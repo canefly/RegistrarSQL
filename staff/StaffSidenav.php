@@ -1,20 +1,44 @@
 <?php
+  require_once __DIR__ . "/../Database/session-checker.php";
+  require_once __DIR__ . "/../Database/connection.php"; // <- make sure this has $conn = new mysqli(...)
+
   $current_page = basename($_SERVER['PHP_SELF']);
-  require_once __DIR__ . "/../Database/session-checker.php"
+
+  // Check if user is logged in
+  if (!isset($_SESSION['user_id'])) {
+      header("Location: ../login.php");
+      exit();
+  }
+
+  $user_id = $_SESSION['user_id'];
+
+  // Fetch staff name and role
+  $stmt = $conn->prepare("
+      SELECT u.username, r.name AS role_name
+      FROM users u
+      JOIN roles r ON u.role_id = r.role_id
+      WHERE u.user_id = ?
+  ");
+  $stmt->bind_param("i", $user_id);
+  $stmt->execute();
+  $result = $stmt->get_result();
+  $user = $result->fetch_assoc();
+
+  $staffName = $user['username'] ?? "Unknown User";
+  $staffRole = $user['role_name'] ?? "Unknown Role";
 ?>
+
 
 <!DOCTYPE html>
 <html lang="en">
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@100..900&family=Roboto:ital,wght@0,100..900;1,100..900&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-
 <head>
   <meta charset="UTF-8">
   <title>Sidebar Example</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <script src="https://kit.fontawesome.com/a076d05399.js" crossorigin="anonymous"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@100..900&family=Roboto:ital,wght@0,100..900;1,100..900&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <style>
     body {
       margin: 0;
@@ -47,29 +71,22 @@
     .sidebar.collapsed .sidebar-text {
       display: none;
     }
-    .sidebar.collapsed .sidebar-header img {
-      width: 40px;
-      height: 40px;
-    }
 
     /* Header */
     .sidebar-header {
       text-align: center;
       margin-bottom: 20px;
     }
-    .sidebar-header img {
-      width: 60px;
-      height: 60px;
-      border-radius: 50%;
-      border: 3px #0056d2 solid;
-    }
     .sidebar-header h3 {
-      margin: 10px 0 5px;
+      margin: 0;
       font-size: 16px;
+      font-weight: 600;
+      color: #0056d2;
     }
     .sidebar-header p {
       font-size: 13px;
       color: #666;
+      margin: 4px 0 0;
     }
 
     .sidebar-section {
@@ -157,11 +174,11 @@
 
 <!-- Sidebar -->
 <div class="sidebar" id="sidebar">
-  <div class="sidebar-header">
-    <img src="../components/img/nabunturan.png" alt="Profile">
-    <h3 class="sidebar-text">Justin Nabunturan</h3>
-    <p class="sidebar-text">Registrar Staff</p>
-  </div>
+ <div class="sidebar-header">
+  <h3 class="sidebar-text"><?= htmlspecialchars($staffName) ?></h3>
+  <p class="sidebar-text"><?= htmlspecialchars($staffRole) ?></p>
+</div>
+
 
   <div class="sidebar-section">
     <h4 class="sidebar-text">MAIN</h4>
@@ -198,7 +215,6 @@
   <i class="fas fa-angle-left"></i>
 </button>
 
-
 <script>
 const sidebar = document.getElementById("sidebar");
 const toggleBtn = document.getElementById("toggleBtn");
@@ -210,10 +226,8 @@ toggleBtn.addEventListener("click", () => {
 function handleResize() {
   if (window.innerWidth <= 720) {
     sidebar.classList.add("collapsed");
-    body.classList.remove("sidebar-open");
   } else {
     sidebar.classList.remove("collapsed");
-    body.classList.remove("sidebar-open");
   }
 }
 window.addEventListener("resize", handleResize);

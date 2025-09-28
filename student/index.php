@@ -10,7 +10,7 @@
 <?php include 'StaffSidenav.php'; ?>
 
 <div class="container">
-  <h1>Enrollment Section</h1>
+  <h1>STUDENT</h1>
   <p>This is where enrollment details will be managed.</p>
 </div>
 
