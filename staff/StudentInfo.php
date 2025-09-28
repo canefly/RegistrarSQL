@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <title>Student Records</title>
-  <link rel="stylesheet" href="../css/StudentInfo.css">
+  <link rel="stylesheet" href="../components/css/StudentInfo.css">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@100..900&family=Roboto:ital,wght@0,100..900;1,100..900&display=swap" rel="stylesheet">
@@ -185,7 +185,7 @@ function printID(index) {
   preview.innerHTML = `
     <div class="id-front">
       <div style="display:flex;align-items:center;gap:10px;margin-bottom:8px;">
-        <img src="../img/bcpp.png" style="width:40px;height:40px;">
+        <img src="../components/img/bcpp.png" style="width:40px;height:40px;">
         <div>
           <h3>Bestlink College of the Philippines</h3>
           <small>Student ID</small>

@@ -1,5 +1,6 @@
 <?php
   $current_page = basename($_SERVER['PHP_SELF']);
+  require_once __DIR__ . "/../Database/session-checker.php"
 ?>
 
 <!DOCTYPE html>
@@ -164,7 +165,7 @@
 
   <div class="sidebar-section">
     <h4 class="sidebar-text">MAIN</h4>
-    <a href="StaffDashboard.php" class="<?= $current_page=='StaffDashboard.php' ? 'active' : '' ?>">
+    <a href="index.php" class="<?= $current_page=='index.php' ? 'active' : '' ?>">
       <i class="fas fa-th-large"></i><span class="sidebar-text">  Dashboard</span>
     </a>
     <a href="Enrollment.php" class="<?= $current_page=='Enrollment.php' ? 'active' : '' ?>">
@@ -186,7 +187,7 @@
     <a href="#">
       <i class="fas fa-cog"></i><span class="sidebar-text"> Settings</span>
     </a>
-    <a href="logout.php" class="logout">
+    <a href="../Database/logout.php" class="logout">
       <i class="fas fa-sign-out-alt"></i><span class="sidebar-text"> Logout</span>
     </a>
   </div>

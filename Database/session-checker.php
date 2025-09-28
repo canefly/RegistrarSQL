@@ -4,7 +4,7 @@ session_start();
 require_once "connection.php"; // your mysqli/pdo connection file
 
 if (!isset($_SESSION['user_id'])) {
-    header("Location: login.php");
+    header("Location: ../index.php");
     exit();
 }
 
@@ -18,7 +18,7 @@ $user = $result->fetch_assoc();
 
 if (!$user) {
     session_destroy();
-    header("Location: login.php?error=inactive");
+    header("Location: ../index.php?error=inactive");
     exit();
 }
 
@@ -34,7 +34,7 @@ function requireRole($roleName) {
     ];
 
     if (!isset($_SESSION['role_id']) || $roles[$_SESSION['role_id']] !== $roleName) {
-        header("Location: unauthorized.php");
+        header("Location: ../index.php");
         exit();
     }
 }

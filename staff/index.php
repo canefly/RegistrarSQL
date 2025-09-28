@@ -1,3 +1,5 @@
+
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -7,7 +9,8 @@
 </head>
 <body>
 
-<?php include 'StaffSidenav.php'; ?>
+<?php include 'StaffSidenav.php'; 
+require_once __DIR__ . "/../Database/session-checker.php";?>
 
 
 <div class="container">

@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <title>Enrollment</title>
-  <link rel="stylesheet" href="../components/css/StaffDashboard.css">
+  <link rel="stylesheet" href="../css/StaffDashboard.css">
 </head>
 <body>
 
