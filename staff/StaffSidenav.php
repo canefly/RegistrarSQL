@@ -185,11 +185,9 @@
     <a href="index.php" class="<?= $current_page=='index.php' ? 'active' : '' ?>">
       <i class="fas fa-th-large"></i><span class="sidebar-text">  Dashboard</span>
     </a>
-    <a href="Enrollment.php" class="<?= $current_page=='Enrollment.php' ? 'active' : '' ?>">
-      <i class="fas fa-user-graduate"></i><span class="sidebar-text">  Enrollment</span>
-    </a>
+
     <a href="StudentInfo.php" class="<?= $current_page=='StudentInfo.php' ? 'active' : '' ?>">
-      <i class="fas fa-id-card"></i><span class="sidebar-text">  Student Info</span>
+      <i class="fas fa-id-card"></i><span class="sidebar-text">  Students</span>
     </a>
     <a href="Masterlist.php" class="<?= $current_page=='Masterlist.php' ? 'active' : '' ?>">
       <i class="fas fa-list"></i><span class="sidebar-text">  Masterlists</span>

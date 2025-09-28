@@ -8,7 +8,6 @@ body {
   display: flex;
   flex-direction: column;
   padding-top: 70px; 
-  
 }
 
 .container {
@@ -22,14 +21,12 @@ body {
   background-image: url("../img/bg.jpg");
   background-size: cover;
   background-position: center;
-
 }
 
 /* Adjust when sidebar is collapsed */
 .sidebar.collapsed ~ .container {
   margin-left: 70px;
 }
-
 
 /* Heading */
 h1 {
@@ -45,14 +42,12 @@ table {
   background: white;
   box-shadow: 0 2px 6px rgba(0,0,0,0.1);
   margin-top: 20px;
-
 }
 
 th, td {
   border: 1px solid #ddd;
   padding: 10px;
   text-align: center;
-
 }
 
 th {
@@ -62,16 +57,19 @@ th {
 
 /* Buttons */
 button {
-  padding: 6px 12px;
+  padding: 8px 16px;
   background: #0073e6;
   color: white;
   border: none;
-  border-radius: 4px;
+  border-radius: 6px;
   cursor: pointer;
+  font-size: 14px;
+  transition: background 0.2s ease, transform 0.1s ease;
 }
 
 button:hover {
   background: #005bb5;
+  transform: translateY(-1px);
 }
 
 /* Search Bar */
@@ -81,8 +79,8 @@ button:hover {
 }
 
 #searchInput {
-  padding: 10px;
-  width: 300px;
+  padding: 10px 15px;
+  width: 320px;
   border: 1px solid #ccc;
   border-radius: 25px;
   font-size: 16px;
@@ -92,7 +90,7 @@ button:hover {
 
 #searchInput:focus {
   border-color: #0073e6;
-  box-shadow: 0 0 5px rgba(0,115,230,0.5);
+  box-shadow: 0 0 6px rgba(0,115,230,0.5);
 }
 
 /* Modal */
@@ -109,30 +107,64 @@ button:hover {
 
 .modal-content {
   background: white;
-  padding: 20px;
-  width: 500px;
-  border-radius: 8px;
+  padding: 25px;
+  width: 550px;
+  border-radius: 12px;
   position: relative;
-  transition: transform 0.6s ease, opacity 0.6s ease;
+  transition: transform 0.4s ease, opacity 0.4s ease;
   opacity: 1;
-  transform: translateX(0);
-}
-
-.modal-content.left {
-  transform: translateX(-100%);
-  opacity: 0;
-}
-
-.modal-content.right {
-  transform: translateX(100%);
-  opacity: 0;
+  transform: translateY(0);
+  max-height: 90vh;
+  overflow-y: auto;
 }
 
 .close {
   position: absolute;
-  top: 10px; right: 15px;
-  font-size: 20px;
+  top: 12px; right: 18px;
+  font-size: 22px;
   cursor: pointer;
+  color: #666;
+}
+
+/* ✏️ Form fields inside modal */
+.modal-content input[type="text"],
+.modal-content input[type="number"],
+.modal-content input[type="date"],
+.modal-content select {
+  width: 100%;
+  padding: 10px 12px;
+  margin: 6px 0 14px;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  font-size: 15px;
+  box-sizing: border-box;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.modal-content input:focus,
+.modal-content select:focus {
+  border-color: #0073e6;
+  box-shadow: 0 0 5px rgba(0,115,230,0.4);
+  outline: none;
+}
+
+/* Labels & sections */
+.modal-content p {
+  margin: 6px 0;
+  font-size: 14px;
+  color: #444;
+}
+
+.modal-content h2 {
+  font-size: 20px;
+  margin-bottom: 10px;
+  color: #222;
+}
+
+.modal-content h3 {
+  font-size: 16px;
+  margin-top: 20px;
+  color: #0073e6;
 }
 
 /* ID Card */
@@ -146,45 +178,28 @@ button:hover {
   background: white;
 }
 
-
-
 /* 📱 Responsive Design */
 @media (max-width: 1024px) {
-  table {
-    font-size: 14px;
-  }
+  table { font-size: 14px; }
 }
 
 @media (max-width: 768px) {
-  .container {
-    margin-left: 0; /* 🔹 Take full width on small screens */
-  }
-  table {
-    font-size: 13px;
-  }
-  #searchInput {
-    width: 250px;
-  }
+  .container { margin-left: 0; }
+  table { font-size: 13px; }
+  #searchInput { width: 250px; }
 }
 
 @media (max-width: 480px) {
-  .container {
-    margin-left: 0;
-  }
-  table {
-    font-size: 12px;
-  }
-  #searchInput {
-    width: 200px;
-  }
-}
-/* Hide the ID card completely in normal view */
-#idCard {
-  display: none !important;
+  .container { margin-left: 0; }
+  table { font-size: 12px; }
+  #searchInput { width: 200px; }
+  .modal-content { width: 90%; }
 }
 
+/* Hide the ID card completely in normal view */
+#idCard { display: none !important; }
+
 /* Show only in print */
-/* ID card styles */
 .id-front, .id-back {
   width: 336px;   /* standard ID size ~85.6mm */
   height: 214px;  /* ~54mm */
@@ -197,8 +212,6 @@ button:hover {
   background-image: url("../img/bgid.jpg"); 
 }
 
-
-
 .id-front h3, .id-back h3 {
   margin: 0 0 6px;
   font-size: 14px;
@@ -210,12 +223,8 @@ button:hover {
 
 /* Print mode */
 @media print {
-  body * {
-    visibility: hidden;
-  }
-  #idCard, #idCard * {
-    visibility: visible;
-  }
+  body * { visibility: hidden; }
+  #idCard, #idCard * { visibility: visible; }
   #idCard {
     position: absolute;
     left: 0;
@@ -223,7 +232,5 @@ button:hover {
     display: block !important;
     margin: auto;
   }
-  .id-front {
-    page-break-after: always;
-  }
+  .id-front { page-break-after: always; }
 }
