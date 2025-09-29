@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Sep 29, 2025 at 08:30 AM
+-- Generation Time: Sep 29, 2025 at 12:21 AM
 -- Server version: 10.4.32-MariaDB
 -- PHP Version: 8.2.12
 
@@ -157,18 +157,29 @@ INSERT INTO `login_audit` (`log_id`, `user_id`, `action_type`, `timestamp`) VALU
 (3, 2, 'logout', '2025-09-28 21:52:20'),
 (4, 2, 'logout', '2025-09-28 22:09:14'),
 (5, 3, 'login', '2025-09-28 22:13:17'),
-(6, 3, 'logout', '2025-09-28 22:13:17'),
-(7, 2, 'logout', '2025-09-29 00:05:23'),
-(8, 2, 'logout', '2025-09-29 00:13:43'),
-(9, 4, 'logout', '2025-09-29 00:16:38');
+(6, 3, 'logout', '2025-09-28 22:13:17');
 
 -- --------------------------------------------------------
 
 --
 -- Table structure for table `masterlists`
 --
--- Error reading structure for table sms.masterlists: #1932 - Table &#039;sms.masterlists&#039; doesn&#039;t exist in engine
--- Error reading data for table sms.masterlists: #1064 - You have an error in your SQL syntax; check the manual that corresponds to your MariaDB server version for the right syntax to use near &#039;FROM `sms`.`masterlists`&#039; at line 1
+
+CREATE TABLE `masterlists` (
+  `masterlist_id` int(11) NOT NULL,
+  `term` varchar(255) DEFAULT NULL,
+  `year` varchar(255) DEFAULT NULL,
+  `program` varchar(255) DEFAULT NULL,
+  `generated_by` int(11) DEFAULT NULL,
+  `generation_date` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp()
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dumping data for table `masterlists`
+--
+
+INSERT INTO `masterlists` (`masterlist_id`, `term`, `year`, `program`, `generated_by`, `generation_date`) VALUES
+(1, '1st Sem', '2025-2026', 'BSIT', 2, '2025-09-28 22:13:17');
 
 -- --------------------------------------------------------
 
@@ -187,15 +198,7 @@ CREATE TABLE `masterlist_details` (
 --
 
 INSERT INTO `masterlist_details` (`id`, `masterlist_id`, `student_id`) VALUES
-(25, 6, 'S2025-007'),
-(26, 6, 'S2025-022'),
-(27, 6, 'S2025-001'),
-(28, 6, 'S2025-013'),
-(29, 6, 'S2025-025'),
-(30, 6, 'S2025-004'),
-(31, 6, 'S2025-019'),
-(32, 6, 'S2025-010'),
-(33, 6, 'S2025-016');
+(1, 1, 'S2025-001');
 
 -- --------------------------------------------------------
 
@@ -223,16 +226,50 @@ INSERT INTO `roles` (`role_id`, `name`, `description`) VALUES
 --
 -- Table structure for table `students`
 --
--- Error reading structure for table sms.students: #1932 - Table &#039;sms.students&#039; doesn&#039;t exist in engine
--- Error reading data for table sms.students: #1064 - You have an error in your SQL syntax; check the manual that corresponds to your MariaDB server version for the right syntax to use near &#039;FROM `sms`.`students`&#039; at line 1
+
+CREATE TABLE `students` (
+  `student_id` varchar(255) NOT NULL,
+  `first_name` varchar(255) DEFAULT NULL,
+  `last_name` varchar(255) DEFAULT NULL,
+  `birthdate` date DEFAULT NULL,
+  `gender` varchar(255) DEFAULT NULL,
+  `program` varchar(255) DEFAULT NULL,
+  `year_level` int(11) DEFAULT NULL,
+  `student_status` varchar(255) DEFAULT NULL,
+  `photo_path` text DEFAULT NULL,
+  `date_registered` date DEFAULT NULL,
+  `email` varchar(255) DEFAULT NULL,
+  `contact_no` varchar(255) DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dumping data for table `students`
+--
+
+INSERT INTO `students` (`student_id`, `first_name`, `last_name`, `birthdate`, `gender`, `program`, `year_level`, `student_status`, `photo_path`, `date_registered`, `email`, `contact_no`) VALUES
+('S2025-001', 'Juan', 'Dela Cruz', '2005-06-15', 'Male', 'BSIT', 1, 'Enrolled', '/uploads/photos/juan.png', '2025-06-01', 'student1@example.com', '09123456789');
 
 -- --------------------------------------------------------
 
 --
 -- Table structure for table `student_ids`
 --
--- Error reading structure for table sms.student_ids: #1932 - Table &#039;sms.student_ids&#039; doesn&#039;t exist in engine
--- Error reading data for table sms.student_ids: #1064 - You have an error in your SQL syntax; check the manual that corresponds to your MariaDB server version for the right syntax to use near &#039;FROM `sms`.`student_ids`&#039; at line 1
+
+CREATE TABLE `student_ids` (
+  `id_id` int(11) NOT NULL,
+  `student_id` varchar(255) DEFAULT NULL,
+  `qr_code` text DEFAULT NULL,
+  `issue_date` date DEFAULT NULL,
+  `expiry_date` date DEFAULT NULL,
+  `printed` tinyint(1) DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dumping data for table `student_ids`
+--
+
+INSERT INTO `student_ids` (`id_id`, `student_id`, `qr_code`, `issue_date`, `expiry_date`, `printed`) VALUES
+(1, 'S2025-001', 'QR123456789', '2025-06-05', '2029-06-05', 1);
 
 -- --------------------------------------------------------
 
@@ -321,56 +358,7 @@ CREATE TABLE `users` (
 INSERT INTO `users` (`user_id`, `username`, `email`, `password_hash`, `role_id`, `active`) VALUES
 (1, 'admin1', 'admin@example.com', '123456', 1, 1),
 (2, 'employee1', 'employee@example.com', '123456', 2, 1),
-(3, 'student1', 'student@example.com', '123456', 3, 1),
-(4, 'juan.dcruz', 'juan.dcruz@bcp.edu.ph', '123456', 3, 1),
-(5, 'maria.santos', 'maria.santos@bcp.edu.ph', '123456', 3, 1),
-(6, 'carlos.reyes', 'carlos.reyes@bcp.edu.ph', '123456', 3, 1),
-(7, 'angelica.torres', 'angelica.torres@bcp.edu.ph', '123456', 3, 1),
-(8, 'mark.ramos', 'mark.ramos@bcp.edu.ph', '123456', 3, 1),
-(9, 'paula.garcia', 'paula.garcia@bcp.edu.ph', '123456', 3, 1),
-(10, 'john.lim', 'john.lim@bcp.edu.ph', '123456', 3, 1),
-(11, 'rose.vergara', 'rose.vergara@bcp.edu.ph', '123456', 3, 1),
-(12, 'miguel.delacruz', 'miguel.delacruz@bcp.edu.ph', '123456', 3, 1),
-(13, 'clarisse.bautista', 'clarisse.bautista@bcp.edu.ph', '123456', 3, 1),
-(14, 'patrick.gonzales', 'patrick.gonzales@bcp.edu.ph', '123456', 3, 1),
-(15, 'samantha.ong', 'samantha.ong@bcp.edu.ph', '123456', 3, 1),
-(16, 'josephine.castro', 'josephine.castro@bcp.edu.ph', '123456', 3, 1),
-(17, 'edward.tan', 'edward.tan@bcp.edu.ph', '123456', 3, 1),
-(18, 'maricar.roxas', 'maricar.roxas@bcp.edu.ph', '123456', 3, 1),
-(19, 'kevin.mendoza', 'kevin.mendoza@bcp.edu.ph', '123456', 3, 1),
-(20, 'grace.chua', 'grace.chua@bcp.edu.ph', '123456', 3, 1),
-(21, 'paolo.cruz', 'paolo.cruz@bcp.edu.ph', '123456', 3, 1),
-(22, 'liza.flores', 'liza.flores@bcp.edu.ph', '123456', 3, 1),
-(23, 'richard.uy', 'richard.uy@bcp.edu.ph', '123456', 3, 1),
-(24, 'isabella.lee', 'isabella.lee@bcp.edu.ph', '123456', 3, 1),
-(25, 'roberto.morales', 'roberto.morales@bcp.edu.ph', '123456', 3, 1),
-(26, 'andrea.soriano', 'andrea.soriano@bcp.edu.ph', '123456', 3, 1),
-(27, 'gabriel.perez', 'gabriel.perez@bcp.edu.ph', '123456', 3, 1),
-(28, 'christine.yap', 'christine.yap@bcp.edu.ph', '123456', 3, 1),
-(29, 'darren.valdez', 'darren.valdez@bcp.edu.ph', '123456', 3, 1),
-(30, 'roxanne.lopez', 'roxanne.lopez@bcp.edu.ph', '123456', 3, 1),
-(31, 'samuel.villanueva', 'samuel.villanueva@bcp.edu.ph', '123456', 3, 1),
-(32, 'kimberly.diaz', 'kimberly.diaz@bcp.edu.ph', '123456', 3, 1),
-(33, 'jonathan.cruz', 'jonathan.cruz@bcp.edu.ph', '123456', 3, 1),
-(34, 'micaela.alvarez', 'micaela.alvarez@bcp.edu.ph', '123456', 3, 1),
-(35, 'ryan.santos', 'ryan.santos@bcp.edu.ph', '123456', 3, 1),
-(36, 'nicole.gomez', 'nicole.gomez@bcp.edu.ph', '123456', 3, 1),
-(37, 'leo.delosreyes', 'leo.delosreyes@bcp.edu.ph', '123456', 3, 1),
-(38, 'sophia.manalo', 'sophia.manalo@bcp.edu.ph', '123456', 3, 1),
-(39, 'francis.torralba', 'francis.torralba@bcp.edu.ph', '123456', 3, 1),
-(40, 'danica.estrada', 'danica.estrada@bcp.edu.ph', '123456', 3, 1),
-(41, 'victor.rivera', 'victor.rivera@bcp.edu.ph', '123456', 3, 1),
-(42, 'roxan.santiago', 'roxan.santiago@bcp.edu.ph', '123456', 3, 1),
-(43, 'camille.guevarra', 'camille.guevarra@bcp.edu.ph', '123456', 3, 1),
-(44, 'adrian.navarro', 'adrian.navarro@bcp.edu.ph', '123456', 3, 1),
-(45, 'karla.pascual', 'karla.pascual@bcp.edu.ph', '123456', 3, 1),
-(46, 'jerome.francisco', 'jerome.francisco@bcp.edu.ph', '123456', 3, 1),
-(47, 'trisha.cortez', 'trisha.cortez@bcp.edu.ph', '123456', 3, 1),
-(48, 'allan.vargas', 'allan.vargas@bcp.edu.ph', '123456', 3, 1),
-(49, 'helen.rosario', 'helen.rosario@bcp.edu.ph', '123456', 3, 1),
-(50, 'cesar.montoya', 'cesar.montoya@bcp.edu.ph', '123456', 3, 1),
-(51, 'alyssa.lorenzo', 'alyssa.lorenzo@bcp.edu.ph', '123456', 3, 1),
-(52, 'dennis.quintos', 'dennis.quintos@bcp.edu.ph', '123456', 3, 1);
+(3, 'student1', 'student@example.com', '123456', 3, 1);
 
 --
 -- Indexes for dumped tables
@@ -421,6 +409,13 @@ ALTER TABLE `login_audit`
   ADD KEY `user_id` (`user_id`);
 
 --
+-- Indexes for table `masterlists`
+--
+ALTER TABLE `masterlists`
+  ADD PRIMARY KEY (`masterlist_id`),
+  ADD KEY `generated_by` (`generated_by`);
+
+--
 -- Indexes for table `masterlist_details`
 --
 ALTER TABLE `masterlist_details`
@@ -433,6 +428,19 @@ ALTER TABLE `masterlist_details`
 --
 ALTER TABLE `roles`
   ADD PRIMARY KEY (`role_id`);
+
+--
+-- Indexes for table `students`
+--
+ALTER TABLE `students`
+  ADD PRIMARY KEY (`student_id`);
+
+--
+-- Indexes for table `student_ids`
+--
+ALTER TABLE `student_ids`
+  ADD PRIMARY KEY (`id_id`),
+  ADD UNIQUE KEY `student_id` (`student_id`);
 
 --
 -- Indexes for table `student_status_history`
@@ -501,19 +509,31 @@ ALTER TABLE `health_records`
 -- AUTO_INCREMENT for table `login_audit`
 --
 ALTER TABLE `login_audit`
-  MODIFY `log_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=10;
+  MODIFY `log_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
+
+--
+-- AUTO_INCREMENT for table `masterlists`
+--
+ALTER TABLE `masterlists`
+  MODIFY `masterlist_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
 
 --
 -- AUTO_INCREMENT for table `masterlist_details`
 --
 ALTER TABLE `masterlist_details`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=34;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
 
 --
 -- AUTO_INCREMENT for table `roles`
 --
 ALTER TABLE `roles`
   MODIFY `role_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
+
+--
+-- AUTO_INCREMENT for table `student_ids`
+--
+ALTER TABLE `student_ids`
+  MODIFY `id_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
 
 --
 -- AUTO_INCREMENT for table `student_status_history`
@@ -537,7 +557,7 @@ ALTER TABLE `system_logs`
 -- AUTO_INCREMENT for table `users`
 --
 ALTER TABLE `users`
-  MODIFY `user_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=376;
+  MODIFY `user_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
 
 --
 -- Constraints for dumped tables
@@ -582,11 +602,23 @@ ALTER TABLE `login_audit`
   ADD CONSTRAINT `login_audit_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `users` (`user_id`);
 
 --
+-- Constraints for table `masterlists`
+--
+ALTER TABLE `masterlists`
+  ADD CONSTRAINT `masterlists_ibfk_1` FOREIGN KEY (`generated_by`) REFERENCES `users` (`user_id`);
+
+--
 -- Constraints for table `masterlist_details`
 --
 ALTER TABLE `masterlist_details`
   ADD CONSTRAINT `masterlist_details_ibfk_1` FOREIGN KEY (`masterlist_id`) REFERENCES `masterlists` (`masterlist_id`),
   ADD CONSTRAINT `masterlist_details_ibfk_2` FOREIGN KEY (`student_id`) REFERENCES `students` (`student_id`);
+
+--
+-- Constraints for table `student_ids`
+--
+ALTER TABLE `student_ids`
+  ADD CONSTRAINT `student_ids_ibfk_1` FOREIGN KEY (`student_id`) REFERENCES `students` (`student_id`);
 
 --
 -- Constraints for table `student_status_history`
