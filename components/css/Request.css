@@ -1,0 +1,86 @@
+body
+ {
+     font-family: 'Outfit', sans-serif; background: #f9f9f9; margin: 0;
+}
+global css for offset effect
+
+/* Default layout */
+body {
+  margin: 0;
+  font-family: 'Outfit', sans-serif;
+  background: #f9f9f9;
+  color: #333;
+  display: flex;
+  min-height: 100vh;
+}
+
+/* Sidebar offset container (shared for content pages) */
+.content, 
+.container {
+  flex: 1;
+  margin-left: 240px; /* same width as sidebar */
+  padding: 20px 40px;
+  transition: margin-left 0.3s ease;
+  box-sizing: border-box;
+}
+
+/* Adjust when sidebar is collapsed */
+.sidebar.collapsed ~ .content,
+.sidebar.collapsed ~ .container {
+  margin-left: 70px; /* collapsed width */
+}
+
+/* Toggle button positioning */
+.toggle-btn {
+  position: fixed;
+  top: 20px;
+  left: 250px;
+  background: #0056d2;
+  color: #fff;
+  border: none;
+  padding: 8px 12px;
+  border-radius: 50%;
+  cursor: pointer;
+  transition: left 0.3s ease, transform 0.3s ease;
+  z-index: 1100;
+}
+
+.sidebar.collapsed + .toggle-btn {
+  left: 80px;
+}
+
+.sidebar.collapsed + .toggle-btn i {
+  transform: rotate(180deg);
+}
+
+/* Responsive fix */
+@media (max-width: 768px) {
+  .content, 
+  .container {
+    margin-left: 0;
+    padding: 20px;
+  }
+  .toggle-btn {
+    left: 20px !important; /* stays accessible */
+  }
+}
+
+h1 { margin-bottom: 10px; }
+.requests-table {
+    width: 100%; border-collapse: collapse; margin-top: 20px;
+    background: #fff; box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+    border-radius: 8px; overflow: hidden;
+}
+.requests-table th, .requests-table td {
+    padding: 12px 15px; text-align: left; /* Changed to left alignment */
+    border-bottom: 1px solid #eee;
+}
+.requests-table th { background: #0056d2; color: #fff; font-weight: 600; }
+.status { padding: 5px 12px; border-radius: 20px; font-size: 13px; color: #fff; display: inline-block; }
+.status.Pending { background: #f59e0b; }
+.status.Approved { background: #16a34a; }
+.status.Declined { background: #ef4444; }
+button { padding: 6px 12px; border: none; border-radius: 4px; cursor: pointer; font-size: 14px; }
+button.approve { background: #16a34a; color: #fff; } /* Fixed color for readability */
+button.decline { background: #ef4444; color: #fff; } /* Fixed color for readability */
+button:hover { opacity: 0.85; } /* Fixed opacity value */

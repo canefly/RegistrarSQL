@@ -193,3 +193,27 @@ button.danger:hover { background: #c62b37; }
   border: 1px solid #ccc;
   border-radius: 6px;
 }
+
+@media print {
+  @page {
+    size: 8.5in 13in; /* Long bond paper */
+    margin: 15mm;
+  }
+
+  body, html {
+    margin: 0;
+    padding: 0;
+    height: 100%;
+  }
+
+  body * { visibility: hidden; }
+  #printArea, #printArea * { visibility: visible; }
+  #printArea { position: absolute; top: 0; left: 0; width: 100%; }
+
+  #printArea table th, 
+  #printArea table td {
+    border: 1px solid #000;
+  }
+
+  #printArea thead { display: table-header-group; }
+}

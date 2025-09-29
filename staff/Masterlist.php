@@ -2,22 +2,68 @@
 require_once __DIR__ . "/../Database/session-checker.php";
 require_once __DIR__ . "/../Database/connection.php";
 
-// 🔹 Handle create masterlist form submission
+// 🔹 Handle delete masterlist
+if (isset($_GET['delete_masterlist'])) {
+    $delete_id = intval($_GET['delete_masterlist']);
+
+    $stmt = $conn->prepare("DELETE FROM masterlist_details WHERE masterlist_id = ?");
+    $stmt->bind_param("i", $delete_id);
+    $stmt->execute();
+
+    $stmt = $conn->prepare("DELETE FROM masterlists WHERE masterlist_id = ?");
+    $stmt->bind_param("i", $delete_id);
+    $stmt->execute();
+
+    echo "<script>alert('Masterlist deleted successfully!'); window.location='Masterlist.php';</script>";
+    exit;
+}
+
+// 🔹 Handle create masterlist
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['create_masterlist'])) {
     $term = $_POST['term'];
     $year = $_POST['year'];
     $program = $_POST['program'];
     $section = $_POST['section'];
+    $year_level = intval($_POST['year_level']);
     $generated_by = $_SESSION['user_id'];
 
     $stmt = $conn->prepare("INSERT INTO masterlists (term, year, program, section, generated_by) VALUES (?, ?, ?, ?, ?)");
     $stmt->bind_param("ssssi", $term, $year, $program, $section, $generated_by);
     $stmt->execute();
 
-    echo "<script>alert('Masterlist created successfully!');</script>";
+    $masterlist_id = $conn->insert_id;
+
+    $stmt = $conn->prepare("
+        SELECT student_id 
+        FROM students 
+        WHERE program = ? AND year_level = ?
+        AND (section IS NULL OR section = '')
+        AND student_id NOT IN (SELECT student_id FROM masterlist_details)
+        ORDER BY RAND()
+        LIMIT 50
+    ");
+    $stmt->bind_param("si", $program, $year_level);
+    $stmt->execute();
+    $result = $stmt->get_result();
+    $eligible_students = $result->fetch_all(MYSQLI_ASSOC);
+
+    if ($eligible_students) {
+        $insert_stmt = $conn->prepare("INSERT INTO masterlist_details (masterlist_id, student_id) VALUES (?, ?)");
+        $update_stmt = $conn->prepare("UPDATE students SET section = ? WHERE student_id = ?");
+        foreach ($eligible_students as $es) {
+            $insert_stmt->bind_param("is", $masterlist_id, $es['student_id']);
+            $insert_stmt->execute();
+
+            $update_stmt->bind_param("ss", $section, $es['student_id']);
+            $update_stmt->execute();
+        }
+    }
+
+    echo "<script>alert('Masterlist created and auto-filled with up to 50 students!'); window.location='Masterlist.php';</script>";
+    exit;
 }
 
-// 🔹 Fetch all masterlists
+// 🔹 Fetch masterlists
 $sql = "SELECT m.masterlist_id, m.term, m.year, m.program, m.section, m.generation_date, u.username 
         FROM masterlists m
         LEFT JOIN users u ON m.generated_by = u.user_id
@@ -32,15 +78,20 @@ $viewing_masterlist = null;
 if (isset($_GET['view_students'])) {
     $viewing_masterlist = intval($_GET['view_students']);
     $stmt = $conn->prepare("
-        SELECT s.student_id, s.first_name, s.last_name, s.program, s.year_level, s.student_status, m.section
+        SELECT s.student_id, s.first_name, s.last_name, s.program, s.year_level, s.student_status, s.section
         FROM masterlist_details md
         JOIN students s ON md.student_id = s.student_id
-        JOIN masterlists m ON md.masterlist_id = m.masterlist_id
         WHERE md.masterlist_id = ?
     ");
     $stmt->bind_param("i", $viewing_masterlist);
     $stmt->execute();
     $students_in_masterlist = $stmt->get_result()->fetch_all(MYSQLI_ASSOC);
+
+    // Fetch meta info for header
+    $info_stmt = $conn->prepare("SELECT term, year, program, section FROM masterlists WHERE masterlist_id = ?");
+    $info_stmt->bind_param("i", $viewing_masterlist);
+    $info_stmt->execute();
+    $masterlist_info = $info_stmt->get_result()->fetch_assoc();
 }
 ?>
 <!DOCTYPE html>
@@ -49,6 +100,14 @@ if (isset($_GET['view_students'])) {
   <meta charset="UTF-8">
   <title>Masterlist</title>
   <link rel="stylesheet" href="../components/css/masterlists.css">
+  <style>
+    @media print {
+      body * { visibility: hidden; }
+      #printArea, #printArea * { visibility: visible; }
+      #printArea { position: absolute; left: 0; top: 0; width: 100%; }
+      button, .close, .actions { display: none !important; }
+    }
+  </style>
 </head>
 <body>
 
@@ -56,9 +115,8 @@ if (isset($_GET['view_students'])) {
 
 <div class="container">
   <h1>📑 Masterlist Manager</h1>
-  <p>Create, view, and export student masterlists per term, year, program, and section.</p>
+  <p>Create, view, and print student masterlists per term, year, program, and section.</p>
 
-  <!-- ➕ Create Masterlist -->
   <div class="actions">
     <button class="primary" onclick="openCreateModal()">+ Create New Masterlist</button>
   </div>
@@ -90,8 +148,10 @@ if (isset($_GET['view_students'])) {
           <td><?= $m['generation_date'] ?></td>
           <td>
             <a href="?view_students=<?= $m['masterlist_id'] ?>"><button>👀 View</button></a>
-            <button>⬇ Export</button>
-            <button class="danger">🗑 Delete</button>
+            <a href="?view_students=<?= $m['masterlist_id'] ?>#print"><button>🖨 Print</button></a>
+            <a href="?delete_masterlist=<?= $m['masterlist_id'] ?>" onclick="return confirm('Are you sure you want to delete this masterlist?');">
+              <button class="danger">🗑 Delete</button>
+            </a>
           </td>
         </tr>
         <?php endforeach; ?>
@@ -123,6 +183,14 @@ if (isset($_GET['view_students'])) {
         <option value="BSBA">BSBA</option>
       </select>
 
+      <label>Year Level</label>
+      <select name="year_level" required>
+        <option value="1">1st Year</option>
+        <option value="2">2nd Year</option>
+        <option value="3">3rd Year</option>
+        <option value="4">4th Year</option>
+      </select>
+
       <label>Section</label>
       <input type="text" name="section" placeholder="e.g. 2201" required>
 
@@ -140,36 +208,79 @@ if (isset($_GET['view_students'])) {
   <div class="modal-content wide">
     <a href="Masterlist.php" class="close">&times;</a>
     <h2>👩‍🎓 Students in Masterlist (ID: <?= $viewing_masterlist ?>)</h2>
-    <table>
-      <thead>
-        <tr>
-          <th>Student ID</th>
-          <th>Name</th>
-          <th>Program</th>
-          <th>Year Level</th>
-          <th>Section</th>
-          <th>Status</th>
+    <button onclick="window.print()" class="primary" style="margin-bottom:10px;">🖨 Print Masterlist</button>
+ <div id="printArea">
+  <!-- Header with logo + school info -->
+  <div style="display:flex; align-items:center; justify-content:center; margin-bottom:10px; gap:15px;">
+    <img src="../components/img/bcpp.png" alt="School Logo" style="width:80px; height:80px;">
+    <div style="text-align:center;">
+      <h2 style="margin:0; font-weight:700;">Bestlink College of the Philippines</h2>
+      <p style="margin:0; font-size:14px;">Official Student Masterlist</p>
+    </div>
+  </div>
+
+  <!-- Meta Info -->
+  <p style="text-align:center; margin:0 0 15px; font-size:14px;">
+    Term: <?= htmlspecialchars($masterlist_info['term']) ?> | 
+    School Year: <?= htmlspecialchars($masterlist_info['year']) ?> | 
+    Program: <?= htmlspecialchars($masterlist_info['program']) ?> | 
+    Section: <?= htmlspecialchars($masterlist_info['section']) ?>
+  </p>
+
+  <!-- Table -->
+  <table border="1" cellspacing="0" cellpadding="7" width="100%" style="border-collapse:collapse; font-size:13px;">
+    <thead style="background:#0056d2; color:white;">
+      <tr>
+        <th>Student ID</th>
+        <th>Name</th>
+        <th>Program</th>
+        <th>Year Level</th>
+        <th>Section</th>
+        <th>Status</th>
+        <th>Signature</th>
+      </tr>
+    </thead>
+    <tbody>
+      <?php if ($students_in_masterlist): ?>
+        <?php foreach ($students_in_masterlist as $i => $s): ?>
+        <tr style="background:<?= $i % 2 === 0 ? '#fff' : '#f5f7fa' ?>;">
+          <td><?= $s['student_id'] ?></td>
+          <td><?= htmlspecialchars($s['first_name'] . " " . $s['last_name']) ?></td>
+          <td><?= htmlspecialchars($s['program']) ?></td>
+          <td><?= htmlspecialchars($s['year_level']) ?></td>
+          <td><?= htmlspecialchars($s['section']) ?></td>
+          <td><?= htmlspecialchars($s['student_status']) ?></td>
+          <td style="height:30px;"></td>
         </tr>
-      </thead>
-      <tbody>
-        <?php if ($students_in_masterlist): ?>
-          <?php foreach ($students_in_masterlist as $s): ?>
-          <tr>
-            <td><?= $s['student_id'] ?></td>
-            <td><?= htmlspecialchars($s['first_name'] . " " . $s['last_name']) ?></td>
-            <td><?= htmlspecialchars($s['program']) ?></td>
-            <td><?= htmlspecialchars($s['year_level']) ?></td>
-            <td><?= htmlspecialchars($s['section']) ?></td>
-            <td><?= htmlspecialchars($s['student_status']) ?></td>
-          </tr>
-          <?php endforeach; ?>
-        <?php else: ?>
-          <tr><td colspan="6">No students in this masterlist yet.</td></tr>
-        <?php endif; ?>
-      </tbody>
-    </table>
+        <?php endforeach; ?>
+      <?php else: ?>
+        <tr><td colspan="7">No students in this masterlist yet.</td></tr>
+      <?php endif; ?>
+    </tbody>
+  </table>
+
+  <!-- Signature Blocks -->
+  <br><br>
+  <div style="display:flex; justify-content:space-between; margin-top:40px; font-size:13px;">
+    <div style="text-align:center; width:30%;">
+      <p>Prepared by:</p><br>
+      <p>_________________________</p>
+      <p>Registrar Staff</p>
+    </div>
+    <div style="text-align:center; width:30%;">
+      <p>Checked by:</p><br>
+      <p>_________________________</p>
+      <p>Head Registrar</p>
+    </div>
+    <div style="text-align:center; width:30%;">
+      <p>Approved by:</p><br>
+      <p>_________________________</p>
+      <p>School Director</p>
+    </div>
   </div>
 </div>
+
+
 <?php endif; ?>
 
 <script>
