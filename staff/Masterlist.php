@@ -14,7 +14,7 @@ if (isset($_GET['delete_masterlist'])) {
     $stmt->bind_param("i", $delete_id);
     $stmt->execute();
 
-    echo "<script>alert('Masterlist deleted successfully!'); window.location='Masterlist.php';</script>";
+    echo "<script>alert('Masterlist successfully!'); window.location='Masterlist.php';</script>";
     exit;
 }
 
