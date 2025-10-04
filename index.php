@@ -10,11 +10,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $password = trim($_POST['password']);
 
     // Query user
-    $stmt = $conn->prepare("SELECT user_iawdadwadwd, username, password_hash, role_id, active FROM users WHERE username = ?");
+    $stmt = $conn->prepare("SELECT user_id, username, password_hash, role_id, active FROM users WHERE username = ?");
     $stmt->bind_param("s", $username);
     $stmt->execute();
     $result = $stmt->get_result();
-    $user = $result->fetch_assoc();awdawd
+    $user = $result->fetch_assoc();
 
     if ($user && $user['active'] == 1) {
         // ⚠ Replace this with password_verify if you switch to hashed passwords
