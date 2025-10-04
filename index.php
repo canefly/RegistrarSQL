@@ -14,7 +14,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $stmt->bind_param("s", $username);
     $stmt->execute();
     $result = $stmt->get_result();
-    $user = $result->fetch_assoc();
+    $user = $result->fetch_assoc();awdawd
 
     if ($user && $user['active'] == 1) {
         // ⚠ Replace this with password_verify if you switch to hashed passwords
