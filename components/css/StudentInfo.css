@@ -17,59 +17,85 @@ body.modal-open {
 }
 
 
-/* === CONTAINER === */
 .container {
   flex: 1;
-  padding: 30px;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
   margin-left: 240px;
+  padding: 20px 40px;
   transition: margin-left 0.3s ease;
-  background: rgba(255, 255, 255, 0.35);
-  backdrop-filter: blur(10px);
-  border-radius: 16px 16px 0 0;
-  box-shadow: inset 0 0 40px rgba(255, 255, 255, 0.1);
+  box-sizing: border-box;
+  position: relative;
+  background: none; /* transparent like dashboard */
+  align-items: flex-start; /* ensures left-alignment */
 }
 
 .sidebar.collapsed ~ .container {
   margin-left: 70px;
 }
 
-/* === HEADINGS === */
-h1 {
-  font-weight: 700;
-  font-size: 2rem;
-  text-align: center;
-  color: #1e3a8a;
-  margin-bottom: 10px;
-  letter-spacing: 0.5px;
+/* === HEADER (Dashboard Consistency) === */
+.header-bar {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 4px;
+  margin-bottom: 20px;
+  margin-top: 0;
 }
 
-/* === SEARCH BAR === */
-.search-container {
-  width: 100%;
-  max-width: 1200px;
+.header-bar h1 {
+  font-size: 28px;
+  font-weight: 700;
+  color: #1e3a8a;
+  margin: 0;
+  line-height: 1.2;
+}
+
+.header-bar p {
+  color: #555;
+  font-size: 15px;
+  margin: 0 0 10px 0;
+}
+
+/* === SEARCH === */
+.header-bar .search-container {
   display: flex;
-  justify-content: center;
-  margin-bottom: 15px;
+  justify-content: flex-start;
+  align-items: center;
+  width: 100%;
 }
 
 #searchInput {
-  padding: 12px 20px;
-  width: 340px;
-  border: 1px solid #cbd5e1;
+  padding: 10px 16px;
+  width: 320px;
+  border: 1px solid #d1d5db;
   border-radius: 25px;
-  font-size: 16px;
+  font-size: 15px;
   background: #fff;
-  transition: all 0.3s ease;
-  box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+  transition: all 0.2s ease;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.04);
 }
 
 #searchInput:focus {
   border-color: #3b82f6;
-  box-shadow: 0 0 8px rgba(59,130,246,0.5);
+  box-shadow: 0 0 6px rgba(59,130,246,0.4);
 }
+
+/* === SUGGESTIONS === */
+#suggestionsBox {
+  position: absolute;
+  background: white;
+  border: 1px solid #d1d5db;
+  border-radius: 8px;
+  width: 320px;
+  box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+  margin-top: 4px;
+  max-height: 180px;
+  overflow-y: auto;
+  z-index: 1000;
+}
+
+.suggestions div { padding: 5px; cursor: pointer; }
+.suggestions div:hover { background: #f1f5f9; }
 
 /* === TABLE CONTAINER === */
 .table-container {
@@ -88,33 +114,111 @@ h1 {
   box-shadow: 0 8px 24px rgba(0,0,0,0.12);
 }
 
-/* === TABLE === */
-table {
+/* ------------------ Student Records Table Styling ------------------ */
+.table-wrapper {
   width: 100%;
   border-collapse: collapse;
+  background: #fff;
+  border-radius: 10px;
+  overflow: hidden;
+  box-shadow: 0 3px 12px rgba(0,0,0,0.1);
+  margin-top: 20px;
+}
+
+/* Scrollbar styling for table wrapper */
+.table-wrapper::-webkit-scrollbar {
+  width: 8px;
+}
+.table-wrapper::-webkit-scrollbar-thumb {
+  background: #0073e6;
+  border-radius: 10px;
+}
+.table-wrapper::-webkit-scrollbar-thumb:hover {
+  background: #005bb5;
+}
+
+
+
+/* Actual Table */
+#studentsTable {
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0;
+  background: white;
   font-size: 14px;
 }
 
-th {
-  background: linear-gradient(135deg, #3b82f6, #2563eb);
+#studentsTable thead {
+  background: #004aad;
   color: #fff;
-  text-align: left;
-  padding: 12px 15px;
-  position: sticky;
-  top: 0;
-  font-weight: 600;
-  letter-spacing: 0.3px;
 }
 
-td {
+#studentsTable th,
+#studentsTable td {
   padding: 12px 15px;
-  border-bottom: 1px solid #f1f5f9;
-  background-color: rgba(255,255,255,0.6);
+  text-align: center;
+  border-bottom: 1px solid #eee;
 }
 
-tr:hover td {
-  background-color: rgba(219, 234, 254, 0.7);
+/* Hover row effect */
+#studentsTable tbody tr:hover {
+  background: #f0f6ff;
+  transition: background 0.2s ease;
 }
+
+/* Rounded header corners */
+#studentsTable th:first-child {
+  border-top-left-radius: 12px;
+}
+#studentsTable th:last-child {
+  border-top-right-radius: 12px;
+}
+
+/* Alternate row background (zebra stripes) */
+#studentsTable tbody tr:nth-child(even) {
+  background-color: #f9fafb; /* light gray */
+}
+
+#studentsTable tbody tr:nth-child(odd) {
+  background-color: #ffffff; /* white */
+}
+
+#studentsTable tbody tr:hover {
+  background: #f1f5ff; /* bluish-gray */
+  transition: background 0.25s ease;
+}
+
+
+/* Buttons inside the table */
+#studentsTable button {
+  padding: 6px 12px;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 13px;
+  background: #0073e6;
+  color: #fff;
+  transition: background 0.3s ease;
+}
+#studentsTable button:hover {
+  background: #005bb5;
+}
+
+#noResultsRow td {
+  font-style: italic;
+  color: #6b7280;
+  background: #f9fafb;
+}
+
+
+/* Responsive view */
+@media (max-width: 768px) {
+  #studentsTable th, #studentsTable td {
+    font-size: 13px;
+    padding: 10px;
+  }
+}
+
 
 /* === BUTTONS === */
 button {
@@ -406,19 +510,28 @@ button.secondary:hover {
 .id-back {
   padding: 16px;
   display: flex;
-  flex-direction: row;
-  justify-content: space-between;
-  align-items: flex-start;
+  flex-direction: column; /* vertical layout */
+  justify-content: flex-start;
+  align-items: center;
   background: linear-gradient(180deg, #ffffff 80%, #e8f0ff 100%);
+  border-radius: 14px;
+  gap: 10px;
 }
 
 .id-back p {
   font-size: 12px;
-  text-align: left;
-  line-height: 1.4;
+  text-align: center;
+  line-height: 1.5;
   margin: 0;
-  flex: 1;
-  padding-right: 10px;
+  color: #1e293b;
+  width: 90%;
+}
+
+.id-back strong {
+  display: block;
+  margin-bottom: 4px;
+  font-weight: 700;
+  color: #1e3a8a;
 }
 
 #qrcode {
@@ -428,6 +541,7 @@ button.secondary:hover {
   border-radius: 10px;
   background: #fff;
   padding: 4px;
+  margin-top: 8px;
 }
 
 /* === PRINT === */

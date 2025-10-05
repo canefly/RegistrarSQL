@@ -184,6 +184,7 @@ foreach ($allStudents as &$s) {
 <?php include 'StaffSidenav.php'; ?>
 <div class="container">
   <h1>Student Records</h1>
+  <p>Manage student information, update records, and print student IDs.</p>
 
   <!-- Search -->
   <div style="position:relative;">
@@ -192,7 +193,8 @@ foreach ($allStudents as &$s) {
   </div>
 
   <!-- Student Table -->
-  <table id="studentsTable">
+  <div class="table-wrapper">
+    <table id="studentsTable">
     <thead>
       <tr>
         <th>Student Name</th>
@@ -204,19 +206,26 @@ foreach ($allStudents as &$s) {
         <th>Action</th>
       </tr>
     </thead>
-    <tbody>
-    <?php foreach ($students as $s): ?>
-      <tr data-student='<?= json_encode($s, JSON_HEX_APOS | JSON_HEX_QUOT) ?>'>
-        <td><?= htmlspecialchars($s['last_name'] . ", " . $s['first_name']) ?></td>
-        <td><?= htmlspecialchars($s['program']) ?></td>
-        <td><?= htmlspecialchars($s['year_level']) ?></td>
-        <td><?= htmlspecialchars($s['section']) ?></td>
-        <td><?= htmlspecialchars($s['student_id']) ?></td>
-        <td><?= htmlspecialchars($s['student_status']) ?></td>
-        <td><button onclick="showDetails(this)">Edit</button></td>
-      </tr>
-    <?php endforeach; ?>
-    </tbody>
+  <tbody id="studentsBody">
+  <?php foreach ($students as $s): ?>
+    <tr data-student='<?= json_encode($s, JSON_HEX_APOS | JSON_HEX_QUOT) ?>'>
+      <td><?= htmlspecialchars($s['last_name'] . ", " . $s['first_name']) ?></td>
+      <td><?= htmlspecialchars($s['program']) ?></td>
+      <td><?= htmlspecialchars($s['year_level']) ?></td>
+      <td><?= htmlspecialchars($s['section']) ?></td>
+      <td><?= htmlspecialchars($s['student_id']) ?></td>
+      <td><?= htmlspecialchars($s['student_status']) ?></td>
+      <td><button onclick="showDetails(this)">Edit</button></td>
+    </tr>
+  <?php endforeach; ?>
+
+  <!-- 🔹 Hidden by default, shown when no match -->
+  <tr id="noResultsRow" style="display:none;">
+    <td colspan="7" style="text-align:center; color:#666; padding:20px;">
+      No students found.
+    </td>
+  </tr>
+</tbody>
   </table>
 </div>
 
@@ -251,34 +260,66 @@ const allStudents = <?= json_encode($allStudents, JSON_HEX_APOS | JSON_HEX_QUOT)
 const searchInput = document.getElementById("searchInput");
 const suggestionsBox = document.getElementById("suggestionsBox");
 
-searchInput.addEventListener("keyup", function() {
+searchInput.addEventListener("keyup", function () {
   const filter = this.value.toLowerCase();
+  const rows = document.querySelectorAll("#studentsTable tbody tr[data-student]");
+  const noResultsRow = document.getElementById("noResultsRow");
+  const suggestionsBox = document.getElementById("suggestionsBox");
+  let visibleCount = 0;
   let matches = [];
 
-  allStudents.forEach(s => {
-    const fullName = (s.last_name + ", " + s.first_name).toLowerCase();
-    if (fullName.includes(filter)) matches.push(s);
+  rows.forEach(row => {
+    const student = JSON.parse(row.dataset.student);
+    const fullName = (student.last_name + ", " + student.first_name).toLowerCase();
+    const id = student.student_id.toLowerCase();
+    const program = student.program.toLowerCase();
+
+    // Filter table rows
+    if (fullName.includes(filter) || id.includes(filter) || program.includes(filter)) {
+      row.style.display = "";
+      visibleCount++;
+      matches.push(student);
+    } else {
+      row.style.display = "none";
+    }
   });
 
+  // Toggle “No students found”
+  noResultsRow.style.display = visibleCount === 0 ? "table-row" : "none";
+
+  // 🔹 Build dropdown suggestions
   suggestionsBox.innerHTML = "";
   if (matches.length > 0 && filter.length > 0) {
     suggestionsBox.style.display = "block";
-    matches.forEach(m => {
+    matches.slice(0, 5).forEach(m => {
       const div = document.createElement("div");
-      const regex = new RegExp("(" + filter + ")", "i");
-      const name = m.last_name + ", " + m.first_name;
-      div.innerHTML = name.replace(regex, "<b>$1</b>");
+      const name = `${m.last_name}, ${m.first_name} (${m.student_id})`;
+      div.innerHTML = name.replace(
+        new RegExp(`(${filter})`, "gi"),
+        "<b>$1</b>"
+      );
+      div.style.padding = "8px 10px";
+      div.style.cursor = "pointer";
+      div.style.transition = "background 0.2s";
+      div.onmouseover = () => (div.style.background = "#f1f5ff");
+      div.onmouseout = () => (div.style.background = "white");
+
+      // ✅ When clicked → open same modal as Edit
       div.onclick = () => {
-        currentStudent = m;
-        printID();
+        const matchRow = Array.from(rows).find(
+          r => JSON.parse(r.dataset.student).student_id === m.student_id
+        );
+        if (matchRow) showDetails(matchRow.querySelector("button"));
         suggestionsBox.style.display = "none";
       };
+
       suggestionsBox.appendChild(div);
     });
   } else {
     suggestionsBox.style.display = "none";
   }
 });
+
 
 function showDetails(btn) {
   const row = btn.closest("tr");
@@ -376,13 +417,16 @@ function printID() {
         </div>
       </div>
     </div>
-    <div class="id-back" style="display:flex;justify-content:center;align-items:center;">
-      <p>  In Case of emergency  Guardian: ${s.guardian_name} (${s.guardian_contact})<br>    Address: ${s.guardian_address}</p>  
-      <div style="border:2px solid #000; border-radius:10px; padding:8px; background:#fff;">            
-        <div id="qrcode"></div>
-      </div>
-    </div>
-  `;
+    
+     <div class="id-back">
+    <p>
+      <strong>In Case of Emergency</strong>
+      Guardian: ${s.guardian_name} (${s.guardian_contact})<br>
+      Address: ${s.guardian_address}
+    </p>
+    <div id="qrcode"></div>
+  </div>
+`;
   new QRCode(document.getElementById("qrcode"), {
     text: `ID: ${s.student_id}\nName: ${s.first_name} ${s.last_name}\nProgram: ${s.program}\nYear: ${s.year_level} Section: ${s.section}\nGuardian: ${s.guardian_name} (${s.guardian_contact})\nAddress: ${s.guardian_address}`,
     width: 100, height: 100
