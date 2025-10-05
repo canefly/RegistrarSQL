@@ -184,6 +184,7 @@ foreach ($allStudents as &$s) {
 <?php include 'StaffSidenav.php'; ?>
 <div class="container">
   <h1>Student Records</h1>
+  <p>Manage student information, update records, and print student IDs.</p>
 
   <!-- Search -->
   <div style="position:relative;">
@@ -192,7 +193,8 @@ foreach ($allStudents as &$s) {
   </div>
 
   <!-- Student Table -->
-  <table id="studentsTable">
+  <div class="table-wrapper">
+    <table id="studentsTable">
     <thead>
       <tr>
         <th>Student Name</th>
@@ -204,22 +206,26 @@ foreach ($allStudents as &$s) {
         <th>Action</th>
       </tr>
     </thead>
-    <tbody>
-    <?php foreach ($students as $s): ?>
-      <tr data-student='<?= json_encode($s, JSON_HEX_APOS | JSON_HEX_QUOT) ?>'>
-        <td><?= htmlspecialchars($s['last_name'] . ", " . $s['first_name']) ?></td>
-        <td><?= htmlspecialchars($s['program']) ?></td>
-        <td><?= htmlspecialchars($s['year_level']) ?></td>
-        <td><?= htmlspecialchars($s['section']) ?></td>
-        <td><?= htmlspecialchars($s['student_id']) ?></td>
-        <td><?= htmlspecialchars($s['student_status']) ?></td>
-        <td>
-          <button onclick="viewStudent(this)">View</button>
-          <button onclick="showDetails(this)">Edit</button>
-        </td>
-      </tr>
-    <?php endforeach; ?>
-    </tbody>
+  <tbody id="studentsBody">
+  <?php foreach ($students as $s): ?>
+    <tr data-student='<?= json_encode($s, JSON_HEX_APOS | JSON_HEX_QUOT) ?>'>
+      <td><?= htmlspecialchars($s['last_name'] . ", " . $s['first_name']) ?></td>
+      <td><?= htmlspecialchars($s['program']) ?></td>
+      <td><?= htmlspecialchars($s['year_level']) ?></td>
+      <td><?= htmlspecialchars($s['section']) ?></td>
+      <td><?= htmlspecialchars($s['student_id']) ?></td>
+      <td><?= htmlspecialchars($s['student_status']) ?></td>
+      <td><button onclick="showDetails(this)">Edit</button></td>
+    </tr>
+  <?php endforeach; ?>
+
+  <!-- 🔹 Hidden by default, shown when no match -->
+  <tr id="noResultsRow" style="display:none;">
+    <td colspan="7" style="text-align:center; color:#666; padding:20px;">
+      No students found.
+    </td>
+  </tr>
+</tbody>
   </table>
 </div>
 
@@ -246,15 +252,6 @@ foreach ($allStudents as &$s) {
   </div>
 </div>
 
-<!-- View Modal -->
-<div id="viewModal" class="modal">
-  <div class="modal-content" style="max-width: 700px;">
-    <span class="close" onclick="closeModal('viewModal')">&times;</span>
-    <div id="viewStudentDetails"></div>
-  </div>
-</div>
-
-
 <div id="idCard" style="display:none;"></div>
 <script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
 <script>
@@ -263,34 +260,66 @@ const allStudents = <?= json_encode($allStudents, JSON_HEX_APOS | JSON_HEX_QUOT)
 const searchInput = document.getElementById("searchInput");
 const suggestionsBox = document.getElementById("suggestionsBox");
 
-searchInput.addEventListener("keyup", function() {
+searchInput.addEventListener("keyup", function () {
   const filter = this.value.toLowerCase();
+  const rows = document.querySelectorAll("#studentsTable tbody tr[data-student]");
+  const noResultsRow = document.getElementById("noResultsRow");
+  const suggestionsBox = document.getElementById("suggestionsBox");
+  let visibleCount = 0;
   let matches = [];
 
-  allStudents.forEach(s => {
-    const fullName = (s.last_name + ", " + s.first_name).toLowerCase();
-    if (fullName.includes(filter)) matches.push(s);
+  rows.forEach(row => {
+    const student = JSON.parse(row.dataset.student);
+    const fullName = (student.last_name + ", " + student.first_name).toLowerCase();
+    const id = student.student_id.toLowerCase();
+    const program = student.program.toLowerCase();
+
+    // Filter table rows
+    if (fullName.includes(filter) || id.includes(filter) || program.includes(filter)) {
+      row.style.display = "";
+      visibleCount++;
+      matches.push(student);
+    } else {
+      row.style.display = "none";
+    }
   });
 
+  // Toggle “No students found”
+  noResultsRow.style.display = visibleCount === 0 ? "table-row" : "none";
+
+  // 🔹 Build dropdown suggestions
   suggestionsBox.innerHTML = "";
   if (matches.length > 0 && filter.length > 0) {
     suggestionsBox.style.display = "block";
-    matches.forEach(m => {
+    matches.slice(0, 5).forEach(m => {
       const div = document.createElement("div");
-      const regex = new RegExp("(" + filter + ")", "i");
-      const name = m.last_name + ", " + m.first_name;
-      div.innerHTML = name.replace(regex, "<b>$1</b>");
+      const name = `${m.last_name}, ${m.first_name} (${m.student_id})`;
+      div.innerHTML = name.replace(
+        new RegExp(`(${filter})`, "gi"),
+        "<b>$1</b>"
+      );
+      div.style.padding = "8px 10px";
+      div.style.cursor = "pointer";
+      div.style.transition = "background 0.2s";
+      div.onmouseover = () => (div.style.background = "#f1f5ff");
+      div.onmouseout = () => (div.style.background = "white");
+
+      // ✅ When clicked → open same modal as Edit
       div.onclick = () => {
-        currentStudent = m;
-        printID();
+        const matchRow = Array.from(rows).find(
+          r => JSON.parse(r.dataset.student).student_id === m.student_id
+        );
+        if (matchRow) showDetails(matchRow.querySelector("button"));
         suggestionsBox.style.display = "none";
       };
+
       suggestionsBox.appendChild(div);
     });
   } else {
     suggestionsBox.style.display = "none";
   }
 });
+
 
 function showDetails(btn) {
   const row = btn.closest("tr");
@@ -349,62 +378,6 @@ function showDetails(btn) {
   document.getElementById("modal").style.display = "flex";
 }
 
-function viewStudent(btn) {
-  const row = btn.closest("tr");
-  const s = JSON.parse(row.dataset.student);
-  currentStudent = s;
-
-  const photo = s.photo_path
-    ? `<img src="../components/img/ids/${s.photo_path}" 
-             alt="Student Photo" 
-             style="width:140px;height:160px;border:1px solid #000;border-radius:8px;object-fit:cover;">`
-    : `<div style="width:140px;height:160px;border:1px dashed #999;
-                   display:flex;align-items:center;justify-content:center;
-                   border-radius:8px;color:#777;font-style:italic;">
-         No Photo
-       </div>`;
-
-  const content = `
-    <h2 style="text-align:center;margin-bottom:20px;color:#1e3a8a;">Student Information</h2>
-
-    <div style="display:flex;gap:25px;align-items:flex-start;justify-content:center;">
-      <!-- Left side photo -->
-      <div style="flex:0 0 160px;text-align:center;">
-        <h4 style="margin-bottom:8px;">Student Photo</h4>
-        ${photo}
-      </div>
-
-      <!-- Right side details -->
-      <div style="flex:1;">
-        <p><b>Student ID:</b> ${s.student_id}</p>
-        <p><b>Name:</b> ${s.first_name} ${s.last_name}</p>
-        <p><b>Birthdate:</b> ${s.birthdate || 'N/A'}</p>
-        <p><b>Program:</b> ${s.program}</p>
-        <p><b>Year Level:</b> ${s.year_level}</p>
-        <p><b>Section:</b> ${s.section}</p>
-        <p><b>Status:</b> ${s.student_status}</p>
-      </div>
-    </div>
-
-    <hr style="margin:20px 0;">
-    <h3 style="color:#1e3a8a;">Guardian Information</h3>
-    <p><b>Name:</b> ${s.guardian_name || 'N/A'}</p>
-    <p><b>Contact:</b> ${s.guardian_contact || 'N/A'}</p>
-    <p><b>Address:</b> ${s.guardian_address || 'N/A'}</p>
-
-    <hr style="margin:20px 0;">
-    <h3 style="color:#1e3a8a;">Academic Background</h3>
-    <p><b>Primary:</b> ${s.primary_school || 'N/A'} (${s.primary_year || ''})</p>
-    <p><b>Secondary:</b> ${s.secondary_school || 'N/A'} (${s.secondary_year || ''})</p>
-    <p><b>Tertiary:</b> ${s.tertiary_school || 'N/A'} (${s.tertiary_year || ''})</p>
-  `;
-
-  document.getElementById("viewStudentDetails").innerHTML = content;
-  document.getElementById("viewModal").style.display = "flex";
-}
-
-
-
 function openModal(id) {
   document.getElementById(id).style.display = "flex";
   document.body.classList.add("modal-open");
@@ -444,13 +417,16 @@ function printID() {
         </div>
       </div>
     </div>
-    <div class="id-back" style="display:flex;justify-content:center;align-items:center;">
-      <p>  In Case of emergency  Guardian: ${s.guardian_name} (${s.guardian_contact})<br>    Address: ${s.guardian_address}</p>  
-      <div style="border:2px solid #000; border-radius:10px; padding:8px; background:#fff;">            
-        <div id="qrcode"></div>
-      </div>
-    </div>
-  `;
+    
+     <div class="id-back">
+    <p>
+      <strong>In Case of Emergency</strong>
+      Guardian: ${s.guardian_name} (${s.guardian_contact})<br>
+      Address: ${s.guardian_address}
+    </p>
+    <div id="qrcode"></div>
+  </div>
+`;
   new QRCode(document.getElementById("qrcode"), {
     text: `ID: ${s.student_id}\nName: ${s.first_name} ${s.last_name}\nProgram: ${s.program}\nYear: ${s.year_level} Section: ${s.section}\nGuardian: ${s.guardian_name} (${s.guardian_contact})\nAddress: ${s.guardian_address}`,
     width: 100, height: 100
