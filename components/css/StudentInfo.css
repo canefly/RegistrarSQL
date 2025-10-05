@@ -410,6 +410,7 @@ button.secondary:hover {
   justify-content: space-between;
   align-items: flex-start;
   background: linear-gradient(180deg, #ffffff 80%, #e8f0ff 100%);
+  font-weight: 400;
 }
 
 .id-back p {
@@ -419,6 +420,7 @@ button.secondary:hover {
   margin: 0;
   flex: 1;
   padding-right: 10px;
+  font-weight: 900;
 }
 
 #qrcode {
