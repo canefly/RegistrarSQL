@@ -9,6 +9,8 @@ include "StaffSidenav.php";
 <head>
   <meta charset="UTF-8">
   <title>Digital File Storage</title>
+  <link rel="icon" sizes="32x32" href="../components/img/bcpp.png">
+  <link rel="icon" sizes="192x192" href="../components/img/bcpp.png">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <style>
     body {

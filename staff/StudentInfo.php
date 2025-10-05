@@ -155,6 +155,8 @@ foreach ($allStudents as &$s) {
   <meta charset="UTF-8">
   <title>Student Records</title>
   <link rel="stylesheet" href="../components/css/StudentInfo.css">
+  <link rel="icon" sizes="32x32" href="../components/img/bcpp.png">
+  <link rel="icon" sizes="192x192" href="../components/img/bcpp.png">
   <script src="https://cdn.jsdelivr.net/npm/qrcodejs@1.0.0/qrcode.min.js"></script>
   <style>
     .suggestions { 

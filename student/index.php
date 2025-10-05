@@ -108,6 +108,8 @@ $stmt2->close();
 <meta charset="utf-8">
 <title>Student Dashboard</title>
 <meta name="viewport" content="width=device-width,initial-scale=1">
+<link rel="icon" sizes="32x32" href="../components/img/bcpp.png">
+<link rel="icon" sizes="192x192" href="../components/img/bcpp.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@100..900&display=swap" rel="stylesheet">

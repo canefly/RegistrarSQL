@@ -34,6 +34,8 @@ if (strtolower($data['status']) !== 'approved') {
   <meta charset="UTF-8">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="icon" sizes="32x32" href="../components/img/bcpp.png">
+  <link rel="icon" sizes="192x192" href="../components/img/bcpp.png">
   <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@100..900&family=Roboto:ital,wght@0,100..900;1,100..900&display=swap" rel="stylesheet">
   <title>Document Request Printout</title>
   <style>

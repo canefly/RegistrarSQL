@@ -40,6 +40,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Registrar Login</title>
   <link rel="stylesheet" href="components/css/LoginPage.css">
+  <link rel="icon" sizes="32x32" href="components/img/bcpp.png">
+  <link rel="icon" sizes="192x192" href="components/img/bcpp.png">
   <link href="https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css" rel="stylesheet">
   <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@100..900&display=swap" rel="stylesheet">
 </head>
