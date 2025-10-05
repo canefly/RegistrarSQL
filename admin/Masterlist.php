@@ -1,8 +1,6 @@
 <?php
 require_once __DIR__ . "/../Database/session-checker.php";
 require_once __DIR__ . "/../Database/connection.php";
-require_once __DIR__ . "/../Database/functions.php";
-
 
 // 🔹 Handle delete masterlist
 if (isset($_GET['delete_masterlist'])) {
@@ -17,13 +15,6 @@ if (isset($_GET['delete_masterlist'])) {
     $stmt->execute();
 
     echo "<script>alert('Masterlist deleted successfully!'); window.location='Masterlist.php';</script>";
-    addSystemLog(
-    $conn,
-    'INFO',
-    "Deleted masterlist ID {$delete_id}",
-    'staff/Masterlist.php',
-    $_SESSION['user_id']
-);
     exit;
 }
 
@@ -44,21 +35,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['create_masterlist']))
     $stmt->bind_param("ssssii", $term, $year, $program, $section, $year_level, $generated_by);
     $stmt->execute();
 
-    // ✅ get the newly created masterlist_id right after execute
     $masterlist_id = $conn->insert_id;
-
-    // 🧾 Log creation of masterlist
-    if ($masterlist_id > 0) {
-        addSystemLog(
-            $conn,
-            'INFO',
-            "Created new masterlist ({$program} - Year {$year_level}, Section {$section}, Term {$term}, SY {$year})",
-            'staff/Masterlist.php',
-            $_SESSION['user_id']
-        );
-    } else {
-        die("<script>alert('Error: Failed to create masterlist record.'); window.location='Masterlist.php';</script>");
-    }
 
     // 2️⃣ Fetch all students with matching program, section, and year level
     $students_stmt = $conn->prepare("
@@ -80,16 +57,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['create_masterlist']))
             $insert_stmt->bind_param("is", $masterlist_id, $row['student_id']); // student_id is varchar
             $insert_stmt->execute();
         }
-
-        // 🧾 Log the number of students added
-        addSystemLog(
-            $conn,
-            'INFO',
-            "Added {$result->num_rows} students to masterlist ID {$masterlist_id}",
-            'staff/Masterlist.php',
-            $_SESSION['user_id']
-        );
-
         echo "<script>alert('Masterlist created and students added successfully!'); window.location='Masterlist.php';</script>";
     } else {
         echo "<script>alert('Masterlist created, but no students matched the criteria.'); window.location='Masterlist.php';</script>";
@@ -97,8 +64,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['create_masterlist']))
 
     exit;
 }
-
-
 
 // 🔹 Fetch masterlists
 $sql = "SELECT m.masterlist_id, m.term, m.year, m.program, m.section, m.generation_date, u.username 
@@ -189,7 +154,7 @@ if (isset($_POST['auto_section'])) {
 </head>
 <body>
 
-<?php include 'StaffSidenav.php'; ?>
+<?php include 'AdminSidenav.php'; ?>
 
 <div class="container">
     <h1> Masterlist Manager</h1>

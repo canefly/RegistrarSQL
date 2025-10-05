@@ -31,10 +31,10 @@
   <meta charset="UTF-8">
   <title>Sidebar Example</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <link rel="icon" sizes="32x32" href="../components/img/bcpp.png">
-  <link rel="icon" sizes="192x192" href="../components/img/bcpp.png">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="icon" sizes="32x32" href="../components/img/bcpp.png">
+  <link rel="icon" sizes="192x192" href="../components/img/bcpp.png">
   <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@100..900&family=Roboto:ital,wght@0,100..900;1,100..900&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <style>
@@ -146,7 +146,7 @@
 <body>
 
 <!-- Sidebar -->
-<div class="sidebar" id="sidebar">
+<div class="sidebar collapsed" id="sidebar">
   <div class="sidebar-header">
     <h3 class="sidebar-text"><?= htmlspecialchars($staffName) ?></h3>
     <p class="sidebar-text"><?= htmlspecialchars($staffRole) ?></p>
@@ -155,30 +155,35 @@
   <div class="sidebar-section">
     <h4 class="sidebar-text">MAIN</h4>
     <a href="index.php" class="<?= $current_page=='index.php' ? 'active' : '' ?>">
-      <i class="fas fa-th-large"></i><span class="sidebar-text">Dashboard</span>
+      <i class="fas fa-th-large"></i><span class="sidebar-text"> Dashboard</span>
+    </a>
+    <a href="StudentInfo.php" class="<?= $current_page=='StudentInfo.php' ? 'active' : '' ?>">
+      <i class="fas fa-id-card"></i><span class="sidebar-text"> Students</span>
+    </a>
+    <a href="Masterlist.php" class="<?= $current_page=='Masterlist.php' ? 'active' : '' ?>">
+      <i class="fas fa-list"></i><span class="sidebar-text"> Masterlists</span>
+    </a>
+    <a href="FileStorage.php" class="<?= $current_page=='FileStorage.php' ? 'active' : '' ?>">
+      <i class="fas fa-folder-open"></i><span class="sidebar-text"> File Storage</span>
     </a>
     <a href="Request.php" class="<?= $current_page=='Request.php' ? 'active' : '' ?>">
-      <i class="fas fa-file-alt"></i><span class="sidebar-text">Request</span>
+      <i class="fas fa-file-alt"></i><span class="sidebar-text"> Request</span>
     </a>
-    <a href="Forms.php" class="<?= $current_page=='Forms.php' ? 'active' : '' ?>">
-      <i class="fa-solid fa-file-lines"></i><span class="sidebar-text">Forms</span>
-    </a>
-
-    <a href="history.php" class="<?= $current_page=='history.php' ? 'active' : '' ?>">
-      <i class="fa-solid fa-file-lines"></i><span class="sidebar-text">History</span>
+    <a href="ActivityLogs.php" class="<?= $current_page=='ActivityLogs.php' ? 'active' : '' ?>">
+      <i class="fas fa-history"></i><span class="sidebar-text"> Recent Activity Logs</span>
     </a>
   </div>
-
-  
 
   <div class="sidebar-section">
     <h4 class="sidebar-text">ACCOUNT</h4>
+    <a href="Accounts.php" class="<?= $current_page=='Accounts.php' ? 'active' : '' ?>">
+      <i class="fas fa-users"></i><span class="sidebar-text"> Accounts</span>
+    </a>
     <a href="../Database/logout.php" class="logout">
-      <i class="fas fa-sign-out-alt"></i><span class="sidebar-text">Logout</span>
+      <i class="fas fa-sign-out-alt"></i><span class="sidebar-text"> Logout</span>
     </a>
   </div>
 </div>
-
 
 
 

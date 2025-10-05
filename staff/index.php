@@ -74,16 +74,7 @@ $recentLogs = $conn->query("
     </table>
   </div>
 
-  <!-- Recent Activity Logs -->
-  <div class="section">
-    <h2>Recent Activity Logs</h2>
-    <ul>
-      <?php while ($log = $recentLogs->fetch_assoc()): ?>
-        <li>[<?= $log['level'] ?>] <?= htmlspecialchars($log['message']) ?> (<?= $log['timestamp'] ?>)</li>
-      <?php endwhile; ?>
-    </ul>
-  </div>
-</div>
+
 
 </body>
 </html>

@@ -1,7 +1,7 @@
 <?php
 require_once __DIR__ . "/../Database/connection.php";
 require_once __DIR__ . "/../Database/session-checker.php";
-
+require_once __DIR__ . "/../Database/functions.php";
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $student_id = $_POST['student_id'];
     $file_type = $_POST['doc_type'];
@@ -22,6 +22,26 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             ");
             $stmt->bind_param("sssi", $student_id, $file_type, $path, $uploaded_by);
             $stmt->execute();
+
+            // ✅ Fetch student name for more descriptive log
+            $student_stmt = $conn->prepare("SELECT first_name, last_name FROM students WHERE student_id = ?");
+            $student_stmt->bind_param("s", $student_id);
+            $student_stmt->execute();
+            $student = $student_stmt->get_result()->fetch_assoc();
+            $student_stmt->close();
+
+            $full_name = $student ? "{$student['first_name']} {$student['last_name']}" : "Unknown Student";
+
+            // ✅ Add system log entry
+            addSystemLog(
+                $conn,
+                'INFO',
+                "Uploaded document '{$file_type}' for {$full_name} (ID: {$student_id})",
+                'staff/upload_student_file.php',
+                $_SESSION['user_id']
+            );
+
+
 
             echo "<script>alert('File uploaded successfully!'); window.history.back();</script>";
         } else {

@@ -1,182 +1,111 @@
 <?php
 require_once __DIR__ . "/../Database/session-checker.php";
 require_once __DIR__ . "/../Database/connection.php";
-require_once __DIR__ . "/../Database/functions.php";
 
 /* ======================
    Handle Student Update
 ====================== */
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['update_student'])) {
   $student_id       = $_POST['student_id'];
-  $first_name       = trim($_POST['first_name'] ?? '');
-  $last_name        = trim($_POST['last_name'] ?? '');
+  $first_name       = $_POST['first_name'] ?? '';
+  $last_name        = $_POST['last_name'] ?? '';
   $birthdate        = $_POST['birthdate'] ?? '';
-  $program          = trim($_POST['program'] ?? '');
-  $validPrograms    = ['Undeclared', 'BSIT', 'BSCS', 'BSECE', 'BSHM', 'BSHRM'];
-  if (!in_array($program, $validPrograms)) $program = 'Undeclared';
-
+  $program = trim($_POST['program'] ?? '');
+  $validPrograms = ['Undeclared', 'BSIT', 'BSCS', 'BSECE', 'BSHM', 'BSHRM'];
+  if (!in_array($program, $validPrograms)) {
+      $program = 'Undeclared';
+  }
   $year_level       = (int)($_POST['year_level'] ?? 0);
-  $section          = trim($_POST['section'] ?? '');
-  $status           = trim($_POST['student_status'] ?? 'Enrolled');
-  $guardian_name    = trim($_POST['guardian_name'] ?? '');
-  $guardian_contact = trim($_POST['guardian_contact'] ?? '');
-  $guardian_address = trim($_POST['guardian_address'] ?? '');
-  $primary_school   = trim($_POST['primary_school'] ?? '');
-  $primary_year     = trim($_POST['primary_year'] ?? '');
-  $secondary_school = trim($_POST['secondary_school'] ?? '');
-  $secondary_year   = trim($_POST['secondary_year'] ?? '');
-  $tertiary_school  = trim($_POST['tertiary_school'] ?? '');
-  $tertiary_year    = trim($_POST['tertiary_year'] ?? '');
+  $section          = $_POST['section'] ?? '';
+  $status           = $_POST['student_status'] ?? 'Enrolled';
+  $guardian_name    = $_POST['guardian_name'] ?? '';
+  $guardian_contact = $_POST['guardian_contact'] ?? '';
+  $guardian_address = $_POST['guardian_address'] ?? '';
 
-  // 🔍 current data snapshot
-  $stmtCurrent = $conn->prepare("
-    SELECT 
-      first_name, last_name, birthdate, program, year_level, section, student_status,
-      (SELECT name FROM guardians WHERE student_id = s.student_id LIMIT 1) AS guardian_name,
-      (SELECT contact_no FROM guardians WHERE student_id = s.student_id LIMIT 1) AS guardian_contact,
-      (SELECT address FROM guardians WHERE student_id = s.student_id LIMIT 1) AS guardian_address,
-      (SELECT primary_school FROM academic_background WHERE student_id = s.student_id LIMIT 1) AS primary_school,
-      (SELECT primary_year FROM academic_background WHERE student_id = s.student_id LIMIT 1) AS primary_year,
-      (SELECT secondary_school FROM academic_background WHERE student_id = s.student_id LIMIT 1) AS secondary_school,
-      (SELECT secondary_year FROM academic_background WHERE student_id = s.student_id LIMIT 1) AS secondary_year,
-      (SELECT tertiary_school FROM academic_background WHERE student_id = s.student_id LIMIT 1) AS tertiary_school,
-      (SELECT tertiary_year FROM academic_background WHERE student_id = s.student_id LIMIT 1) AS tertiary_year,
-      s.photo_path
-    FROM students s WHERE s.student_id = ?
-  ");
-  $stmtCurrent->bind_param("s", $student_id);
-  $stmtCurrent->execute();
-  $current = $stmtCurrent->get_result()->fetch_assoc() ?? [];
-  $stmtCurrent->close();
+  $primary_school   = $_POST['primary_school'] ?? '';
+  $primary_year     = $_POST['primary_year'] ?? '';
+  $secondary_school = $_POST['secondary_school'] ?? '';
+  $secondary_year   = $_POST['secondary_year'] ?? '';
+  $tertiary_school  = $_POST['tertiary_school'] ?? '';
+  $tertiary_year    = $_POST['tertiary_year'] ?? '';
 
-  // ✅ handle photo
-  $photo_path = $current['photo_path'] ?? '';
-  if (isset($_FILES['student_photo']) && $_FILES['student_photo']['error'] === UPLOAD_ERR_OK) {
-      $ext = strtolower(pathinfo($_FILES['student_photo']['name'], PATHINFO_EXTENSION));
-      if (in_array($ext, ['jpg','jpeg','png','gif'])) {
-          $newFileName = $student_id . '.' . $ext;
-          $target = __DIR__ . '/../components/img/ids/' . $newFileName;
-          if (move_uploaded_file($_FILES['student_photo']['tmp_name'], $target)) {
-              if ($photo_path !== $newFileName) {
-                  $photo_path = $newFileName;
-                  addSystemLog($conn, 'INFO', "Updated student photo for {$student_id}", 'staff/StudentInfo.php', $_SESSION['user_id']);
-              }
-          }
-      }
+  // ✅ Handle photo upload
+  $photo_path = '';
+  $resPhoto = $conn->prepare("SELECT photo_path FROM students WHERE student_id=?");
+  $resPhoto->bind_param("s", $student_id);
+  $resPhoto->execute();
+  $resultPhoto = $resPhoto->get_result();
+  $current_photo = '';
+  if ($resultPhoto->num_rows > 0) {
+      $current_photo = $resultPhoto->fetch_assoc()['photo_path'];
   }
 
-  // === PERSONAL DETAILS ===
-// === PERSONAL DETAILS ===
-// normalize null values from DB to empty string to avoid false "changed" triggers
-foreach ($current as $key => $val) {
-    if (is_null($val)) {
-        $current[$key] = '';
-    }
-}
+  if (isset($_FILES['student_photo']) && $_FILES['student_photo']['error'] === UPLOAD_ERR_OK) {
+      $fileTmpPath = $_FILES['student_photo']['tmp_name'];
+      $fileName = $_FILES['student_photo']['name'];
+      $fileNameCmps = explode(".", $fileName);
+      $fileExtension = strtolower(end($fileNameCmps));
 
-// now safely compare trimmed strings and numbers
-$personalChanged = (
-    trim((string)$current['first_name']) !== $first_name ||
-    trim((string)$current['last_name']) !== $last_name ||
-    trim((string)$current['birthdate']) !== $birthdate ||
-    trim((string)$current['program']) !== $program ||
-    (int)$current['year_level'] !== (int)$year_level ||
-    trim((string)$current['section']) !== $section ||
-    trim((string)$current['student_status']) !== $status
-);
+      $allowedExtensions = ['jpg','jpeg','png','gif'];
+      if (in_array($fileExtension, $allowedExtensions)) {
+          $newFileName = $student_id . '.' . $fileExtension;
+          $uploadFileDir = __DIR__ . '/../components/img/ids/';
+          $dest_path = $uploadFileDir . $newFileName;
+          if (move_uploaded_file($fileTmpPath, $dest_path)) {
+              $photo_path = $newFileName;
+          } else {
+              $photo_path = $current_photo;
+          }
+      } else {
+          $photo_path = $current_photo;
+      }
+  } else {
+      $photo_path = $current_photo;
+  }
 
-// only update + log if a real personal change happened
-if ($personalChanged) {
-    $stmt = $conn->prepare("UPDATE students 
-      SET first_name=?, last_name=?, birthdate=?, program=?, year_level=?, section=?, student_status=?, photo_path=? 
-      WHERE student_id=?");
-    $stmt->bind_param(
-        "ssssissss",
-        $first_name,
-        $last_name,
-        $birthdate,
-        $program,
-        $year_level,
-        $section,
-        $status,
-        $photo_path,
-        $student_id
-    );
+// Update students
+    $stmt = $conn->prepare("UPDATE students SET first_name=?, last_name=?, birthdate=?, program=?, year_level=?, section=?, student_status=?, photo_path=? WHERE student_id=?");
+    $stmt->bind_param("ssssissss", $first_name, $last_name, $birthdate, $program, $year_level, $section, $status, $photo_path, $student_id);
+
     $stmt->execute();
 
-    addSystemLog(
-        $conn,
-        'INFO',
-        "Updated personal details for {$first_name} {$last_name} (ID: {$student_id})",
-        'staff/StudentInfo.php',
-        $_SESSION['user_id']
-    );
-}
-
-
-  // === GUARDIAN INFO ===
-  $guardianChanged = (
-      trim((string)$current['guardian_name']) !== $guardian_name ||
-      trim((string)$current['guardian_contact']) !== $guardian_contact ||
-      trim((string)$current['guardian_address']) !== $guardian_address
-  );
-
-  if ($guardianChanged) {
-      $res = $conn->prepare("SELECT guardian_id FROM guardians WHERE student_id=?");
-      $res->bind_param("s", $student_id);
-      $res->execute();
-      $check = $res->get_result();
-      if ($check->num_rows > 0) {
-          $stmt = $conn->prepare("UPDATE guardians SET name=?, contact_no=?, address=? WHERE student_id=?");
-          $stmt->bind_param("ssss", $guardian_name, $guardian_contact, $guardian_address, $student_id);
-          $stmt->execute();
-          addSystemLog($conn, 'INFO', "Updated guardian info for student {$student_id}", 'staff/StudentInfo.php', $_SESSION['user_id']);
-      } else {
-          $stmt = $conn->prepare("INSERT INTO guardians (student_id, name, contact_no, address) VALUES (?, ?, ?, ?)");
-          $stmt->bind_param("ssss", $student_id, $guardian_name, $guardian_contact, $guardian_address);
-          $stmt->execute();
-          addSystemLog($conn, 'INFO', "Added guardian info for student {$student_id}", 'staff/StudentInfo.php', $_SESSION['user_id']);
-      }
+  // ✅ Guardian
+  $res = $conn->prepare("SELECT guardian_id FROM guardians WHERE student_id=?");
+  $res->bind_param("s", $student_id);
+  $res->execute();
+  $result = $res->get_result();
+  if ($result->num_rows > 0) {
+    $stmt = $conn->prepare("UPDATE guardians SET name=?, contact_no=?, address=? WHERE student_id=?");
+    $stmt->bind_param("ssss", $guardian_name, $guardian_contact, $guardian_address, $student_id);
+    $stmt->execute();
+  } else {
+    $stmt = $conn->prepare("INSERT INTO guardians (student_id, name, contact_no, address) VALUES (?, ?, ?, ?)");
+    $stmt->bind_param("ssss", $student_id, $guardian_name, $guardian_contact, $guardian_address);
+    $stmt->execute();
   }
 
-  // === ACADEMIC BACKGROUND ===
-  $academicChanged = (
-      trim((string)$current['primary_school']) !== $primary_school ||
-      trim((string)$current['primary_year']) !== $primary_year ||
-      trim((string)$current['secondary_school']) !== $secondary_school ||
-      trim((string)$current['secondary_year']) !== $secondary_year ||
-      trim((string)$current['tertiary_school']) !== $tertiary_school ||
-      trim((string)$current['tertiary_year']) !== $tertiary_year
-  );
+  // ✅ Academic background
+  $res = $conn->prepare("SELECT id FROM academic_background WHERE student_id=?");
+  $res->bind_param("s", $student_id);
+  $res->execute();
+  $result = $res->get_result();
 
-  if ($academicChanged) {
-      $res = $conn->prepare("SELECT id FROM academic_background WHERE student_id=?");
-      $res->bind_param("s", $student_id);
-      $res->execute();
-      $check = $res->get_result();
-      if ($check->num_rows > 0) {
-          $stmt = $conn->prepare("UPDATE academic_background 
-              SET primary_school=?, primary_year=?, secondary_school=?, secondary_year=?, tertiary_school=?, tertiary_year=? 
-              WHERE student_id=?");
-          $stmt->bind_param("sssssss", $primary_school, $primary_year, $secondary_school, $secondary_year, $tertiary_school, $tertiary_year, $student_id);
-          $stmt->execute();
-          addSystemLog($conn, 'INFO', "Updated academic background for student {$student_id}", 'staff/StudentInfo.php', $_SESSION['user_id']);
-      } else {
-          $stmt = $conn->prepare("INSERT INTO academic_background 
-              (student_id, primary_school, primary_year, secondary_school, secondary_year, tertiary_school, tertiary_year) 
-              VALUES (?, ?, ?, ?, ?, ?, ?)");
-          $stmt->bind_param("sssssss", $student_id, $primary_school, $primary_year, $secondary_school, $secondary_year, $tertiary_school, $tertiary_year);
-          $stmt->execute();
-          addSystemLog($conn, 'INFO', "Added academic background for student {$student_id}", 'staff/StudentInfo.php', $_SESSION['user_id']);
-      }
+  if ($result->num_rows > 0) {
+    $stmt = $conn->prepare("UPDATE academic_background 
+      SET primary_school=?, primary_year=?, secondary_school=?, secondary_year=?, tertiary_school=?, tertiary_year=? 
+      WHERE student_id=?");
+    $stmt->bind_param("sssssss", $primary_school, $primary_year, $secondary_school, $secondary_year, $tertiary_school, $tertiary_year, $student_id);
+    $stmt->execute();
+  } else {
+    $stmt = $conn->prepare("INSERT INTO academic_background 
+      (student_id, primary_school, primary_year, secondary_school, secondary_year, tertiary_school, tertiary_year) 
+      VALUES (?, ?, ?, ?, ?, ?, ?)");
+    $stmt->bind_param("sssssss", $student_id, $primary_school, $primary_year, $secondary_school, $secondary_year, $tertiary_school, $tertiary_year);
+    $stmt->execute();
   }
 
   echo "<script>alert('Student record updated successfully!');</script>";
 }
-
-
-
-
 
 /* ======================
    Fetch Students
@@ -220,7 +149,6 @@ foreach ($allStudents as &$s) {
   }
 }
 ?>
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -255,7 +183,7 @@ foreach ($allStudents as &$s) {
   </style>
 </head>
 <body>
-<?php include 'StaffSidenav.php'; ?>
+<?php include 'AdminSidenav.php'; ?>
 <div class="container">
   <h1>Student Records</h1>
   <p>Manage student information, update records, and print student IDs.</p>

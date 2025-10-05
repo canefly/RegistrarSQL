@@ -1,9 +1,7 @@
 <?php
 require_once __DIR__ . "/../Database/session-checker.php";
 require_once __DIR__ . "/../Database/connection.php";
-require_once __DIR__ . "/../Database/functions.php";
-
-include "StaffSidenav.php";
+include "AdminSidenav.php";
 ?>
 
 <!DOCTYPE html>
@@ -21,7 +19,7 @@ include "StaffSidenav.php";
       margin: 0;
       display: flex;
     }
-   
+   global css for offset effect
 
 /* Default layout */
 body {
