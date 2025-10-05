@@ -326,7 +326,7 @@ function printID() {
   if (!currentStudent) return;
   const s = currentStudent;
   const preview = document.getElementById("idCardPreview");
-  const photo = s.photo_path ? `../components/img/ids/${s.photo_path}` : "../components/img/ids/default.jpg";
+  const photo = s.photo_path ? `../components/img/ids/${s.photo_path}` : "../components/img/bgid.jpg";
 
   preview.innerHTML = `
     <div class="id-front">
