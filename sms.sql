@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Oct 04, 2025 at 02:55 PM
+-- Generation Time: Oct 05, 2025 at 06:10 PM
 -- Server version: 10.4.32-MariaDB
 -- PHP Version: 8.2.12
 
@@ -116,9 +116,33 @@ INSERT INTO `document_requests` (`request_id`, `student_id`, `document_type`, `n
 (1, 'S2025-001', 'Certificate of Enrollment', '', '2025-09-01', 'Released', '2025-09-05'),
 (2, 'S2025-004', 'Receipt Records', 'NSTP - RECEIPT CERTIFICATE\r\n', '2025-10-01', 'Approved', '2025-10-10'),
 (3, 'S2025-004', 'ID Replacement', '', '2025-10-01', 'Approved', '2025-10-08'),
-(8, 'S2025-004', 'ID Replacement', 'MY ID LOST', '2025-10-03', 'Declined', NULL),
 (9, 'S2025-004', 'Receipt Records', '', '2025-10-03', 'Approved', '2025-10-10'),
-(10, 'S2025-004', 'ID Replacement', '', '2025-10-04', 'Pending', NULL);
+(11, 'S2025-004', 'Certificate of Enrollment', '', '2025-10-05', 'Approved', '2025-10-12');
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `document_requests_archive`
+--
+
+CREATE TABLE `document_requests_archive` (
+  `id` int(11) NOT NULL,
+  `student_id` int(11) NOT NULL,
+  `document_type` varchar(100) NOT NULL,
+  `notes` text DEFAULT NULL,
+  `request_date` date DEFAULT NULL,
+  `status` varchar(50) DEFAULT NULL,
+  `release_date` date DEFAULT NULL,
+  `deleted_at` datetime DEFAULT current_timestamp()
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dumping data for table `document_requests_archive`
+--
+
+INSERT INTO `document_requests_archive` (`id`, `student_id`, `document_type`, `notes`, `request_date`, `status`, `release_date`, `deleted_at`) VALUES
+(0, 0, 'ID Replacement', '', '2025-10-04', 'Pending', NULL, '2025-10-05 00:58:57'),
+(0, 0, 'ID Replacement', 'MY ID LOST', '2025-10-03', 'Declined', NULL, '2025-10-05 00:59:13');
 
 -- --------------------------------------------------------
 
@@ -140,7 +164,9 @@ CREATE TABLE `file_storage` (
 --
 
 INSERT INTO `file_storage` (`file_id`, `student_id`, `file_type`, `file_path`, `uploaded_by`, `upload_date`) VALUES
-(1, 'S2025-001', 'Enrollment Form', '/uploads/docs/enrollment_form.pdf', 2, '2025-09-28 22:13:17');
+(1, 'S2025-001', 'Enrollment Form', '/uploads/docs/enrollment_form.pdf', 2, '2025-09-28 22:13:17'),
+(2, 'S2025-001', 'Form137', '/uploads/docs/1759646441_1.PNG', 2, '2025-10-05 06:40:41'),
+(4, 'S2025-001', 'ID', '/uploads/docs/1759661396_ID.pdf', 2, '2025-10-05 10:49:56');
 
 -- --------------------------------------------------------
 
@@ -243,7 +269,18 @@ INSERT INTO `login_audit` (`log_id`, `user_id`, `action_type`, `timestamp`) VALU
 (16, 4, 'logout', '2025-10-04 05:42:13'),
 (17, 4, 'logout', '2025-10-04 05:46:25'),
 (18, 2, 'logout', '2025-10-04 06:23:22'),
-(19, 4, 'logout', '2025-10-04 06:28:53');
+(19, 4, 'logout', '2025-10-04 06:28:53'),
+(20, 4, 'logout', '2025-10-04 15:18:10'),
+(21, 2, 'logout', '2025-10-04 16:54:31'),
+(22, 4, 'logout', '2025-10-04 17:02:58'),
+(23, 2, 'logout', '2025-10-04 18:21:53'),
+(24, 2, 'logout', '2025-10-04 18:23:32'),
+(25, 4, 'logout', '2025-10-04 18:24:21'),
+(26, 2, 'logout', '2025-10-04 18:36:36'),
+(27, 2, 'logout', '2025-10-05 10:40:33'),
+(28, 2, 'logout', '2025-10-05 12:43:04'),
+(29, 2, 'logout', '2025-10-05 16:07:33'),
+(30, 4, 'logout', '2025-10-05 16:09:04');
 
 -- --------------------------------------------------------
 
@@ -257,6 +294,7 @@ CREATE TABLE `masterlists` (
   `year` varchar(255) DEFAULT NULL,
   `program` varchar(255) DEFAULT NULL,
   `section` varchar(50) DEFAULT NULL,
+  `year_level` int(11) DEFAULT NULL,
   `generated_by` int(11) DEFAULT NULL,
   `generation_date` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
@@ -265,9 +303,8 @@ CREATE TABLE `masterlists` (
 -- Dumping data for table `masterlists`
 --
 
-INSERT INTO `masterlists` (`masterlist_id`, `term`, `year`, `program`, `section`, `generated_by`, `generation_date`) VALUES
-(5, '1st Sem', '2025-2026', 'BSIT', '11001', 2, '2025-10-02 05:12:47'),
-(7, '1st Sem', '2025-2026', 'BSIT', '11001', 2, '2025-10-04 09:02:50');
+INSERT INTO `masterlists` (`masterlist_id`, `term`, `year`, `program`, `section`, `year_level`, `generated_by`, `generation_date`) VALUES
+(14, '1st Sem', '2025-2026', 'BSIT', '11001', 1, 2, '2025-10-04 16:13:05');
 
 -- --------------------------------------------------------
 
@@ -286,15 +323,11 @@ CREATE TABLE `masterlist_details` (
 --
 
 INSERT INTO `masterlist_details` (`id`, `masterlist_id`, `student_id`) VALUES
-(2, 5, 'S2025-013'),
-(3, 5, 'S2025-016'),
-(4, 5, 'S2025-001'),
-(5, 5, 'S2025-004'),
-(6, 5, 'S2025-022'),
-(7, 5, 'S2025-010'),
-(8, 5, 'S2025-019'),
-(9, 5, 'S2025-025'),
-(10, 5, 'S2025-007');
+(22, 14, 'S2025-001'),
+(23, 14, 'S2025-004'),
+(24, 14, 'S2025-019'),
+(25, 14, 'S2025-022'),
+(26, 14, 'S2025-025');
 
 -- --------------------------------------------------------
 
@@ -330,7 +363,7 @@ CREATE TABLE `students` (
   `last_name` varchar(255) DEFAULT NULL,
   `birthdate` date DEFAULT NULL,
   `gender` varchar(255) DEFAULT NULL,
-  `program` varchar(255) DEFAULT NULL,
+  `program` varchar(50) NOT NULL,
   `year_level` int(11) DEFAULT NULL,
   `section` int(10) NOT NULL,
   `student_status` varchar(255) DEFAULT NULL,
@@ -345,7 +378,7 @@ CREATE TABLE `students` (
 --
 
 INSERT INTO `students` (`student_id`, `user_id`, `first_name`, `last_name`, `birthdate`, `gender`, `program`, `year_level`, `section`, `student_status`, `photo_path`, `date_registered`, `email`, `contact_no`) VALUES
-('S2025-001', 3, 'Juan', 'Dela Cruz', '2005-06-15', 'Male', '0', 1, 11001, 'Enrolled', '/components/img/ids/juan.jpg', '2025-06-01', 'student@example.com', '09123456789'),
+('S2025-001', 3, 'Juan Miguel', 'Dela Cruz', '2005-06-15', 'Male', 'BSIT', 1, 11001, 'Enrolled', '/components/img/ids/juan.jpg', '2025-06-01', 'student@example.com', '09123456789'),
 ('S2025-004', 4, 'Juan', 'Dela Cruz', '2005-03-14', 'Male', 'BSIT', 1, 11001, 'Enrolled', NULL, NULL, 'juan.dcruz@bcp.edu.ph', '09123450004'),
 ('S2025-005', 5, 'Maria', 'Santos', '2004-07-10', 'Female', 'BSA', 2, 21001, 'Enrolled', NULL, NULL, 'maria.santos@bcp.edu.ph', '09123450005'),
 ('S2025-006', 6, 'Carlos', 'Reyes', '2003-11-22', 'Male', 'BSBA', 3, 31001, 'Enrolled', '/components/img/ids/carlos.jpg', NULL, 'carlos.reyes@bcp.edu.ph', '09123450006'),
@@ -355,10 +388,10 @@ INSERT INTO `students` (`student_id`, `user_id`, `first_name`, `last_name`, `bir
 ('S2025-010', 10, 'John', 'Lim', '2005-05-14', 'Male', 'BSIT', 1, 11002, 'Enrolled', NULL, NULL, 'john.lim@bcp.edu.ph', '09123450010'),
 ('S2025-011', 11, 'Rose', 'Vergara', '2004-08-25', 'Female', 'BSA', 2, 21001, 'Enrolled', NULL, NULL, 'rose.vergara@bcp.edu.ph', '09123450011'),
 ('S2025-012', 12, 'Miguel', 'Dela Cruz', '2003-10-18', 'Male', 'BSBA', 3, 31001, 'Enrolled', NULL, NULL, 'miguel.delacruz@bcp.edu.ph', '09123450012'),
-('S2025-013', 13, 'Clarisse', 'Bautista', '2005-06-05', 'Female', 'BSBA', 1, 11002, 'Enrolled', NULL, NULL, 'clarisse.bautista@bcp.edu.ph', '09123450013'),
+('S2025-013', 13, 'Clarisse', 'Bautista', '2005-06-05', 'Female', 'BSIT', 1, 11002, 'Enrolled', 'S2025-013.png', NULL, 'clarisse.bautista@bcp.edu.ph', '09123450013'),
 ('S2025-014', 14, 'Patrick', 'Gonzales', '2004-01-15', 'Male', 'BSA', 2, 21001, 'Enrolled', NULL, NULL, 'patrick.gonzales@bcp.edu.ph', '09123450014'),
 ('S2025-015', 15, 'Samantha', 'Ong', '2003-08-09', 'Female', 'BSBA', 3, 31001, 'Enrolled', NULL, NULL, 'samantha.ong@bcp.edu.ph', '09123450015'),
-('S2025-016', 16, 'Josephine', 'Castro', '2005-10-12', 'Female', 'BSIT', 1, 11002, 'Enrolled', NULL, NULL, 'josephine.castro@bcp.edu.ph', '09123450016'),
+('S2025-016', 16, 'Josephine', 'Castro', '2005-10-12', 'Female', 'BSCS', 1, 11002, 'Enrolled', NULL, NULL, 'josephine.castro@bcp.edu.ph', '09123450016'),
 ('S2025-017', 17, 'Edward', 'Tan', '2004-11-19', 'Male', 'BSA', 2, 21001, 'Enrolled', NULL, NULL, 'edward.tan@bcp.edu.ph', '09123450017'),
 ('S2025-018', 18, 'Maricar', 'Roxas', '2003-12-22', 'Female', 'BSBA', 3, 31001, 'Enrolled', NULL, NULL, 'maricar.roxas@bcp.edu.ph', '09123450018'),
 ('S2025-019', 19, 'Kevin', 'Mendoza', '2005-04-01', 'Male', 'BSIT', 1, 11001, 'Enrolled', NULL, NULL, 'kevin.mendoza@bcp.edu.ph', '09123450019'),
@@ -690,13 +723,13 @@ ALTER TABLE `academic_records`
 -- AUTO_INCREMENT for table `document_requests`
 --
 ALTER TABLE `document_requests`
-  MODIFY `request_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=11;
+  MODIFY `request_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=12;
 
 --
 -- AUTO_INCREMENT for table `file_storage`
 --
 ALTER TABLE `file_storage`
-  MODIFY `file_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+  MODIFY `file_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
 
 --
 -- AUTO_INCREMENT for table `guardians`
@@ -714,19 +747,19 @@ ALTER TABLE `health_records`
 -- AUTO_INCREMENT for table `login_audit`
 --
 ALTER TABLE `login_audit`
-  MODIFY `log_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=20;
+  MODIFY `log_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=31;
 
 --
 -- AUTO_INCREMENT for table `masterlists`
 --
 ALTER TABLE `masterlists`
-  MODIFY `masterlist_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=8;
+  MODIFY `masterlist_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=15;
 
 --
 -- AUTO_INCREMENT for table `masterlist_details`
 --
 ALTER TABLE `masterlist_details`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=18;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=27;
 
 --
 -- AUTO_INCREMENT for table `roles`
