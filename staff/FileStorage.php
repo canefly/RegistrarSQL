@@ -17,24 +17,124 @@ include "StaffSidenav.php";
       margin: 0;
       display: flex;
     }
-    .content {
-      margin-left: 240px;
-      padding: 20px;
-      width: 100%;
-    }
-    h2 {
-      color: #003b99;
-      margin-bottom: 20px;
-    }
-    .search-bar {
-      margin-bottom: 15px;
-    }
-    input[type="text"] {
-      padding: 10px;
-      width: 300px;
-      border: 1px solid #ccc;
-      border-radius: 8px;
-    }
+   global css for offset effect
+
+/* Default layout */
+body {
+  margin: 0;
+  font-family: 'Outfit', sans-serif;
+  background: #f9f9f9;
+  color: #333;
+  display: flex;
+  min-height: 100vh;
+}
+
+/* Sidebar offset container (shared for content pages) */
+.content, 
+.container {
+  flex: 1;
+  margin-left: 240px; /* same width as sidebar */
+  padding: 20px 40px;
+  transition: margin-left 0.3s ease;
+  box-sizing: border-box;
+}
+
+/* Adjust when sidebar is collapsed */
+.sidebar.collapsed ~ .content,
+.sidebar.collapsed ~ .container {
+  margin-left: 70px; /* collapsed width */
+}
+
+/* Toggle button positioning */
+.toggle-btn {
+  position: fixed;
+  top: 20px;
+  left: 250px;
+  background: #0056d2;
+  color: #fff;
+  border: none;
+  padding: 8px 12px;
+  border-radius: 50%;
+  cursor: pointer;
+  transition: left 0.3s ease, transform 0.3s ease;
+  z-index: 1100;
+}
+
+.sidebar.collapsed + .toggle-btn {
+  left: 80px;
+}
+
+.sidebar.collapsed + .toggle-btn i {
+  transform: rotate(180deg);
+}
+
+/* Responsive fix */
+@media (max-width: 768px) {
+  .content, 
+  .container {
+    margin-left: 0;
+    padding: 20px;
+  }
+  .toggle-btn {
+    left: 20px !important; /* stays accessible */
+  }
+}
+
+ h1 {
+  font-size: 32px;
+  margin-bottom: 10px;
+}
+
+ p {
+  font-size: 18px;
+  color: #555;
+}
+.header-bar {
+  width: 100%;
+  max-width: 1200px;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 6px;
+  margin: 0 0 18px 0;
+  padding-top: 10px;
+}
+.search-bar { position: relative; width: 100%; max-width: 360px; }
+#searchInput {
+  padding: 12px 18px;
+  width: 100%;
+  border: 1px solid #d1d5db;
+  border-radius: 25px;
+  font-size: 15px;
+  background: #fff;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.04);
+  transition: all 0.2s ease;
+}
+#searchInput:focus {
+  border-color: #3b82f6;
+  box-shadow: 0 0 6px rgba(59,130,246,0.4);
+  outline: none;
+}
+.suggestions {
+  position: absolute;
+  background: #fff;
+  border: 1px solid #d1d5db;
+  border-radius: 8px;
+  width: 100%;
+  box-shadow: 0 4px 8px rgba(0,0,0,0.08);
+  margin-top: 5px;
+  max-height: 200px;
+  overflow-y: auto;
+  z-index: 1000;
+}
+.suggestions div {
+  padding: 8px 12px;
+  cursor: pointer;
+  transition: background 0.2s ease;
+}
+.suggestions div:hover { background: #f1f5ff; }
+
+
     button {
       background: #0056d2;
       color: white;
@@ -102,7 +202,7 @@ include "StaffSidenav.php";
 
     .file-name {
     font-size: 13px;
-    color: #d7d2d2
+    color: #d7d2d2;
     padding: 0 6px;
     font-style: italic;
     }
@@ -226,11 +326,21 @@ include "StaffSidenav.php";
 </head>
 <body>
 <div class="content">
-  <h2><i class="fas fa-folder-open"></i> Digital File Storage</h2>
+ <div class="header-bar">
+  <h1>Digital File Storage</h1>
+  <p>Manage and upload student documents efficiently.</p>
 
   <div class="search-bar">
-    <input type="text" id="searchInput" placeholder="Search student by ID or name...">
+    <input type="text" id="searchInput" placeholder="Search student by ID or name..." autocomplete="off">
+    <div id="suggestionsBox" class="suggestions" style="display:none;"></div>
   </div>
+</div>
+
+<!-- Empty state under header; shown only when no card matches -->
+<div id="emptyState" style="display:none; color:#666; font-style:italic; margin:10px 0;">
+  No students found.
+</div>
+
 
   <div id="studentContainer">
     <?php
@@ -303,19 +413,59 @@ include "StaffSidenav.php";
     </div>
   <script>
   const searchInput = document.getElementById('searchInput');
-  const cards = document.querySelectorAll('.student-card');
+  const cards = Array.from(document.querySelectorAll('.student-card'));
+  const suggestionsBox = document.getElementById('suggestionsBox');
+  const emptyState = document.getElementById('emptyState');
 
-  searchInput.addEventListener('keyup', function() {
-    const filter = this.value.toLowerCase();
+  // Live filter + suggestions (mirrors StudentInfo behavior)
+  searchInput.addEventListener('keyup', function () {
+    const filter = this.value.toLowerCase().trim();
+    let matches = [];
+
+    let visibleCount = 0;
     cards.forEach(card => {
       const name = card.dataset.name.toLowerCase();
       const id = card.dataset.id.toLowerCase();
-      if (name.includes(filter) || id.includes(filter)) {
-        card.style.display = 'block';
-      } else {
-        card.style.display = 'none';
+      const hit = name.includes(filter) || id.includes(filter);
+
+      card.style.display = hit ? 'block' : 'none';
+      if (hit) {
+        visibleCount++;
+        if (filter) matches.push({ label: `${card.dataset.name} (${card.dataset.id})`, key: name });
       }
     });
+
+    // Empty state under header
+    emptyState.style.display = (filter && visibleCount === 0) ? 'block' : 'none';
+
+    // Suggestions
+    suggestionsBox.innerHTML = '';
+    if (filter && matches.length > 0) {
+      suggestionsBox.style.display = 'block';
+      matches.slice(0, 5).forEach(m => {
+        const div = document.createElement('div');
+        div.innerHTML = m.label.replace(new RegExp(`(${filter})`, 'gi'), '<b>$1</b>');
+        div.onclick = () => {
+          // Show only the selected card and scroll to it
+          cards.forEach(c => c.style.display = (c.dataset.name.toLowerCase() === m.key) ? 'block' : 'none');
+          const target = cards.find(c => c.dataset.name.toLowerCase() === m.key);
+          if (target) target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+          searchInput.value = m.label;
+          suggestionsBox.style.display = 'none';
+          emptyState.style.display = 'none';
+        };
+        suggestionsBox.appendChild(div);
+      });
+    } else {
+      suggestionsBox.style.display = 'none';
+    }
+  });
+
+  // Close suggestions when clicking outside
+  document.addEventListener('click', (e) => {
+    if (!suggestionsBox.contains(e.target) && e.target !== searchInput) {
+      suggestionsBox.style.display = 'none';
+    }
   });
 
  

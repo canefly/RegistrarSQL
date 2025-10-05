@@ -160,7 +160,6 @@ if (isset($_POST['auto_section'])) {
 
     <div class="actions">
         <button class="primary" onclick="openCreateModal()">+ Create New Masterlist</button>
-        <button class="secondary" onclick="openNoSectionModal()">Check Students Without Section</button>
     </div>
 
     <!-- Masterlist Table -->

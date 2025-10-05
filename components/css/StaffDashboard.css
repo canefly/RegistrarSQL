@@ -15,14 +15,15 @@ body {
   margin-left: 240px; /* space for sidebar */
   transition: margin-left 0.3s ease, filter 0.3s ease;
   box-sizing: border-box;
-
-  /* background image */
+}
+  /* background image 
   background-image: url('../img/bg.jpg');
   background-size: cover;
   background-position: center;
   background-attachment: fixed;
   position: relative;
-}
+
+*/
 
 /* Light overlay for readability */
 .container::before {
@@ -110,18 +111,24 @@ table th, table td {
 }
 
 table th {
-  background: #0056d2;
+  background: #004aad;
   color: #fff;
   font-weight: 500;
 }
 
 table tr:nth-child(even) {
-  background: #f5f7fb;
+  background-color: #f9fafb; /* light gray */
+}
+
+tr:nth-child(odd) {
+  background-color: #ffffff; /* white */
 }
 
 table tr:hover {
-  background: #eef3ff;
+  background: #f1f5ff; /* bluish-gray */
+  transition: background 0.25s ease;
 }
+
 
 /* Recent Logs */
 .section ul {
