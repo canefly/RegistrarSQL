@@ -90,7 +90,7 @@ $stmt2 = $conn->prepare("
     WHERE student_id = ?
     ORDER BY request_date DESC
 ");
-$stmt2->bind_param("i", $stud_id);
+$stmt2->bind_param("s", $stud_id);
 $stmt2->execute();
 $requests = [];
 if (method_exists($stmt2, 'get_result')) {
