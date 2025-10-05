@@ -418,15 +418,17 @@ function printID() {
         </div>
       </div>
     </div>
-    
+
      <div class="id-back">
-    <p>
-      <strong>In Case of Emergency</strong>
-      Guardian: ${s.guardian_name} (${s.guardian_contact})<br>
-      Address: ${s.guardian_address}
-    </p>
-    <div id="qrcode"></div>
+  <div class="id-back-info">
+    <p><b>In Case of Emergency</b></p>
+    <p><span>Guardian:</span> ${s.guardian_name}</p>
+    <p><span>Contact:</span> ${s.guardian_contact}</p>
+    <p><span>Address:</span> ${s.guardian_address}</p>
   </div>
+
+  <div id="qrcode"></div>
+</div>
 `;
   new QRCode(document.getElementById("qrcode"), {
     text: `ID: ${s.student_id}\nName: ${s.first_name} ${s.last_name}\nProgram: ${s.program}\nYear: ${s.year_level} Section: ${s.section}\nGuardian: ${s.guardian_name} (${s.guardian_contact})\nAddress: ${s.guardian_address}`,
