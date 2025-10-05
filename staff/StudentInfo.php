@@ -11,7 +11,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['update_student'])) {
   $last_name        = $_POST['last_name'] ?? '';
   $birthdate        = $_POST['birthdate'] ?? '';
   $program = trim($_POST['program'] ?? '');
-  $validPrograms = ['Undeclared', 'BSIT', 'BSCS', 'BSECE'];
+  $validPrograms = ['Undeclared', 'BSIT', 'BSCS', 'BSECE', 'BSHM', 'BSHRM'];
   if (!in_array($program, $validPrograms)) {
       $program = 'Undeclared';
   }
@@ -291,7 +291,18 @@ function showDetails(btn) {
     <p><b>First Name:</b> <input type="text" name="first_name" value="${s.first_name}"></p>
     <p><b>Last Name:</b> <input type="text" name="last_name" value="${s.last_name}"></p>
     <p><b>Birthdate:</b> <input type="date" name="birthdate" value="${s.birthdate || ''}"></p>
-    <p><b>Program:</b> <input type="text" name="program" value="${s.program}"></p>
+    <p><b>Program:</b> 
+    <select name="program" required>
+        <option value="">-- Select Program --</option>
+        <option value="BSIT" ${s.program === "BSIT" ? "selected" : ""}>BSIT - Bachelor of Science in Information Technology</option>
+        <option value="BSCS" ${s.program === "BSCS" ? "selected" : ""}>BSCS - Bachelor of Science in Computer Science</option>
+        <option value="BSECE" ${s.program === "BSECE" ? "selected" : ""}>BSECE - Bachelor of Science in Electronics Engineering</option>
+        <option value="BSHM" ${s.program === "BSHM" ? "selected" : ""}>BSHM - Bachelor of Science in Hospitality Management</option>
+        <option value="BSHRM" ${s.program === "BSHRM" ? "selected" : ""}>BSHRM - Bachelor of Science in Hotel & Restaurant Management</option>
+        <option value="Undeclared" ${s.program === "Undeclared" ? "selected" : ""}>Undeclared</option>
+      </select>
+    </p>
+
     <p><b>Year Level:</b> <input type="number" name="year_level" value="${s.year_level}"></p>
     <p><b>Section:</b> <input type="text" name="section" value="${s.section}"></p>
     <p><b>Status:</b>
