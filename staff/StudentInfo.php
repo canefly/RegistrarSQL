@@ -305,6 +305,7 @@ searchInput.addEventListener("keyup", function () {
       div.onmouseout = () => (div.style.background = "white");
 
       // ✅ When clicked → open same modal as Edit
+       // ✅ When clicked → open same modal as Edit
       div.onclick = () => {
         const matchRow = Array.from(rows).find(
           r => JSON.parse(r.dataset.student).student_id === m.student_id
