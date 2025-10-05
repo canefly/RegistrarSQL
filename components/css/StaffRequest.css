@@ -1,0 +1,212 @@
+/* ------------------ Body / Background ------------------ */
+body {
+    margin: 0;
+    font-family: 'Outfit', sans-serif;
+    background: url('../img/bg.jpg') no-repeat center center fixed;
+    background-size: cover;
+    min-height: 100vh;
+}
+
+/* ------------------ Container Layout ------------------ */
+.container {
+    flex: 1;
+    margin-left: 240px;
+    padding: 20px 40px;
+    transition: margin-left 0.3s ease;
+    box-sizing: border-box;
+    position: relative;
+    background: none; /* transparent */
+}
+
+/* Overlay + background image */
+.container::before {
+    content: "";
+    position: absolute;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background-image: url('../img/bg.jpg');
+    background-size: cover;
+    background-position: center;
+    background-attachment: fixed;
+    opacity: 0.15; /* adjust visibility */
+    z-index: 0;
+}
+
+/* Make content appear above overlay */
+.container > * {
+    position: relative;
+    z-index: 1;
+}
+
+
+/* ------------------ Adjust when sidebar collapsed ------------------ */
+.sidebar.collapsed ~ .content,
+.sidebar.collapsed ~ .container {
+    margin-left: 70px; /* collapsed width */
+}
+
+/* ------------------ Toggle Button ------------------ */
+.toggle-btn {
+    position: fixed;
+    top: 20px;
+    left: 250px;
+    background: #0056d2;
+    color: #fff;
+    border: none;
+    padding: 8px 12px;
+    border-radius: 50%;
+    cursor: pointer;
+    transition: left 0.3s ease, transform 0.3s ease;
+    z-index: 1100;
+}
+
+.sidebar.collapsed + .toggle-btn {
+    left: 80px;
+}
+
+.sidebar.collapsed + .toggle-btn i {
+    transform: rotate(180deg);
+}
+
+/* ------------------ Headings ------------------ */
+h1 {
+    font-size: 28px;
+    margin-bottom: 8px;
+}
+
+p {
+    margin-bottom: 24px;
+    color: #555;
+}
+
+/* ------------------ Table Styles ------------------ */
+.requests-table {
+    width: 100%;
+    border-collapse: collapse;
+    background: #fff;
+    border-radius: 10px;
+    overflow: hidden;
+    box-shadow: 0 3px 12px rgba(0,0,0,0.1);
+}
+
+.requests-table thead {
+    background: #004aad;
+    color: #fff;
+}
+
+.requests-table th,
+.requests-table td {
+    padding: 12px 15px;
+    text-align: left;
+    font-size: 14px;
+}
+
+.requests-table th {
+    font-weight: 600;
+}
+
+.requests-table tbody tr {
+    border-bottom: 1px solid #e0e0e0;
+    transition: background 0.3s;
+}
+
+.requests-table tbody tr:hover {
+    background: #f0f4ff;
+}
+
+/* ------------------ Status Badges ------------------ */
+.status {
+    padding: 5px 10px;
+    border-radius: 12px;
+    color: #fff;
+    font-weight: 600;
+    text-transform: capitalize;
+    font-size: 12px;
+}
+
+.status.Pending {
+    background: #ffb900;
+}
+
+.status.Approved {
+    background: #28a745;
+}
+
+.status.Declined {
+    background: #dc3545;
+}
+
+/* ------------------ Buttons ------------------ */
+button {
+    padding: 6px 12px;
+    border: none;
+    border-radius: 6px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 0.3s, transform 0.2s;
+}
+
+button.approve {
+    background: #28a745;
+    color: #fff;
+}
+
+button.approve:hover {
+    background: #218838;
+    transform: scale(1.05);
+}
+
+button.decline {
+    background: #dc3545;
+    color: #fff;
+}
+
+button.decline:hover {
+    background: #c82333;
+    transform: scale(1.05);
+}
+
+button[disabled] {
+    background: #6c757d;
+    cursor: not-allowed;
+}
+
+button.print {
+  background: #004aad;
+  color: white;
+  padding: 6px 12px;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+}
+button.print:hover {
+  background: #003377;
+}
+
+
+/* ------------------ Responsive ------------------ */
+@media (max-width: 768px) {
+    .content, 
+    .container {
+        margin-left: 0;
+        padding: 15px 20px;
+    }
+
+    .requests-table th, 
+    .requests-table td {
+        padding: 10px 8px;
+        font-size: 13px;
+    }
+
+    /* Stack buttons vertically in last column */
+    .requests-table td:last-child {
+        display: flex;
+        flex-direction: column;
+        gap: 6px;
+    }
+
+    .requests-table td:last-child a,
+    .requests-table td:last-child button {
+        width: 100%;
+        text-align: center;
+    }
+}

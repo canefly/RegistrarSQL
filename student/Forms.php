@@ -1,231 +1,189 @@
 <?php
 require_once __DIR__ . "/../Database/session-checker.php";
+
+$formsDir = __DIR__ . '/forms';
+$files = glob($formsDir . '/*');
+
+$forms = [];
+
+foreach ($files as $file) {
+    $filename = basename($file);
+    $extension = strtolower(pathinfo($filename, PATHINFO_EXTENSION));
+
+    // Clean title: replace underscores/hyphens with spaces and capitalize words
+    $title = pathinfo($filename, PATHINFO_FILENAME);
+    $title = str_replace(['_', '-'], ' ', $title);
+    $title = ucwords($title);
+
+    // Choose icon based on extension
+    switch ($extension) {
+        case 'pdf': $iconClass = 'fa-solid fa-file-pdf'; break;
+        case 'doc':
+        case 'docx': $iconClass = 'fa-solid fa-file-word'; break;
+        case 'xls':
+        case 'xlsx': $iconClass = 'fa-solid fa-file-excel'; break;
+        default: $iconClass = 'fa-solid fa-file'; break;
+    }
+
+    $forms[] = [
+        'title' => $title,
+        'file' => 'forms/' . $filename,
+        'icon' => $iconClass
+    ];
+}
 ?>
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <title>School Forms</title>
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-  <style>
-    body {
-      font-family: 'Outfit', sans-serif;
-      background: #f9f9f9;
-      margin: 0;
-      color: #000;
-    }
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>School Forms</title>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;700&display=swap" rel="stylesheet">
 
-    .container { margin-left:240px; padding:30px; }
-    .forms-grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(250px,1fr)); gap:20px; }
-    .form-card {
-      background:#fff; padding:20px; border-radius:12px;
-      box-shadow:0 2px 6px rgba(0,0,0,0.1);
-      text-align:center; transition:.2s;
-    }
-    .form-card:hover { transform:translateY(-5px); }
-    .form-card i { font-size:40px; color:#0056d2; margin-bottom:10px; }
-    .form-card button { margin-top:10px; padding:8px 14px; border:none;
-      border-radius:6px; background:#0056d2; color:#fff; cursor:pointer; }
-    .form-card button:hover { background:#003c94; }
+<style>
+/* ----------------- Global CSS for offset effect ----------------- */
+body {
+  margin: 0;
+  font-family: 'Outfit', sans-serif;
+  background: #f9f9f9;
+  color: #333;
+  display: flex;
+  min-height: 100vh;
+}
 
-    /* Official form style */
-    @page { size: 8.5in 13in; margin: 1in; }
-    .official-form {
-      display:none; background:#fff;
-      max-width:850px; margin:30px auto;
-      padding:40px 60px; line-height:1.6;
-      border:1px solid #ccc; border-radius:8px;
-      box-shadow:0 2px 8px rgba(0,0,0,0.08);
-      position: relative; min-height: 100vh;
-    }
-    .form-header { text-align:center; margin-bottom:30px; }
-    .form-header img { display:block; margin:0 auto 10px; width:90px; }
-    .form-header h2 { margin:0; font-size:22px; font-weight:700; }
-    .form-header h3 { margin:5px 0; font-size:18px; font-weight:600; color:#333; }
+/* Sidebar offset container */
+.content, 
+.container {
+  flex: 1;
+  margin-left: 240px; /* same width as sidebar */
+  padding: 20px 40px;
+  transition: margin-left 0.3s ease;
+  box-sizing: border-box;
+}
 
-    label { display:block; margin:14px 0 6px; font-weight:600; font-size:14px; }
-    input, textarea {
-      display:block; width:100%;
-      margin-bottom:14px; padding:10px;
-      border:1px solid #aaa; border-radius:6px;
-      font-size:14px; background:#fafafa;
-    }
-    textarea { resize:vertical; }
+/* Adjust when sidebar is collapsed */
+.sidebar.collapsed ~ .content,
+.sidebar.collapsed ~ .container {
+  margin-left: 70px; /* collapsed width */
+}
 
-    .signature-line { margin-top:60px; display:flex; justify-content:space-between; }
-    .signature { text-align:center; width:45%; font-size:14px; }
-    .signature span {
-      display:block; border-top:1px solid #000;
-      margin-top:70px; padding-top:5px; font-weight:500;
-    }
+/* Toggle button positioning */
+.toggle-btn {
+  position: fixed;
+  top: 20px;
+  left: 250px;
+  background: #0056d2;
+  color: #fff;
+  border: none;
+  padding: 8px 12px;
+  border-radius: 50%;
+  cursor: pointer;
+  transition: left 0.3s ease, transform 0.3s ease;
+  z-index: 1100;
+}
 
-    .download-btn {
-      margin-top:25px; background:#16a34a; color:#fff;
-      padding:12px 24px; border:none; border-radius:6px;
-      cursor:pointer; font-size:14px;
-    }
-    .download-btn:hover { background:#0e7c2f; }
+.sidebar.collapsed + .toggle-btn {
+  left: 80px;
+}
 
-    .form-footer {
-      text-align:center; font-size:12px;
-      border-top:1px solid #000; padding-top:10px;
-      margin-top:80px; color:#333;
-      position:absolute; bottom:30px; left:0; right:0;
-    }
+.sidebar.collapsed + .toggle-btn i {
+  transform: rotate(180deg);
+}
 
-    @media print {
-      body { background:#fff; }
-      .form-card,.container > h1,.forms-grid,.download-btn { display:none !important; }
-      .official-form { border:none; box-shadow:none; max-width:100%; margin:0; }
-      .form-footer { position:absolute; bottom:20px; }
-    }
-  </style>
+/* Responsive fix */
+@media (max-width: 768px) {
+  .content, 
+  .container {
+    margin-left: 0;
+    padding: 20px;
+  }
+  .toggle-btn {
+    left: 20px !important;
+  }
+}
+
+/* ----------------- Forms Grid Styling ----------------- */
+h1 { font-size: 26px; margin-bottom: 8px; }
+p { margin-bottom: 24px; color: #444; }
+
+.forms-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 24px; }
+
+.form-card {
+  background: #fff;
+  padding: 24px 20px;
+  border-radius: 14px;
+  border: 1px solid #e0e4ea;
+  text-align: center;
+  box-shadow: 0 3px 12px rgba(0,0,0,0.06);
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  transition: transform 0.3s ease, box-shadow 0.3s ease; /* smoother transition */
+}
+
+.form-card:hover {
+  transform: translateY(-10px) scale(1.02);
+  box-shadow: 0 10px 25px rgba(0,86,210,0.15); 
+}
+
+.form-card i {
+  font-size: 42px;
+  color: #004aad;
+  margin-bottom: 12px;
+}
+
+.form-card h3 {
+  font-size: 16px;
+  font-weight: 600;
+  margin: 12px 0;
+  color: #222;
+  flex-grow: 1;
+}
+
+.form-card a button {
+  margin-top: 12px;
+  padding: 10px 18px;
+  border: none;
+  border-radius: 8px;
+  background: #004aad;
+  color: #fff;
+  font-weight: 600;
+  cursor: pointer;
+  width: 100%;
+  transition: 0.25s;
+}
+
+.form-card a button:hover { background: #003377; }
+
+@media (max-width: 1024px) { .forms-grid { grid-template-columns: repeat(2, 1fr); } }
+@media (max-width: 600px) { .container { margin-left: 0; padding: 20px; } .forms-grid { grid-template-columns: 1fr; } }
+</style>
 </head>
 <body>
 
 <?php include 'StudentSidenav.php'; ?>
 
 <div class="container">
-  <h1>📑 Official School Forms</h1>
-  <p>Select a form below, fill it out, and download as PDF.</p>
+  <h1>Official School Forms</h1>
+  <p>Please select a form below and download as an official PDF document.</p>
 
   <div class="forms-grid">
-    <div class="form-card"><i class="fa-solid fa-user-graduate"></i><h3>Transferee Form</h3><button onclick="openForm('transferee')">Open</button></div>
-    <div class="form-card"><i class="fa-solid fa-user-minus"></i><h3>Dropping Form</h3><button onclick="openForm('dropping')">Open</button></div>
-    <div class="form-card"><i class="fa-solid fa-calendar-days"></i><h3>Leave of Absence</h3><button onclick="openForm('leave')">Open</button></div>
-    <div class="form-card"><i class="fa-solid fa-id-card"></i><h3>ID Replacement</h3><button onclick="openForm('idreplace')">Open</button></div>
-    <div class="form-card"><i class="fa-solid fa-book-open"></i><h3>Change of Program</h3><button onclick="openForm('changeprog')">Open</button></div>
-    <div class="form-card"><i class="fa-solid fa-certificate"></i><h3>Good Moral Request</h3><button onclick="openForm('goodmoral')">Open</button></div>
+    <?php if (!empty($forms)): ?>
+      <?php foreach ($forms as $form): ?>
+        <div class="form-card">
+          <i class="<?= htmlspecialchars($form['icon']) ?>"></i>
+          <h3><?= htmlspecialchars($form['title']) ?></h3>
+          <a href="<?= htmlspecialchars($form['file']) ?>" download="<?= htmlspecialchars($form['title']) ?>.pdf">
+            <button>Download</button>
+          </a>
+        </div>
+      <?php endforeach; ?>
+    <?php else: ?>
+      <p>No forms available at the moment.</p>
+    <?php endif; ?>
   </div>
 </div>
-
-<!-- ================== FORMS ================== -->
-
-<!-- Transferee Form -->
-<div id="transferee" class="official-form">
-  <div class="form-header">
-    <img src="../components/img/bcpp.png" alt="Logo">
-    <h2>Bestlink College of the Philippines</h2>
-    <h3>Transferee Application Form</h3>
-  </div>
-  <form>
-    <label>Full Name</label><input type="text">
-    <label>Student ID</label><input type="text">
-    <label>Current Program</label><input type="text">
-    <label>School Transferring To</label><input type="text">
-    <label>Reason for Transfer</label><textarea rows="3"></textarea>
-    <div class="signature-line"><div class="signature"><span>Student’s Signature</span></div><div class="signature"><span>Registrar</span></div></div>
-    <button type="button" class="download-btn" onclick="downloadForm('transferee')">📥 Download PDF</button>
-  </form>
-  <div class="form-footer">Registrar’s Office • Bestlink College of the Philippines <br>1071 Brgy. Kaligayahan, Quirino Highway, Quezon City • Tel: (02) 1234-5678</div>
-</div>
-
-<!-- Dropping Form -->
-<div id="dropping" class="official-form">
-  <div class="form-header">
-    <img src="../components/img/bcpp.png" alt="Logo">
-    <h2>Bestlink College of the Philippines</h2>
-    <h3>Dropping Form</h3>
-  </div>
-  <form>
-    <label>Full Name</label><input type="text">
-    <label>Student ID</label><input type="text">
-    <label>Subjects to Drop</label><textarea rows="3"></textarea>
-    <label>Reason</label><textarea rows="3"></textarea>
-    <div class="signature-line"><div class="signature"><span>Student</span></div><div class="signature"><span>Registrar</span></div></div>
-    <button type="button" class="download-btn" onclick="downloadForm('dropping')">📥 Download PDF</button>
-  </form>
-  <div class="form-footer">Registrar’s Office • Bestlink College of the Philippines <br>1071 Brgy. Kaligayahan, Quirino Highway, Quezon City • Tel: (02) 1234-5678</div>
-</div>
-
-<!-- Leave of Absence -->
-<div id="leave" class="official-form">
-  <div class="form-header">
-    <img src="../components/img/bcpp.png" alt="Logo">
-    <h2>Bestlink College of the Philippines</h2>
-    <h3>Leave of Absence</h3>
-  </div>
-  <form>
-    <label>Full Name</label><input type="text">
-    <label>Student ID</label><input type="text">
-    <label>Program & Year</label><input type="text">
-    <label>Duration of Leave</label><input type="text" placeholder="e.g., 1 Semester">
-    <label>Reason</label><textarea rows="3"></textarea>
-    <div class="signature-line"><div class="signature"><span>Student</span></div><div class="signature"><span>Dean / Registrar</span></div></div>
-    <button type="button" class="download-btn" onclick="downloadForm('leave')">📥 Download PDF</button>
-  </form>
-  <div class="form-footer">Registrar’s Office • Bestlink College of the Philippines <br>1071 Brgy. Kaligayahan, Quirino Highway, Quezon City • Tel: (02) 1234-5678</div>
-</div>
-
-<!-- ID Replacement -->
-<div id="idreplace" class="official-form">
-  <div class="form-header">
-    <img src="../components/img/bcpp.png" alt="Logo">
-    <h2>Bestlink College of the Philippines</h2>
-    <h3>ID Replacement Form</h3>
-  </div>
-  <form>
-    <label>Full Name</label><input type="text">
-    <label>Student ID</label><input type="text">
-    <label>Reason for Replacement</label><textarea rows="3" placeholder="Lost / Damaged"></textarea>
-    <label>Attach Police/Barangay Report (if lost)</label><input type="file">
-    <div class="signature-line"><div class="signature"><span>Student</span></div><div class="signature"><span>Registrar</span></div></div>
-    <button type="button" class="download-btn" onclick="downloadForm('idreplace')">📥 Download PDF</button>
-  </form>
-  <div class="form-footer">Registrar’s Office • Bestlink College of the Philippines <br>1071 Brgy. Kaligayahan, Quirino Highway, Quezon City • Tel: (02) 1234-5678</div>
-</div>
-
-<!-- Change of Program -->
-<div id="changeprog" class="official-form">
-  <div class="form-header">
-    <img src="../components/img/bcpp.png" alt="Logo">
-    <h2>Bestlink College of the Philippines</h2>
-    <h3>Change of Program</h3>
-  </div>
-  <form>
-    <label>Full Name</label><input type="text">
-    <label>Student ID</label><input type="text">
-    <label>Current Program</label><input type="text">
-    <label>Desired Program</label><input type="text">
-    <label>Reason</label><textarea rows="3"></textarea>
-    <div class="signature-line"><div class="signature"><span>Student</span></div><div class="signature"><span>Registrar / Dean</span></div></div>
-    <button type="button" class="download-btn" onclick="downloadForm('changeprog')">📥 Download PDF</button>
-  </form>
-  <div class="form-footer">Registrar’s Office • Bestlink College of the Philippines <br>1071 Brgy. Kaligayahan, Quirino Highway, Quezon City • Tel: (02) 1234-5678</div>
-</div>
-
-<!-- Good Moral Request -->
-<div id="goodmoral" class="official-form">
-  <div class="form-header">
-    <img src="../components/img/bcpp.png" alt="Logo">
-    <h2>Bestlink College of the Philippines</h2>
-    <h3>Good Moral Certificate Request</h3>
-  </div>
-  <form>
-    <label>Full Name</label><input type="text">
-    <label>Student ID</label><input type="text">
-    <label>Purpose</label><input type="text" placeholder="e.g., Scholarship, Job Application">
-    <div class="signature-line"><div class="signature"><span>Student</span></div><div class="signature"><span>Registrar</span></div></div>
-    <button type="button" class="download-btn" onclick="downloadForm('goodmoral')">📥 Download PDF</button>
-  </form>
-  <div class="form-footer">Registrar’s Office • Bestlink College of the Philippines <br>1071 Brgy. Kaligayahan, Quirino Highway, Quezon City • Tel: (02) 1234-5678</div>
-</div>
-
-<script>
-function openForm(id) {
-  document.querySelectorAll(".official-form").forEach(f => f.style.display="none");
-  document.getElementById(id).style.display="block";
-  window.scrollTo({ top:0, behavior:"smooth" });
-}
-function downloadForm(id) {
-  const form = document.getElementById(id).innerHTML;
-  const css = document.querySelector('style').outerHTML; // include styles
-  const win = window.open('', '_blank');
-  win.document.write(`<html><head><title>Form</title>${css}</head><body>${form}</body></html>`);
-  win.document.close();
-  win.print();
-}
-</script>
 
 </body>
 </html>

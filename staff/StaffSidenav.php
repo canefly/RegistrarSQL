@@ -1,18 +1,16 @@
 <?php
   require_once __DIR__ . "/../Database/session-checker.php";
-  require_once __DIR__ . "/../Database/connection.php"; // <- make sure this has $conn = new mysqli(...)
+  require_once __DIR__ . "/../Database/connection.php";
 
   $current_page = basename($_SERVER['PHP_SELF']);
 
-  // Check if user is logged in
   if (!isset($_SESSION['user_id'])) {
-      header("Location: ../login.php");
+      header("Location: ../index.php");
       exit();
   }
 
   $user_id = $_SESSION['user_id'];
 
-  // Fetch staff name and role
   $stmt = $conn->prepare("
       SELECT u.username, r.name AS role_name
       FROM users u
@@ -27,8 +25,6 @@
   $staffName = $user['username'] ?? "Unknown User";
   $staffRole = $user['role_name'] ?? "Unknown Role";
 ?>
-
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -48,7 +44,7 @@
       display: flex;
     }
 
-    /* Sidebar main css*/
+    /* Sidebar */
     .sidebar {
       position: fixed;
       left: 0;
@@ -63,8 +59,6 @@
       overflow-y: auto;
       z-index: 1000;
     }
-
-    /* Collapsed sidebar */
     .sidebar.collapsed {
       width: 70px;
     }
@@ -135,65 +129,43 @@
       color: #b71c1c;
     }
 
-    .toggle-btn {
-      position: fixed;
-      top: 20px;
-      left: 250px;
-      background: #0056d2;
-      color: white;
-      border: none;
-      padding: 8px 12px;
-      border-radius: 50%;
-      cursor: pointer;
-      transition: left 0.3s ease, transform 0.3s ease;
-      z-index: 1100;
-    }
-    .toggle-btn i {
-      font-size: 18px;
-    }
-    .sidebar.collapsed + .toggle-btn {
-      left: 80px;
-    }
-    .sidebar.collapsed + .toggle-btn i {
-      transform: rotate(180deg);
-    }
-
     /* Content area */
     .content {
-      margin-left: 240px;
+      margin-left: 70px; /* match collapsed by default */
       padding: 20px;
       transition: margin-left 0.3s ease;
       flex: 1;
     }
-    .sidebar.collapsed ~ .content {
-      margin-left: 70px;
+    .sidebar:not(.collapsed) ~ .content {
+      margin-left: 240px;
     }
   </style>
 </head>
 <body>
 
 <!-- Sidebar -->
-<div class="sidebar" id="sidebar">
- <div class="sidebar-header">
-  <h3 class="sidebar-text"><?= htmlspecialchars($staffName) ?></h3>
-  <p class="sidebar-text"><?= htmlspecialchars($staffRole) ?></p>
-</div>
-
+<div class="sidebar collapsed" id="sidebar">
+  <div class="sidebar-header">
+    <h3 class="sidebar-text"><?= htmlspecialchars($staffName) ?></h3>
+    <p class="sidebar-text"><?= htmlspecialchars($staffRole) ?></p>
+  </div>
 
   <div class="sidebar-section">
     <h4 class="sidebar-text">MAIN</h4>
     <a href="index.php" class="<?= $current_page=='index.php' ? 'active' : '' ?>">
-      <i class="fas fa-th-large"></i><span class="sidebar-text">  Dashboard</span>
+      <i class="fas fa-th-large"></i><span class="sidebar-text"> Dashboard</span>
     </a>
-
     <a href="StudentInfo.php" class="<?= $current_page=='StudentInfo.php' ? 'active' : '' ?>">
-      <i class="fas fa-id-card"></i><span class="sidebar-text">  Students</span>
+      <i class="fas fa-id-card"></i><span class="sidebar-text"> Students</span>
     </a>
     <a href="Masterlist.php" class="<?= $current_page=='Masterlist.php' ? 'active' : '' ?>">
-      <i class="fas fa-list"></i><span class="sidebar-text">  Masterlists</span>
+      <i class="fas fa-list"></i><span class="sidebar-text"> Masterlists</span>
+    </a>
+    <a href="FileStorage.php" class="<?= $current_page=='FileStorage.php' ? 'active' : '' ?>">
+      <i class="fas fa-folder-open"></i><span class="sidebar-text"> File Storage</span>
     </a>
     <a href="Request.php" class="<?= $current_page=='Request.php' ? 'active' : '' ?>">
-      <i class="fas fa-file-alt"></i><span class="sidebar-text">  Request</span>
+      <i class="fas fa-file-alt"></i><span class="sidebar-text"> Request</span>
     </a>
   </div>
 
@@ -208,28 +180,33 @@
   </div>
 </div>
 
-<!-- Toggle Button -->
-<button class="toggle-btn" id="toggleBtn">
-  <i class="fas fa-angle-left"></i>
-</button>
+
 
 <script>
 const sidebar = document.getElementById("sidebar");
-const toggleBtn = document.getElementById("toggleBtn");
+let collapseTimeout;
 
-toggleBtn.addEventListener("click", () => {
-  sidebar.classList.toggle("collapsed");
+// Expand on hover
+sidebar.addEventListener("mouseenter", () => {
+  clearTimeout(collapseTimeout);
+  sidebar.classList.remove("collapsed");
 });
 
+// Collapse with delay on mouse leave
+sidebar.addEventListener("mouseleave", () => {
+  collapseTimeout = setTimeout(() => {
+    sidebar.classList.add("collapsed");
+  }, 1000); // 0.5s delay
+});
+
+// Force collapsed on small screens
 function handleResize() {
   if (window.innerWidth <= 720) {
     sidebar.classList.add("collapsed");
-  } else {
-    sidebar.classList.remove("collapsed");
   }
 }
 window.addEventListener("resize", handleResize);
-handleResize(); // run on first load
+handleResize();
 </script>
 
 </body>

@@ -40,8 +40,11 @@ $requests = $result->fetch_all(MYSQLI_ASSOC);
 <html lang="en">
 <head>
   <meta charset="UTF-8">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@100..900&family=Roboto:ital,wght@0,100..900;1,100..900&display=swap" rel="stylesheet">
   <title>Requests</title>
-  <link rel="stylesheet" href="../components/css/Request.css">
+  <link rel="stylesheet" href="../components/css/StaffRequest.css">
   
 </head>
 <body>
@@ -49,7 +52,7 @@ $requests = $result->fetch_all(MYSQLI_ASSOC);
 <?php include 'StaffSidenav.php'; ?>
 
 <div class="container">
-  <h1>📑 Student Requests</h1>
+  <h1>  Student Requests</h1>
   <p>Below is the list of student requests awaiting review.</p>
 
   <table class="requests-table">
@@ -78,10 +81,17 @@ $requests = $result->fetch_all(MYSQLI_ASSOC);
             <?php if ($req['status'] === "Pending"): ?>
               <a href="?approve=<?= $req['request_id'] ?>"><button class="approve">Approve</button></a>
               <a href="?decline=<?= $req['request_id'] ?>"><button class="decline">Decline</button></a>
+            
+            <?php elseif ($req['status'] === "Approved"): ?>
+              <a href="print_request.php?id=<?= $req['request_id'] ?>" target="_blank">
+                <button class="print">🖨 Print</button>
+              </a>
+            
             <?php else: ?>
               <button disabled><?= $req['status'] ?></button>
             <?php endif; ?>
           </td>
+
         </tr>
         <?php endforeach; ?>
       <?php else: ?>
