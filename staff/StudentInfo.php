@@ -165,8 +165,8 @@ foreach ($allStudents as &$s) {
 
 <!-- Edit Modal -->
 <div id="modal" class="modal">
-<div class="modal-content">
-<span class="close" onclick="closeModal()">&times;</span>
+  <div class="modal-content">
+    <span class="close" onclick="closeMainModal()">&times;</span>
 <form method="POST" id="studentForm" enctype="multipart/form-data">
 <div id="studentDetails"></div>
 <div style="margin-top:15px; text-align:right;">
@@ -179,96 +179,81 @@ foreach ($allStudents as &$s) {
 
 <!-- ID Preview -->
 <div id="idPreviewModal" class="modal">
-<div class="modal-content" style="max-width:400px;">
-<span class="close" onclick="closeIdPreview()">&times;</span>
+  <div class="modal-content" style="max-width: 430px;">
+    <span class="close" onclick="closeIdPreview()">&times;</span>
 <div id="idCardPreview"></div>
 <button onclick="confirmPrint()" style="margin-top:10px;">Print ID</button>
 </div>
 </div>
 
 <div id="idCard" style="display:none;"></div>
-
 <script>
+/* ---------------------------
+   STATE
+--------------------------- */
 let currentStudent = null;
 const allStudents = <?= json_encode($allStudents, JSON_HEX_APOS | JSON_HEX_QUOT) ?>;
-
 const searchInput = document.getElementById("searchInput");
 const suggestionsBox = document.getElementById("suggestionsBox");
 
-// ======================
-// SEARCH SUGGESTIONS
-// ======================
-searchInput.addEventListener("keyup", function() {
-    const filter = this.value.toLowerCase();
-    let matches = [];
-
-    allStudents.forEach(s => {
-        const fullName = (s.last_name + ", " + s.first_name).toLowerCase();
-        if (fullName.includes(filter)) matches.push(s);
-    });
-
-    suggestionsBox.innerHTML = "";
-    if (matches.length > 0 && filter.length > 0) {
-        suggestionsBox.style.display = "block";
-        matches.forEach(m => {
-            const div = document.createElement("div");
-            const regex = new RegExp("(" + filter + ")", "i");
-            const name = m.last_name + ", " + m.first_name;
-            div.innerHTML = name.replace(regex, "<b>$1</b>");
-            div.onclick = () => {
-                currentStudent = m;
-                showDetailsModalFromSearch(m);
-                suggestionsBox.style.display = "none";
-            };
-            suggestionsBox.appendChild(div);
-        });
-    } else {
-        suggestionsBox.style.display = "none";
-    }
+/* ---------------------------
+   MODAL HELPERS
+--------------------------- */
+function openModal(id) {
+  const el = document.getElementById(id);
+  if (!el) return;
+  el.style.display = "flex";
+  document.body.classList.add("modal-open"); // prevents background scroll
+}
+function closeModal(id) {
+  const el = document.getElementById(id);
+  if (!el) return;
+  el.style.display = "none";
+  document.body.classList.remove("modal-open");
+}
+// click outside to close
+document.addEventListener("click", (e) => {
+  const main = document.getElementById("modal");
+  const prev = document.getElementById("idPreviewModal");
+  if (main && main.style.display === "flex" && e.target === main) closeModal("modal");
+  if (prev && prev.style.display === "flex" && e.target === prev) closeModal("idPreviewModal");
+});
+// Esc to close
+document.addEventListener("keydown", (e) => {
+  if (e.key === "Escape") {
+    closeModal("modal");
+    closeModal("idPreviewModal");
+  }
 });
 
-// ======================
-// OPEN MODAL FROM TABLE BUTTON
-// ======================
-function showDetails(btn) {
-    const row = btn.closest("tr");
-    const s = JSON.parse(row.dataset.student);
-    currentStudent = s;
-    showDetailsModalFromSearch(s);
-}
+/* ---------------------------
+   RENDER EDIT FORM (shared)
+--------------------------- */
+function openEditModalFor(s) {
+  currentStudent = s;
 
-// ======================
-// POPULATE MODAL FUNCTION
-// ======================
-function showDetailsModalFromSearch(s) {
-    currentStudent = s;
-    const details = `
+  const details = `
     <input type="hidden" name="student_id" value="${s.student_id}">
     <h2>Edit Student: ${s.first_name} ${s.last_name}</h2>
     <p><b>First Name:</b> <input type="text" name="first_name" value="${s.first_name}"></p>
     <p><b>Last Name:</b> <input type="text" name="last_name" value="${s.last_name}"></p>
     <p><b>Birthdate:</b> <input type="date" name="birthdate" value="${s.birthdate || ''}"></p>
-    <p><b>Program:</b>
-      <select name="program">
-        <option value="Undeclared" ${s.program==="Undeclared"?"selected":""}>Undeclared</option>
-        <option value="BSIT" ${s.program==="BSIT"?"selected":""}>BSIT</option>
-        <option value="BSCS" ${s.program==="BSCS"?"selected":""}>BSCS</option>
-        <option value="BSECE" ${s.program==="BSECE"?"selected":""}>BSECE</option>
-      </select>
-    </p>
+    <p><b>Program:</b> <input type="text" name="program" value="${s.program}"></p>
     <p><b>Year Level:</b> <input type="number" name="year_level" value="${s.year_level}"></p>
     <p><b>Section:</b> <input type="text" name="section" value="${s.section}"></p>
     <p><b>Status:</b>
       <select name="student_status">
-        <option value="Enrolled" ${s.student_status==="Enrolled"?"selected":""}>Enrolled</option>
-        <option value="Dropped" ${s.student_status==="Dropped"?"selected":""}>Dropped</option>
-        <option value="Graduated" ${s.student_status==="Graduated"?"selected":""}>Graduated</option>
+        <option value="Enrolled" ${s.student_status === "Enrolled" ? "selected" : ""}>Enrolled</option>
+        <option value="Dropped" ${s.student_status === "Dropped" ? "selected" : ""}>Dropped</option>
+        <option value="Graduated" ${s.student_status === "Graduated" ? "selected" : ""}>Graduated</option>
       </select>
     </p>
     <hr>
     <h3>Photo</h3>
-    <p><input type="file" name="student_photo" accept="image/*">
-    ${s.photo_path ? `<br><img src="../components/img/ids/${s.photo_path}" style="width:70px;height:90px;border:1px solid #000;margin-top:5px;">` : ''}</p>
+    <p><b>Photo:</b> 
+      <input type="file" name="student_photo" accept="image/*">
+      ${s.photo_path ? `<br><img src="../components/img/ids/${s.photo_path}" style="width:70px;height:90px;border:1px solid #000;margin-top:5px;">` : ''}
+    </p>
     <hr>
     <h3>Guardian Info</h3>
     <p><b>Name:</b> <input type="text" name="guardian_name" value="${s.guardian_name}"></p>
@@ -282,67 +267,121 @@ function showDetailsModalFromSearch(s) {
     <p><b>Year:</b> <input type="text" name="secondary_year" value="${s.secondary_year}"></p>
     <p><b>Tertiary School:</b> <input type="text" name="tertiary_school" value="${s.tertiary_school}"></p>
     <p><b>Year:</b> <input type="text" name="tertiary_year" value="${s.tertiary_year}"></p>
-    `;
-    document.getElementById("studentDetails").innerHTML = details;
-    document.getElementById("modal").style.display = "flex";
+  `;
+  document.getElementById("studentDetails").innerHTML = details;
+  openModal("modal");
 }
 
-// ======================
-// CLOSE MODALS
-// ======================
-function closeModal(){ document.getElementById("modal").style.display = "none"; }
-function closeIdPreview(){ document.getElementById("idPreviewModal").style.display = "none"; }
+/* ---------------------------
+   TABLE: Edit button → shared
+--------------------------- */
+function showDetails(btn) {
+  const row = btn.closest("tr");
+  const s = JSON.parse(row.dataset.student);
+  openEditModalFor(s);
+}
 
-// ======================
-// PRINT ID CARD
-// ======================
+/* ---------------------------
+   SEARCH SUGGESTIONS
+--------------------------- */
+searchInput.addEventListener("keyup", function() {
+  const filter = this.value.trim().toLowerCase();
+  let matches = [];
+
+  if (filter.length > 0) {
+    allStudents.forEach(s => {
+      const fullName = (s.last_name + ", " + s.first_name).toLowerCase();
+      if (fullName.includes(filter)) matches.push(s);
+    });
+  }
+
+  suggestionsBox.innerHTML = "";
+  suggestionsBox.style.display = (matches.length > 0) ? "block" : "none";
+
+  matches.slice(0, 8).forEach(m => {
+    const div = document.createElement("div");
+    const regex = new RegExp("(" + filter.replace(/[.*+?^${}()|[\]\\]/g, '\\$&') + ")", "i");
+    const name = m.last_name + ", " + m.first_name;
+    div.innerHTML = name.replace(regex, "<b>$1</b>");
+    div.onclick = () => {
+      // open the SAME Edit modal as the table button
+      openEditModalFor(m);
+      suggestionsBox.style.display = "none";
+      this.value = name; // keep selected text
+    };
+    suggestionsBox.appendChild(div);
+  });
+});
+
+/* ---------------------------
+   CLOSE HOOKS (buttons)
+--------------------------- */
+function closeMainModal(){ closeModal("modal"); }
+function closeIdPreview(){ closeModal("idPreviewModal"); }
+
+/* ---------------------------
+   ID PREVIEW (unchanged logic)
+--------------------------- */
 function printID() {
-    if (!currentStudent) return;
-    const s = currentStudent;
-    const preview = document.getElementById("idCardPreview");
-    const photo = s.photo_path ? `../components/img/ids/${s.photo_path}` : "../components/img/ids/default.jpg";
-    preview.innerHTML = `
+  if (!currentStudent) return;
+  const s = currentStudent;
+  const preview = document.getElementById("idCardPreview");
+  const photo = s.photo_path ? `../components/img/ids/${s.photo_path}` : "../components/img/ids/default.jpg";
+
+  preview.innerHTML = `
     <div class="id-front">
-      <div style="display:flex;align-items:center;gap:10px;margin-bottom:8px;">
-        <img src="../components/img/bcpp.png" style="width:40px;height:40px;">
-        <div><h3 style="margin:0;">Bestlink College of the Philippines</h3><small>Student ID</small></div>
+      <div class="id-front-header">
+        <img src="../components/img/bcpp.png" alt="">
+        <div>
+          <h3>Bestlink College of the Philippines</h3>
+          <small>Student ID</small>
+        </div>
       </div>
-      <div style="display:flex;align-items:center;gap:12px;">
-        <img src="${photo}" alt="Student Photo" style="width:70px;height:90px;border:1px solid #000;">
+      <div class="id-front-body">
+        <img src="${photo}" alt="Student Photo">
         <div>
           <p><b>${s.first_name} ${s.last_name}</b></p>
-          <p>${s.program} - Year ${s.year_level}</p>
-          <p>Section: ${s.section}</p>
+          <p>${s.program || 'Undeclared'} - Year ${s.year_level || ''}</p>
+          <p>Section: ${s.section || ''}</p>
           <p>ID: ${s.student_id}</p>
         </div>
       </div>
     </div>
-    <div class="id-back" style="display:flex;justify-content:center;align-items:center;">
-      <div style="border:2px solid #000; border-radius:10px; padding:8px; background:#fff;">
-        <div id="qrcode"></div>
-      </div>
+    <div class="id-back">
+      <p>
+        In Case of emergency Guardian: ${s.guardian_name || ''} (${s.guardian_contact || ''})<br>
+        Address: ${s.guardian_address || ''}
+      </p>
+      <div id="qrcode"></div>
     </div>
-    `;
-    new QRCode(document.getElementById("qrcode"), {
-        text: `ID: ${s.student_id}\nName: ${s.first_name} ${s.last_name}\nProgram: ${s.program}\nYear: ${s.year_level} Section: ${s.section}\nGuardian: ${s.guardian_name} (${s.guardian_contact})\nAddress: ${s.guardian_address}`,
-        width: 100, height: 100
-    });
-    document.getElementById("idPreviewModal").style.display = "flex";
+  `;
+
+  // fresh QR each time
+  const qrEl = document.getElementById("qrcode");
+  qrEl.innerHTML = "";
+  new QRCode(qrEl, {
+    text: `ID: ${s.student_id}\nName: ${s.first_name} ${s.last_name}\nProgram: ${s.program}\nYear: ${s.year_level} Section: ${s.section}\nGuardian: ${s.guardian_name} (${s.guardian_contact})\nAddress: ${s.guardian_address}`,
+    width: 100,
+    height: 100
+  });
+
+  openModal("idPreviewModal");
 }
 
 function confirmPrint() {
-    const idCard = document.getElementById("idCard");
-    idCard.innerHTML = document.getElementById("idCardPreview").innerHTML;
-    idCard.style.display = "flex";
-    idCard.style.flexDirection = "row";
-    idCard.style.justifyContent = "center";
-    idCard.style.gap = "20px";
-    window.print();
-    idCard.style.display = "none";
-    idCard.innerHTML = "";
-    closeIdPreview();
+  const idCard = document.getElementById("idCard");
+  idCard.innerHTML = document.getElementById("idCardPreview").innerHTML;
+  idCard.style.display = "flex";
+  idCard.style.flexDirection = "row";
+  idCard.style.justifyContent = "center";
+  idCard.style.gap = "20px";
+  window.print();
+  idCard.style.display = "none";
+  idCard.innerHTML = "";
+  closeModal("idPreviewModal");
 }
 </script>
+
 
 </body>
 </html>
