@@ -1,15 +1,13 @@
 <?php
 session_start();
-require_once "Database/connection.php"; // adjust if path differs
+require_once "Database/connection.php";
 
 $error = "";
 
-// Handle login submit
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $username = trim($_POST['username']);
     $password = trim($_POST['password']);
 
-    // Query user
     $stmt = $conn->prepare("SELECT user_id, username, password_hash, role_id, active FROM users WHERE username = ?");
     $stmt->bind_param("s", $username);
     $stmt->execute();
@@ -17,24 +15,15 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $user = $result->fetch_assoc();
 
     if ($user && $user['active'] == 1) {
-        // ⚠ Replace this with password_verify if you switch to hashed passwords
         if ($password === $user['password_hash']) {
             $_SESSION['user_id'] = $user['user_id'];
             $_SESSION['role_id'] = $user['role_id'];
 
-            // Redirect based on role
             switch ($user['role_id']) {
-                case 1: // Admin
-                    header("Location: admin/index.php");
-                    exit();
-                case 2: // Employee
-                    header("Location: staff/index.php");
-                    exit();
-                case 3: // Student
-                    header("Location: student/index.php");
-                    exit();
-                default:
-                    $error = "Unknown role.";
+                case 1: header("Location: admin/index.php"); exit();
+                case 2: header("Location: staff/index.php"); exit();
+                case 3: header("Location: student/index.php"); exit();
+                default: $error = "Unknown role.";
             }
         } else {
             $error = "Invalid password.";
@@ -51,9 +40,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Registrar Login</title>
   <link rel="stylesheet" href="components/css/LoginPage.css">
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@100..900&family=Roboto:ital,wght@0,100..900;1,100..900&display=swap" rel="stylesheet">
+  <link href="https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@100..900&display=swap" rel="stylesheet">
 </head>
 <body>
   <!-- splash screen -->
@@ -67,7 +55,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <h2>Registrar</h2>
 
     <?php if ($error): ?>
-      <p style="color:red;"><?= htmlspecialchars($error) ?></p>
+      <p class="error"><?= htmlspecialchars($error) ?></p>
     <?php endif; ?>
 
     <form method="POST" action="">
@@ -75,15 +63,38 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
       <input type="text" id="username" name="username" placeholder="Enter your username" required>
 
       <label for="password">Password</label>
-      <input type="password" id="password" name="password" placeholder="Enter your password" required>
+      <div class="password-wrapper">
+        <input type="password" id="password" name="password" placeholder="Enter your password" required>
+        <i class='bx bx-hide toggle-password' id="togglePassword"></i>
+      </div>
 
-      <a href="#" class="forgot">Forgot Password?</a>
+      <div class="form-footer">
+        <a href="#" class="forgot" onclick="document.getElementById('forgotPasswordModal').style.display='flex'">
+          Forgot Password?
+        </a>
+      </div>
+
       <button type="submit">Login</button>
     </form>
   </div>
 
+  <!-- Forgot Password Modal -->
+  <div id="forgotPasswordModal" class="modal">
+    <div class="modal-content">
+      <span class="close" onclick="document.getElementById('forgotPasswordModal').style.display='none'">&times;</span>
+      <h2>Forgot Password</h2>
+      <p>
+        If you have forgotten your password, please visit the
+        <strong>Academic Affairs Office</strong> to request a password reset.
+        <br><br>
+        Bring a valid school ID or proof of enrollment for verification.
+      </p>
+      <button onclick="document.getElementById('forgotPasswordModal').style.display='none'">Got it</button>
+    </div>
+  </div>
+
   <script>
-    // splash screen animation
+    // splash screen
     window.addEventListener("load", () => {
       setTimeout(() => {
         document.getElementById("splash").style.opacity = "0";
@@ -92,6 +103,17 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
           document.getElementById("login-container").style.display = "block";
         }, 800);
       }, 2000);
+    });
+
+    // toggle password
+    const togglePassword = document.getElementById('togglePassword');
+    const passwordField = document.getElementById('password');
+
+    togglePassword.addEventListener('click', () => {
+      const isPassword = passwordField.type === 'password';
+      passwordField.type = isPassword ? 'text' : 'password';
+      togglePassword.classList.toggle('bx-hide', !isPassword);
+      togglePassword.classList.toggle('bx-show', isPassword);
     });
   </script>
 </body>

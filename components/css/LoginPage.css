@@ -2,7 +2,7 @@
   margin: 0; 
   padding: 0; 
   box-sizing: border-box; 
-  font-family: 'outfit', sans-serif; 
+  font-family: 'Outfit', sans-serif; 
 }
 
 body {
@@ -16,7 +16,7 @@ body {
   height: 100vh;
 }
 
-/*loading*/
+/* === Splash Screen === */
 #splash {
   position: absolute;
   inset: 0;
@@ -33,7 +33,7 @@ body {
   margin-bottom: 20px;
 }
 
-/* loading pa rin*/
+/* Loading Spinner */
 .loader {
   position: relative;
   transform: rotateZ(45deg);
@@ -61,7 +61,6 @@ body {
   transform: rotateY(70deg);
   animation-delay: .4s;
 }
-
 @keyframes spin {
   0%,100% { box-shadow: .2em 0px 0 0px currentcolor; }
   12% { box-shadow: .2em .2em 0 0 currentcolor; }
@@ -73,7 +72,7 @@ body {
   87% { box-shadow: .2em -.2em 0 0 currentcolor; }
 }
 
-/*Login form */
+/* === Login Container === */
 #login-container {
   background: white;
   padding: 2rem;
@@ -81,7 +80,7 @@ body {
   box-shadow: 0 4px 12px rgba(0,0,0,0.1);
   width: 100%;
   max-width: 380px;
-  display: none; /* hidden until splash fades */
+  display: none;
 }
 
 h2 {
@@ -97,26 +96,67 @@ label {
   font-weight: bold;
 }
 
+/* === Input Field === */
 input {
   width: 100%;
   padding: 0.75rem;
-  margin-bottom: 1rem;
   border: 1px solid #BFC1C2;
   border-radius: 6px;
   font-size: 1rem;
+  margin-bottom: 1rem;
+  transition: 0.2s;
+}
+
+input:focus {
+  border-color: #2563eb;
+  box-shadow: 0 0 6px rgba(37,99,235,0.4);
+  outline: none;
+}
+
+/* === Password Input Wrapper === */
+.password-wrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.password-wrapper input {
+  padding-right: 40px; /* Space for icon */
+}
+
+.password-wrapper i {
+  position: absolute;
+  right: 12px;
+  font-size: 20px;
+  color: #6b7280;
+  cursor: pointer;
+  transition: 0.2s ease;
+}
+
+.password-wrapper i:hover {
+  color: #2563eb;
+}
+
+/* === Forgot Password Link === */
+.form-footer {
+  display: flex;
+  justify-content: flex-end;
+  width: 100%;
 }
 
 .forgot {
-  display: block;
-  text-align: right;
-  margin-bottom: 1.5rem;
-  font-size: 0.9rem;
-  color: #055177;
+  color: #1d4ed8;
   text-decoration: none;
+  font-weight: 600;
+  font-size: 14px;
+  transition: 0.2s;
+}
+.forgot:hover {
+  color: #2563eb;
+  text-decoration: underline;
 }
 
-.forgot:hover { text-decoration: underline; }
-
+/* === Button === */
 button {
   width: 100%;
   padding: 0.9rem;
@@ -129,14 +169,95 @@ button {
   cursor: pointer;
   transition: background 0.3s;
 }
-
 button:hover { background: rgb(116, 171, 255); }
 
+/* === Error Message === */
 .error {
   color: red;
   font-size: 0.9rem;
   margin-bottom: 1rem;
-  display: none; /* shown dynamically */
+}
+
+/* === Forgot Password Modal === */
+.modal {
+  display: none;
+  position: fixed;
+  inset: 0;
+  z-index: 1000;
+  justify-content: center;
+  align-items: center;
+  background: rgba(0,0,0,0.4);
+  backdrop-filter: blur(6px);
+  animation: fadeIn 0.3s ease forwards;
+}
+
+.modal-content {
+  background: #ffffff;
+  border-radius: 18px;
+  padding: 30px 40px;
+  box-shadow: 0 10px 40px rgba(0,0,0,0.25);
+  transform: translateY(20px);
+  opacity: 0;
+  transition: all 0.3s ease;
+  animation: slideUp 0.3s ease forwards;
+  text-align: center;
+  max-width: 480px;
+}
+
+.modal[style*="display: flex"] .modal-content {
+  transform: translateY(0);
+  opacity: 1;
+}
+
+.close {
+  position: absolute;
+  top: 15px;
+  right: 25px;
+  font-size: 24px;
+  color: #555;
+  cursor: pointer;
+  transition: 0.2s ease;
+}
+.close:hover {
+  color: #000;
+}
+
+.modal-content h2 {
+  color: #1d4ed8;
+  margin-bottom: 10px;
+}
+
+.modal-content p {
+  color: #374151;
+  font-size: 15px;
+  line-height: 1.6;
+  margin-bottom: 20px;
+}
+
+.modal-content button {
+  padding: 10px 20px;
+  background: linear-gradient(135deg,#2563eb,#3b82f6);
+  color: white;
+  border: none;
+  border-radius: 10px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: 0.3s;
+}
+
+.modal-content button:hover {
+  background: linear-gradient(135deg,#1e40af,#2563eb);
+  transform: translateY(-2px);
+}
+
+/* === Animations === */
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+@keyframes slideUp {
+  from { transform: translateY(30px); opacity: 0; }
+  to { transform: translateY(0); opacity: 1; }
 }
 
 /* === Responsive === */
