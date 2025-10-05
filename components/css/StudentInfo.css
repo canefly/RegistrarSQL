@@ -631,6 +631,8 @@ button.secondary:hover {
   }
 }
 
+
+/* === RESPONSIVE === */
 /* === RESPONSIVE === */
 @media (max-width: 768px) {
   .container {

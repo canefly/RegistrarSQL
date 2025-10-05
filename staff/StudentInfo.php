@@ -215,7 +215,10 @@ foreach ($allStudents as &$s) {
       <td><?= htmlspecialchars($s['section']) ?></td>
       <td><?= htmlspecialchars($s['student_id']) ?></td>
       <td><?= htmlspecialchars($s['student_status']) ?></td>
-      <td><button onclick="showDetails(this)">Edit</button></td>
+       <td>
+          <button onclick="viewStudent(this)">View</button>
+          <button onclick="showDetails(this)">Edit</button>
+        </td>
     </tr>
   <?php endforeach; ?>
 
@@ -251,6 +254,15 @@ foreach ($allStudents as &$s) {
     <button onclick="confirmPrint()" style="margin-top:10px;">Print ID</button>
   </div>
 </div>
+
+<!-- View Modal -->
+<div id="viewModal" class="modal">
+  <div class="modal-content" style="max-width: 700px;">
+    <span class="close" onclick="closeModal('viewModal')">&times;</span>
+    <div id="viewStudentDetails"></div>
+  </div>
+</div>
+
 
 <div id="idCard" style="display:none;"></div>
 <script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
@@ -305,6 +317,7 @@ searchInput.addEventListener("keyup", function () {
       div.onmouseout = () => (div.style.background = "white");
 
       // ✅ When clicked → open same modal as Edit
+       // ✅ When clicked → open same modal as Edit
       div.onclick = () => {
         const matchRow = Array.from(rows).find(
           r => JSON.parse(r.dataset.student).student_id === m.student_id
@@ -378,6 +391,60 @@ function showDetails(btn) {
   document.getElementById("modal").style.display = "flex";
 }
 
+function viewStudent(btn) {
+  const row = btn.closest("tr");
+  const s = JSON.parse(row.dataset.student);
+  currentStudent = s;
+
+  const photo = s.photo_path
+    ? `<img src="../components/img/ids/${s.photo_path}" 
+             alt="Student Photo" 
+             style="width:140px;height:160px;border:1px solid #000;border-radius:8px;object-fit:cover;">`
+    : `<div style="width:140px;height:160px;border:1px dashed #999;
+                   display:flex;align-items:center;justify-content:center;
+                   border-radius:8px;color:#777;font-style:italic;">
+         No Photo
+       </div>`;
+
+  const content = `
+    <h2 style="text-align:center;margin-bottom:20px;color:#1e3a8a;">Student Information</h2>
+
+    <div style="display:flex;gap:25px;align-items:flex-start;justify-content:center;">
+      <!-- Left side photo -->
+      <div style="flex:0 0 160px;text-align:center;">
+        <h4 style="margin-bottom:8px;">Student Photo</h4>
+        ${photo}
+      </div>
+
+      <!-- Right side details -->
+      <div style="flex:1;">
+        <p><b>Student ID:</b> ${s.student_id}</p>
+        <p><b>Name:</b> ${s.first_name} ${s.last_name}</p>
+        <p><b>Birthdate:</b> ${s.birthdate || 'N/A'}</p>
+        <p><b>Program:</b> ${s.program}</p>
+        <p><b>Year Level:</b> ${s.year_level}</p>
+        <p><b>Section:</b> ${s.section}</p>
+        <p><b>Status:</b> ${s.student_status}</p>
+      </div>
+    </div>
+
+    <hr style="margin:20px 0;">
+    <h3 style="color:#1e3a8a;">Guardian Information</h3>
+    <p><b>Name:</b> ${s.guardian_name || 'N/A'}</p>
+    <p><b>Contact:</b> ${s.guardian_contact || 'N/A'}</p>
+    <p><b>Address:</b> ${s.guardian_address || 'N/A'}</p>
+
+    <hr style="margin:20px 0;">
+    <h3 style="color:#1e3a8a;">Academic Background</h3>
+    <p><b>Primary:</b> ${s.primary_school || 'N/A'} (${s.primary_year || ''})</p>
+    <p><b>Secondary:</b> ${s.secondary_school || 'N/A'} (${s.secondary_year || ''})</p>
+    <p><b>Tertiary:</b> ${s.tertiary_school || 'N/A'} (${s.tertiary_year || ''})</p>
+  `;
+
+  document.getElementById("viewStudentDetails").innerHTML = content;
+  document.getElementById("viewModal").style.display = "flex";
+}
+
 function openModal(id) {
   document.getElementById(id).style.display = "flex";
   document.body.classList.add("modal-open");
@@ -390,10 +457,6 @@ function closeModal(id) {
     document.body.classList.remove("modal-open");
   }
 }
-
-
-
-
 
 
 function printID() {
@@ -417,15 +480,17 @@ function printID() {
         </div>
       </div>
     </div>
-    
+
      <div class="id-back">
-    <p>
-      <strong>In Case of Emergency</strong>
-      Guardian: ${s.guardian_name} (${s.guardian_contact})<br>
-      Address: ${s.guardian_address}
-    </p>
-    <div id="qrcode"></div>
+  <div class="id-back-info">
+    <p><b>In Case of Emergency</b></p>
+    <p><span>Guardian:</span> ${s.guardian_name}</p>
+    <p><span>Contact:</span> ${s.guardian_contact}</p>
+    <p><span>Address:</span> ${s.guardian_address}</p>
   </div>
+
+  <div id="qrcode"></div>
+</div>
 `;
   new QRCode(document.getElementById("qrcode"), {
     text: `ID: ${s.student_id}\nName: ${s.first_name} ${s.last_name}\nProgram: ${s.program}\nYear: ${s.year_level} Section: ${s.section}\nGuardian: ${s.guardian_name} (${s.guardian_contact})\nAddress: ${s.guardian_address}`,
