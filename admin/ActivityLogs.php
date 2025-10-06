@@ -42,7 +42,7 @@ body {
 }
 
 h1 {
-  color: #1e3a8a;
+  color: #000000ff;
   margin-bottom: 8px;
   font-size: 2rem;
 }

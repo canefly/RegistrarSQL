@@ -173,6 +173,11 @@
 
   <div class="sidebar-section">
     <h4 class="sidebar-text">ACCOUNT</h4>
+    
+     <a href="StudentSettings.php" class="<?= $current_page=='StudentSettings.php' ? 'active' : '' ?>">
+      <i class="fa-solid fa-gear"></i><span class="sidebar-text">Settings</span>
+    </a>
+
     <a href="../Database/logout.php" class="logout">
       <i class="fas fa-sign-out-alt"></i><span class="sidebar-text">Logout</span>
     </a>
