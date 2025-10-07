@@ -165,8 +165,8 @@
     </a>
 
     <a href="history.php" class="<?= $current_page=='history.php' ? 'active' : '' ?>">
-      <i class="fa-solid fa-file-lines"></i><span class="sidebar-text">History</span>
-    </a>
+   <i class="fa-solid fa-clock-rotate-left"></i><span class="sidebar-text">History</span>
+  </a>
   </div>
 
   
