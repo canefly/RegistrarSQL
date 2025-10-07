@@ -18,28 +18,74 @@ $logs = $result->fetch_all(MYSQLI_ASSOC);
 <head>
 <meta charset="UTF-8">
 <title>Recent Activity Logs</title>
+<link rel="icon" sizes="32x32" href="../components/img/bcpp.png">
+<link rel="icon" sizes="192x192" href="../components/img/bcpp.png">
 <link rel="stylesheet" href="../components/css/Admin.css">
 <style>
+global css for offset effect
+
+/* Default layout */
 body {
-  font-family: 'Outfit', sans-serif;
-  background: #f3f4f6;
   margin: 0;
-  overflow-x: hidden;
-}
-
-.container {
-  margin-left: 240px;
-  padding: 40px 60px;
-  width: calc(100% - 240px);
+  font-family: 'Outfit', sans-serif;
+  background: #f9f9f9;
+  color: #333;
+  display: flex;
   min-height: 100vh;
-  box-sizing: border-box;
-  transition: margin-left 0.3s ease, width 0.3s ease;
 }
 
-.sidebar.collapsed ~ .container {
-  margin-left: 70px;
-  width: calc(100% - 70px);
+/* Sidebar offset container (shared for content pages) */
+.content, 
+.container {
+  flex: 1;
+  margin-left: 240px; /* same width as sidebar */
+  padding: 20px 40px;
+  transition: margin-left 0.3s ease;
+  box-sizing: border-box;
 }
+
+/* Adjust when sidebar is collapsed */
+.sidebar.collapsed ~ .content,
+.sidebar.collapsed ~ .container {
+  margin-left: 70px; /* collapsed width */
+}
+
+/* Toggle button positioning */
+.toggle-btn {
+  position: fixed;
+  top: 20px;
+  left: 250px;
+  background: #0056d2;
+  color: #fff;
+  border: none;
+  padding: 8px 12px;
+  border-radius: 50%;
+  cursor: pointer;
+  transition: left 0.3s ease, transform 0.3s ease;
+  z-index: 1100;
+}
+
+.sidebar.collapsed + .toggle-btn {
+  left: 80px;
+}
+
+.sidebar.collapsed + .toggle-btn i {
+  transform: rotate(180deg);
+}
+
+/* Responsive fix */
+@media (max-width: 768px) {
+  .content, 
+  .container {
+    margin-left: 0;
+    padding: 20px;
+  }
+  .toggle-btn {
+    left: 20px !important; /* stays accessible */
+  }
+}
+
+
 
 h1 {
   color: #000000ff;
@@ -98,7 +144,7 @@ p {
 }
 
 th {
-  background: linear-gradient(135deg, #3b82f6, #2563eb);
+  background: #004aad;
   color: white;
   text-align: left;
   padding: 14px 18px;

@@ -11,7 +11,7 @@ if ($_SESSION['role_id'] != 1) {
 $forms_dir = __DIR__ . "/../student/forms/";
 $upload_message = "";
 
-// ✅ Upload
+// ✅ Upload handler
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_FILES['form_file'])) {
   $file = $_FILES['form_file'];
   $filename = basename($file['name']);
@@ -37,8 +37,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_FILES['form_file'])) {
   }
 }
 
-// ✅ Delete
-if (isset($_GET['delete'])) {
+// ✅ Delete handler
+if (isset($_GET['delete']) && !empty($_GET['delete'])) {
   $delete_file = basename($_GET['delete']);
   $file_path = $forms_dir . $delete_file;
 
@@ -60,13 +60,12 @@ $files = array_diff(scandir($forms_dir), ['.', '..']);
 <title>Manage Student Forms</title>
 <link rel="icon" sizes="32x32" href="../components/img/bcpp.png">
 <link rel="icon" sizes="192x192" href="../components/img/bcpp.png">
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;600;700&display=swap" rel="stylesheet">
 
 <style>
-/* ------------------ Body / Background ------------------ */
-global css for offset effect
-
-/* Default layout */
+/* ===== SIDEBAR OFFSET RESPONSIVE FIX ===== */
 body {
   margin: 0;
   font-family: 'Outfit', sans-serif;
@@ -76,66 +75,46 @@ body {
   min-height: 100vh;
 }
 
-/* Sidebar offset container (shared for content pages) */
-.content, 
+/* main layout container */
 .container {
   flex: 1;
-  margin-left: 240px; /* same width as sidebar */
-  padding: 20px 40px;
+  margin-left: 240px;
+  padding: 20px 30px 40px 30px; /* reduced horizontal gap */
   transition: margin-left 0.3s ease;
   box-sizing: border-box;
+  width: 100%;
+  max-width: none; /* remove bootstrap restriction */
 }
 
-/* Adjust when sidebar is collapsed */
-.sidebar.collapsed ~ .content,
+
+/* when sidebar collapsed */
 .sidebar.collapsed ~ .container {
-  margin-left: 70px; /* collapsed width */
+  margin-left: 70px;
 }
 
-/* Toggle button positioning */
-.toggle-btn {
-  position: fixed;
-  top: 20px;
-  left: 250px;
-  background: #0056d2;
-  color: #fff;
-  border: none;
-  padding: 8px 12px;
-  border-radius: 50%;
-  cursor: pointer;
-  transition: left 0.3s ease, transform 0.3s ease;
-  z-index: 1100;
-}
-
-.sidebar.collapsed + .toggle-btn {
-  left: 80px;
-}
-
-.sidebar.collapsed + .toggle-btn i {
-  transform: rotate(180deg);
-}
-
-/* Responsive fix */
+/* responsive fix for mobile */
 @media (max-width: 768px) {
-  .content, 
   .container {
     margin-left: 0;
     padding: 20px;
   }
-  .toggle-btn {
-    left: 20px !important; /* stays accessible */
-  }
 }
 
+/* ===== HEADER ===== */
+h1 {
+  font-size: 30px;
+  font-weight: 700;
+  color: #000000ff;
+  margin-bottom: 6px;
+}
+p {
+  color: #555;
+  margin-bottom: 20px;
+  font-size: 16px;
+}
 
-/* ------------------ Headings ------------------ */
-h1 { font-size: 32px; margin-bottom: 10px; color:#222; }
-p { font-size: 18px; color: #555; }
-
-/* ------------------ Search ------------------ */
+/* ===== SEARCH BAR ===== */
 .search-bar {
-  position: relative;
-  width: 100%;
   max-width: 400px;
   margin-bottom: 20px;
 }
@@ -155,7 +134,7 @@ p { font-size: 18px; color: #555; }
   outline: none;
 }
 
-/* ------------------ Upload Section ------------------ */
+/* ===== UPLOAD BOX ===== */
 .upload-section {
   background: linear-gradient(135deg, #f9fbff 0%, #eef3ff 100%);
   border: 1px solid #d8e3ff;
@@ -165,41 +144,38 @@ p { font-size: 18px; color: #555; }
   margin-bottom: 25px;
   transition: 0.3s;
 }
-.upload-section:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 6px 16px rgba(0, 86, 210, 0.12);
-  border-color: #0056d2;
-}
 .upload-header {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  margin-bottom: 12px;
+  display: flex; align-items: center; gap: 8px; margin-bottom: 12px;
 }
-.upload-header i { color: #0056d2; font-size: 18px; }
-.upload-header h4 { font-size: 16px; color: #003b99; margin: 0; }
+.upload-header i { color: #004aad; font-size: 18px; }
+.upload-header h4 { font-size: 16px; color: #004aad; margin: 0; }
 .upload-form { display: flex; flex-wrap: wrap; align-items: center; gap: 12px; }
 .upload-form input[type=file] { display: none; }
 .file-label {
-  background: #0056d2; color: white;
+  background: #004aad; color: white;
   padding: 10px 18px; border-radius: 8px;
   cursor: pointer; font-size: 14px;
   display: flex; align-items: center; gap: 8px;
-  transition: background 0.3s ease;
 }
-.file-label:hover { background: #003b99; }
-.file-name {
-  font-size: 13px; color: #bbb; padding: 0 6px; font-style: italic;
-}
+.file-label:hover { background: #00348d; }
 .upload-btn {
-  background: #00a86b; color: white; border: none;
-  padding: 10px 20px; border-radius: 8px; cursor: pointer;
-  font-weight: 500; display: flex; align-items: center; gap: 6px;
-  transition: background 0.3s ease, transform 0.2s;
+  background: #00a86b;
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  gap: 6px;
 }
-.upload-btn:hover { background: #008a59; transform: translateY(-1px); }
+.upload-btn:hover { background: #008a59; }
+.file-name {
+  font-size: 13px; color: #999; padding: 0 6px; font-style: italic;
+}
 
-/* ------------------ Table (Forms Table) ------------------ */
+/* ===== TABLE STYLING ===== */
 .forms-table {
   width: 100%;
   border-collapse: separate;
@@ -208,7 +184,6 @@ p { font-size: 18px; color: #555; }
   border-radius: 10px;
   overflow: hidden;
   box-shadow: 0 4px 12px rgba(0,0,0,0.08);
-  margin-top: 15px;
   font-family: 'Outfit', sans-serif;
   font-size: 15px;
 }
@@ -216,59 +191,36 @@ p { font-size: 18px; color: #555; }
   background: #004aad;
   color: #ffffff;
 }
-.forms-table th {
-  padding: 14px 16px;
-  text-align: center;
-  font-weight: 600;
-  letter-spacing: 0.3px;
-}
-.forms-table td {
+.forms-table th, .forms-table td {
   padding: 13px 15px;
   text-align: center;
   border-bottom: 1px solid #eee;
+  white-space: nowrap;
 }
-.forms-table tbody tr:nth-child(odd) { background-color: #ffffff; }
-.forms-table tbody tr:nth-child(even) { background-color: #f9fafb; }
-.forms-table tbody tr:hover { background: #f1f5ff; transition: background 0.25s ease; }
+.forms-table td.text-start { text-align: left; }
+.forms-table tbody tr:hover {
+  background: #f1f5ff;
+  transition: background 0.25s ease;
+}
 
-/* Buttons */
+/* ===== BUTTONS ===== */
 .forms-table a.view, .forms-table button.delete {
   padding: 6px 12px;
   border: none;
   border-radius: 6px;
-  cursor: pointer;
   font-size: 13px;
   text-decoration: none;
-  color: white;
+  color: #fff;
   transition: background 0.3s ease;
 }
-.forms-table a.view {
-  background: #004aad;
-}
-.forms-table a.view:hover {
-  background: #003377;
-}
-.forms-table button.delete {
-  background: #dc3545;
-}
-.forms-table button.delete:hover {
-  background: #c82333;
-}
-
-/* Responsive */
-@media (max-width:768px){
-  .forms-table th, .forms-table td { padding: 10px 8px; font-size: 13px; }
-  .forms-table td:last-child {
-    display: flex; flex-direction: column; gap: 6px;
-  }
-  .forms-table td:last-child a,
-  .forms-table td:last-child button {
-    width: 100%; text-align: center;
-  }
-}
+.forms-table a.view { background: #004aad; }
+.forms-table a.view:hover { background: #003377; }
+.forms-table button.delete { background: #dc3545; }
+.forms-table button.delete:hover { background: #b72432; }
 </style>
 </head>
 <body>
+
 <div class="container">
   <h1>Student Forms</h1>
   <p>Below is the list of student forms available for download and management.</p>
@@ -311,12 +263,12 @@ p { font-size: 18px; color: #555; }
               if ($ext==='pdf') $icon='fa-regular fa-file-pdf text-danger';
               elseif(in_array($ext,['doc','docx'])) $icon='fa-regular fa-file-word text-primary';
             ?>
-            <i class="<?= $icon ?>"></i><?= htmlspecialchars($file) ?>
+            <i class="<?= $icon ?>"></i> <?= htmlspecialchars($file) ?>
           </td>
           <td><?= round(filesize($forms_dir . $file)/1024,2) ?></td>
           <td>
             <a href="/RegistrarSQL/student/forms/<?= rawurlencode($file) ?>" target="_blank" class="view"><i class="fa-regular fa-eye"></i> View</a>
-            <button class="delete" onclick="confirmDelete('<?= htmlspecialchars($file) ?>')"><i class="fa-solid fa-trash"></i> Delete</button>
+            <button class="delete" onclick="openDeleteModal('<?= htmlspecialchars($file) ?>')"><i class="fa-solid fa-trash"></i> Delete</button>
           </td>
         </tr>
       <?php endforeach; else: ?>
@@ -327,17 +279,33 @@ p { font-size: 18px; color: #555; }
 </div>
 
 <!-- Delete Modal -->
-<div class="modal" id="deleteModal" style="display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.6);">
-  <div class="modal-content" style="background:#fff;margin:10% auto;border-radius:10px;padding:20px;width:80%;max-width:450px;text-align:center;">
-    <h3><i class="fa-solid fa-triangle-exclamation" style="color:#e00;"></i> Confirm Deletion</h3>
-    <p id="deleteMsg"></p>
-    <div style="margin-top:15px;">
-      <button onclick="closeModal()" style="padding:6px 12px;border:none;border-radius:6px;background:#6c757d;color:#fff;">Cancel</button>
-      <a id="confirmLink" href="#" style="padding:6px 12px;border:none;border-radius:6px;background:#dc3545;color:#fff;text-decoration:none;">Delete</a>
+<div class="modal fade" id="deleteModal" tabindex="-1" aria-labelledby="deleteModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content border-0 shadow-lg">
+      <div class="modal-header bg-danger text-white">
+        <h5 class="modal-title" id="deleteModalLabel">
+          <i class="fa-solid fa-triangle-exclamation me-2"></i> Confirm File Deletion
+        </h5>
+        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+      </div>
+      <div class="modal-body text-center">
+        <p class="fw-semibold fs-6">You are about to permanently delete the file:</p>
+        <p id="deleteFileName" class="text-danger fw-bold fs-5 mb-2"></p>
+        <p class="text-muted small">This action <strong>cannot be undone</strong>.</p>
+      </div>
+      <div class="modal-footer d-flex justify-content-between">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+          <i class="fa-solid fa-xmark me-1"></i> Cancel
+        </button>
+        <a id="confirmDeleteLink" href="#" class="btn btn-danger">
+          <i class="fa-solid fa-trash-can me-1"></i> Confirm Delete
+        </a>
+      </div>
     </div>
   </div>
 </div>
 
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
 <script>
 // ✅ Search Filter
 const input=document.getElementById('searchInput');
@@ -353,17 +321,16 @@ input.addEventListener('keyup',()=>{
   document.getElementById('noResultsRow').style.display=found?'none':'table-row';
 });
 
-// ✅ Delete Modal
-const modal=document.getElementById('deleteModal');
-const msg=document.getElementById('deleteMsg');
-const link=document.getElementById('confirmLink');
-function confirmDelete(name){
-  msg.innerHTML=`Are you sure you want to delete <b>${name}</b>?`;
-  link.href='?delete='+encodeURIComponent(name);
-  modal.style.display='block';
+// ✅ Bootstrap Delete Modal
+let deleteModal = new bootstrap.Modal(document.getElementById('deleteModal'));
+const deleteFileName = document.getElementById('deleteFileName');
+const confirmLink = document.getElementById('confirmDeleteLink');
+
+function openDeleteModal(filename) {
+  deleteFileName.textContent = filename;
+  confirmLink.href = '?delete=' + encodeURIComponent(filename);
+  deleteModal.show();
 }
-function closeModal(){modal.style.display='none';}
-window.onclick=(e)=>{if(e.target==modal)closeModal();}
 </script>
 </body>
 </html>
