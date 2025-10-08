@@ -175,6 +175,9 @@
     <a href="ActivityLogs.php" class="<?= $current_page=='ActivityLogs.php' ? 'active' : '' ?>">
       <i class="fas fa-history"></i><span class="sidebar-text"> Recent Activity Logs</span>
     </a>
+    <a href="ArchivedStudents.php" class="<?= $current_page=='ArchivedStudents.php' ? 'active' : '' ?>">
+      <i class="fas fa-archive"></i><span class="sidebar-text"> Archived Students</span>
+    </a>
   </div>
 
   <div class="sidebar-section">

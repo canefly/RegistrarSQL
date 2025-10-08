@@ -48,7 +48,7 @@ $recentLogs = $conn->query("
 <?php include 'AdminSidenav.php'; ?>
 
 <div class="container">
-  <h1>Welcome, Staff</h1>
+  <h1>Welcome, Admin</h1>
   <p>Quick overview of registrar activities.</p>
 
   <!-- Quick Stats -->
