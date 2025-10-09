@@ -10,11 +10,11 @@ require_once __DIR__ . "/../Database/functions.php";
 function archiveStudent(mysqli $conn, string $student_id, string $final_status, ?int $actor_user_id = null): bool {
     $conn->begin_transaction();
     try {
-        // 📦 grab current student data
+        // 📦 Grab current student info
         $snap = $conn->prepare("
             SELECT 
                 s.student_id, s.first_name, s.last_name, s.program, s.year_level, s.section,
-                s.student_status, s.contact_no, s.birthdate, s.photo_path
+                s.student_status, s.birthdate, s.photo_path
             FROM students s
             WHERE s.student_id = ?
             FOR UPDATE
@@ -28,41 +28,40 @@ function archiveStudent(mysqli $conn, string $student_id, string $final_status, 
             throw new RuntimeException('Student not found for archiving.');
         }
 
-        // ⚙️ delete child first to avoid FK constraint
-        $conn->query("DELETE FROM student_ids WHERE student_id='{$conn->real_escape_string($student_id)}'");
-
-        // update snapshot status
+        // 🧠 Update local copy of status
         $data['student_status'] = $final_status;
 
-        // ✅ insert into archive
+        // ✅ Insert to archive (without contact/address)
         $ins = $conn->prepare("
             INSERT INTO archived_students
             (student_id, first_name, last_name, program, year_level, section, student_status,
-             contact_no, birthdate, photo_path, archived_date)
-            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, NOW())
+             birthdate, photo_path, archived_date)
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, NOW())
         ");
         $ins->bind_param(
-            "ssssisssss",
+            "ssssissss",
             $data['student_id'],
             $data['first_name'],
             $data['last_name'],
-            $data['program'],      // string
-            $data['year_level'],   // int
+            $data['program'],
+            $data['year_level'],
             $data['section'],
             $data['student_status'],
-            $data['contact_no'],
             $data['birthdate'],
             $data['photo_path']
         );
         $ins->execute();
         $ins->close();
 
-        // 🧹 cleanup other dependents + parent
+        // ⚙️ Delete related child tables first to avoid FK constraint
+        $conn->query("DELETE FROM student_ids WHERE student_id='{$conn->real_escape_string($student_id)}'");
         $conn->query("DELETE FROM guardians WHERE student_id='{$conn->real_escape_string($student_id)}'");
         $conn->query("DELETE FROM academic_background WHERE student_id='{$conn->real_escape_string($student_id)}'");
+
+        // 🧹 Finally, remove the main student record
         $conn->query("DELETE FROM students WHERE student_id='{$conn->real_escape_string($student_id)}'");
 
-        // 🪵 log the action
+        // 🪵 Log the archive event
         if (function_exists('addSystemLog')) {
             addSystemLog(
                 $conn,
@@ -82,7 +81,6 @@ function archiveStudent(mysqli $conn, string $student_id, string $final_status, 
         return false;
     }
 }
-
 
 
 
