@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Oct 08, 2025 at 10:48 PM
+-- Generation Time: Oct 09, 2025 at 06:31 AM
 -- Server version: 10.4.32-MariaDB
 -- PHP Version: 8.2.12
 
@@ -43,36 +43,29 @@ CREATE TABLE `academic_background` (
 --
 
 INSERT INTO `academic_background` (`id`, `student_id`, `primary_school`, `primary_year`, `secondary_school`, `secondary_year`, `tertiary_school`, `tertiary_year`) VALUES
-(1, 'S2025-001', 'Bagong Silang Elementary School', '2016', 'Benigno Aquino High School', '2022', 'Bestlink College of the Philippines', '2025'),
-(2, 'S2025-002', 'Novaliches Elementary School', '2016', 'Novaliches High School', '2022', 'Bestlink College of the Philippines', '2025'),
-(3, 'S2025-003', 'Camarin Elementary School', '2015', 'Camarin High School', '2021', 'Bestlink College of the Philippines', '2025'),
-(4, 'S2025-004', 'Bagumbong Elementary School', '2016', 'Bagumbong High School', '2022', 'Bestlink College of the Philippines', '2025'),
-(5, 'S2025-005', 'Sauyo Elementary School', '2015', 'Sauyo High School', '2021', 'Bestlink College of the Philippines', '2025'),
-(6, 'S2025-006', 'Fairview Elementary School', '2016', 'Fairview High School', '2022', 'Bestlink College of the Philippines', '2025'),
-(7, 'S2025-007', 'Taguig Elementary School', '2015', 'Taguig Science HS', '2021', 'Bestlink College of the Philippines', '2025'),
-(8, 'S2025-008', 'Pasig Elementary School', '2016', 'Pasig City HS', '2022', 'Bestlink College of the Philippines', '2025'),
-(9, 'S2025-009', 'Makati Elementary School', '2015', 'Makati HS', '2021', 'Bestlink College of the Philippines', '2025'),
-(10, 'S2025-010', 'Manila Elementary School', '2016', 'Manila Science HS', '2022', 'Bestlink College of the Philippines', '2025'),
-(11, 'S2025-011', 'Mandaluyong Elementary', '2016', 'Mandaluyong HS', '2022', 'Bestlink College of the Philippines', '2025'),
-(12, 'S2025-012', 'Pasay Elementary School', '2015', 'Pasay City HS', '2021', 'Bestlink College of the Philippines', '2025'),
-(13, 'S2025-013', 'Caloocan Elementary School', '2015', 'Caloocan HS', '2021', 'Bestlink College of the Philippines', '2025'),
-(14, 'S2025-014', 'Valenzuela Elementary', '2014', 'Valenzuela HS', '2020', 'Bestlink College of the Philippines', '2025'),
-(15, 'S2025-015', 'Malabon Elementary', '2014', 'Malabon HS', '2020', 'Bestlink College of the Philippines', '2025'),
-(16, 'S2025-016', 'Quezon Elementary', '2015', 'Quezon City HS', '2021', 'Bestlink College of the Philippines', '2025'),
-(17, 'S2025-017', 'San Jose Elementary', '2015', 'San Jose HS', '2021', 'Bestlink College of the Philippines', '2025'),
-(18, 'S2025-018', 'San Mateo Elementary', '2016', 'San Mateo HS', '2022', 'Bestlink College of the Philippines', '2025'),
-(19, 'S2025-019', 'Marikina Elementary', '2015', 'Marikina HS', '2021', 'Bestlink College of the Philippines', '2025'),
-(20, 'S2025-020', 'Montalban Elementary', '2016', 'Montalban HS', '2022', 'Bestlink College of the Philippines', '2025'),
-(21, 'S2025-021', 'Bocaue Elementary', '2015', 'Bocaue HS', '2021', 'Bestlink College of the Philippines', '2025'),
-(22, 'S2025-022', 'Sta. Maria Elementary', '2016', 'Sta. Maria HS', '2022', 'Bestlink College of the Philippines', '2025'),
-(23, 'S2025-023', 'Obando Elementary', '2015', 'Obando HS', '2021', 'Bestlink College of the Philippines', '2025'),
-(24, 'S2025-024', 'Hagonoy Elementary', '2014', 'Hagonoy HS', '2020', 'Bestlink College of the Philippines', '2025'),
-(25, 'S2025-025', 'Malolos Elementary', '2015', 'Malolos HS', '2021', 'Bestlink College of the Philippines', '2025'),
-(26, 'S2025-026', 'Baliuag Elementary', '2015', 'Baliuag HS', '2021', 'Bestlink College of the Philippines', '2025'),
-(27, 'S2025-027', 'Paombong Elementary', '2014', 'Paombong HS', '2020', 'Bestlink College of the Philippines', '2025'),
-(28, 'S2025-028', 'San Ildefonso Elementary', '2016', 'San Ildefonso HS', '2022', 'Bestlink College of the Philippines', '2025'),
-(29, 'S2025-029', 'San Miguel Elementary', '2015', 'San Miguel HS', '2021', 'Bestlink College of the Philippines', '2025'),
-(30, 'S2025-030', 'Plaridel Elementary', '2014', 'Plaridel HS', '2020', 'Bestlink College of the Philippines', '2025');
+(1, 'S2025-001', '', '', '', '', '', ''),
+(2, 'S2025-004', 'Manila Elementary School', '2017', 'Manila Science High School', '2023', 'Bestlink College of the Philippines', '2023'),
+(3, 'S2025-005', 'Taguig Elementary School', '2017', 'Taguig City High School', '2023', 'Bestlink College of the Philippines', '2023'),
+(4, 'S2025-006', 'Makati Elementary School', '2017', 'Makati High School', '2023', 'Bestlink College of the Philippines', '2023'),
+(5, 'S2025-007', 'Pasig Elementary School', '2017', 'Pasig City Science High School', '2023', 'Bestlink College of the Philippines', '2023'),
+(6, 'S2025-008', 'Parañaque Elementary School', '2017', 'Parañaque National High School', '2023', 'Bestlink College of the Philippines', '2023'),
+(7, 'S2025-009', 'Caloocan Elementary School', '2017', 'Caloocan High School', '2023', 'Bestlink College of the Philippines', '2023'),
+(8, 'S2025-010', 'Malabon Elementary School', '2017', 'Malabon National High School', '2023', 'Bestlink College of the Philippines', '2023'),
+(9, 'S2025-011', 'Valenzuela Elementary School', '2017', 'Valenzuela National High School', '2023', 'Bestlink College of the Philippines', '2023'),
+(10, 'S2025-012', 'Marilao Elementary School', '2018', 'Marilao National High School', '2024', 'Bestlink College of the Philippines', '2024'),
+(11, 'S2025-013', 'Bocaue Elementary School', '2018', 'Bocaue National High School', '2024', 'Bestlink College of the Philippines', '2024'),
+(12, 'S2025-014', 'Sta. Maria Elementary School', '2018', 'Sta. Maria High School', '2024', 'Bestlink College of the Philippines', '2024'),
+(13, 'S2025-015', 'Balagtas Elementary School', '2018', 'Balagtas National High School', '2024', 'Bestlink College of the Philippines', '2024'),
+(14, 'S2025-016', 'Baliuag Elementary School', '2018', 'Baliuag National High School', '2024', 'Bestlink College of the Philippines', '2024'),
+(15, 'S2025-017', 'Plaridel Elementary School', '2018', 'Plaridel National High School', '2024', 'Bestlink College of the Philippines', '2024'),
+(16, 'S2025-018', 'Pandi Elementary School', '2018', 'Pandi National High School', '2024', 'Bestlink College of the Philippines', '2024'),
+(17, 'S2025-019', 'Meycauayan Elementary School', '2019', 'Meycauayan National High School', '2025', 'Bestlink College of the Philippines', '2025'),
+(18, 'S2025-020', 'Obando Elementary School', '2019', 'Obando National High School', '2025', 'Bestlink College of the Philippines', '2025'),
+(19, 'S2025-021', 'San Rafael Elementary School', '2019', 'San Rafael National High School', '2025', 'Bestlink College of the Philippines', '2025'),
+(20, 'S2025-022', 'San Jose Elementary School', '2019', 'San Jose National High School', '2025', 'Bestlink College of the Philippines', '2025'),
+(21, 'S2025-023', 'Bulacan Elementary School', '2019', 'Bulacan National High School', '2025', 'Bestlink College of the Philippines', '2025'),
+(22, 'S2025-024', 'Pulilan Elementary School', '2019', 'Pulilan National High School', '2025', 'Bestlink College of the Philippines', '2025'),
+(23, 'S2025-025', 'Guiguinto Elementary School', '2019', 'Guiguinto National High School', '2025', 'Bestlink College of the Philippines', '2025');
 
 -- --------------------------------------------------------
 
@@ -97,8 +90,7 @@ CREATE TABLE `academic_records` (
 INSERT INTO `academic_records` (`record_id`, `student_id`, `subject_id`, `grade`, `term`, `school_year`, `remarks`) VALUES
 (1, 'S2025-001', 1, '1.50', '1st Sem', '2025-2026', 'Passed'),
 (2, 'S2025-001', 2, '1.75', '1st Sem', '2025-2026', 'Passed'),
-(3, 'S2025-002', 1, '2.00', '1st Sem', '2025-2026', 'Passed'),
-(4, 'S2025-003', 3, '1.25', '1st Sem', '2025-2026', 'Excellent');
+(3, 'S2025-001', 3, '2.00', '1st Sem', '2025-2026', 'Passed');
 
 -- --------------------------------------------------------
 
@@ -143,7 +135,36 @@ CREATE TABLE `document_requests` (
 --
 
 INSERT INTO `document_requests` (`request_id`, `student_id`, `document_type`, `notes`, `request_date`, `status`, `release_date`) VALUES
-(1, 'S2025-008', 'Enrollment Certificate', 'Need for scholarship', '2025-10-08', 'Pending', NULL);
+(1, 'S2025-001', 'Certificate of Enrollment', '', '2025-09-01', 'Released', '2025-09-05'),
+(2, 'S2025-004', 'Receipt Records', 'NSTP - RECEIPT CERTIFICATE\r\n', '2025-10-01', 'Approved', '2025-10-10'),
+(3, 'S2025-004', 'ID Replacement', '', '2025-10-01', 'Approved', '2025-10-08'),
+(9, 'S2025-004', 'Receipt Records', '', '2025-10-03', 'Approved', '2025-10-10'),
+(11, 'S2025-004', 'Certificate of Enrollment', '', '2025-10-05', 'Approved', '2025-10-12');
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `document_requests_archive`
+--
+
+CREATE TABLE `document_requests_archive` (
+  `id` int(11) NOT NULL,
+  `student_id` int(11) NOT NULL,
+  `document_type` varchar(100) NOT NULL,
+  `notes` text DEFAULT NULL,
+  `request_date` date DEFAULT NULL,
+  `status` varchar(50) DEFAULT NULL,
+  `release_date` date DEFAULT NULL,
+  `deleted_at` datetime DEFAULT current_timestamp()
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dumping data for table `document_requests_archive`
+--
+
+INSERT INTO `document_requests_archive` (`id`, `student_id`, `document_type`, `notes`, `request_date`, `status`, `release_date`, `deleted_at`) VALUES
+(0, 0, 'ID Replacement', '', '2025-10-04', 'Pending', NULL, '2025-10-05 00:58:57'),
+(0, 0, 'ID Replacement', 'MY ID LOST', '2025-10-03', 'Declined', NULL, '2025-10-05 00:59:13');
 
 -- --------------------------------------------------------
 
@@ -165,7 +186,9 @@ CREATE TABLE `file_storage` (
 --
 
 INSERT INTO `file_storage` (`file_id`, `student_id`, `file_type`, `file_path`, `uploaded_by`, `upload_date`) VALUES
-(1, 'S2025-001', 'Enrollment Form', '/uploads/docs/S2025-001_enrollment.pdf', 2, '2025-10-08 20:30:21');
+(1, 'S2025-001', 'Enrollment Form', '/uploads/docs/enrollment_form.pdf', 2, '2025-09-28 22:13:17'),
+(2, 'S2025-001', 'Form137', '/uploads/docs/1759646441_1.PNG', 2, '2025-10-05 06:40:41'),
+(4, 'S2025-001', 'ID', '/uploads/docs/1759661396_ID.pdf', 2, '2025-10-05 10:49:56');
 
 -- --------------------------------------------------------
 
@@ -187,36 +210,28 @@ CREATE TABLE `guardians` (
 --
 
 INSERT INTO `guardians` (`guardian_id`, `student_id`, `name`, `relation`, `contact_no`, `address`) VALUES
-(1, 'S2025-001', 'Marites Manalo', 'Mother', '09180010001', 'Quezon City'),
-(2, 'S2025-002', 'Rogelio Domingo', 'Father', '09180010002', 'Caloocan City'),
-(3, 'S2025-003', 'Ana Lopez', 'Mother', '09180010003', 'Valenzuela City'),
-(4, 'S2025-004', 'Joseph Ferrer', 'Father', '09180010004', 'Quezon City'),
-(5, 'S2025-005', 'Lourdes Villanueva', 'Mother', '09180010005', 'Malabon City'),
-(6, 'S2025-006', 'Pedro Salvador', 'Father', '09180010006', 'Navotas City'),
-(7, 'S2025-007', 'Maricel Aquino', 'Mother', '09180010007', 'Taguig City'),
-(8, 'S2025-008', 'Julius Reyes', 'Father', '09180010008', 'Pasig City'),
-(9, 'S2025-009', 'Diana Chua', 'Mother', '09180010009', 'Makati City'),
-(10, 'S2025-010', 'Mario Del Rosario', 'Father', '09180010010', 'Manila'),
-(11, 'S2025-011', 'Alicia Alcantara', 'Mother', '09180010011', 'Mandaluyong'),
-(12, 'S2025-012', 'Ramon Santiago', 'Father', '09180010012', 'Pasay City'),
-(13, 'S2025-013', 'Evelyn Dizon', 'Mother', '09180010013', 'Quezon City'),
-(14, 'S2025-014', 'Nestor Vergara', 'Father', '09180010014', 'Quezon City'),
-(15, 'S2025-015', 'Rhea Ocampo', 'Mother', '09180010015', 'Valenzuela City'),
-(16, 'S2025-016', 'Arnold Ramos', 'Father', '09180010016', 'Caloocan City'),
-(17, 'S2025-017', 'Melissa Cruz', 'Mother', '09180010017', 'Quezon City'),
-(18, 'S2025-018', 'Oscar Valdez', 'Father', '09180010018', 'Manila'),
-(19, 'S2025-019', 'Rowena Torres', 'Mother', '09180010019', 'Quezon City'),
-(20, 'S2025-020', 'Victor Gutierrez', 'Father', '09180010020', 'Quezon City'),
-(21, 'S2025-021', 'Carina Reyes', 'Mother', '09180010021', 'Malabon City'),
-(22, 'S2025-022', 'Jose Gomez', 'Father', '09180010022', 'Caloocan City'),
-(23, 'S2025-023', 'Myra Morales', 'Mother', '09180010023', 'Quezon City'),
-(24, 'S2025-024', 'Rodolfo Alvarez', 'Father', '09180010024', 'Pasig City'),
-(25, 'S2025-025', 'Liza Santos', 'Mother', '09180010025', 'Taguig City'),
-(26, 'S2025-026', 'Hector Estrada', 'Father', '09180010026', 'Makati City'),
-(27, 'S2025-027', 'Glenda Villarin', 'Mother', '09180010027', 'Manila'),
-(28, 'S2025-028', 'Dennis Soriano', 'Father', '09180010028', 'Quezon City'),
-(29, 'S2025-029', 'Helen Castro', 'Mother', '09180010029', 'Valenzuela City'),
-(30, 'S2025-030', 'Ricardo Pineda', 'Father', '09180010030', 'Caloocan City');
+(1, 'S2025-001', 'Maria Dela Cruz', 'Mother', '09987654321', 'Quezon City, Metro Manila'),
+(5, 'S2025-005', 'Maria Santos Sr.', NULL, '09171234505', 'Quezon City'),
+(6, 'S2025-006', 'Carlos Reyes Sr.', NULL, '09171234506', 'Caloocan City'),
+(7, 'S2025-007', 'Angelica Torres Sr.', NULL, '09171234507', 'Valenzuela City'),
+(8, 'S2025-008', 'Mark Ramos Sr.', NULL, '09171234508', 'Bulacan'),
+(9, 'S2025-009', 'Paula Garcia Sr.', NULL, '09171234509', 'Quezon City'),
+(10, 'S2025-010', 'John Lim Sr.', NULL, '09171234510', 'Pasig City'),
+(11, 'S2025-011', 'Rose Vergara Sr.', NULL, '09171234511', 'Manila'),
+(12, 'S2025-012', 'Miguel Dela Cruz Sr.', NULL, '09171234512', 'Quezon City'),
+(13, 'S2025-013', 'Clarisse Bautista Sr.', NULL, '09171234513', 'Quezon City'),
+(14, 'S2025-014', 'Patrick Gonzales Sr.', NULL, '09171234514', 'Bulacan'),
+(15, 'S2025-015', 'Samantha Ong Sr.', NULL, '09171234515', 'Caloocan City'),
+(16, 'S2025-016', 'Josephine Castro Sr.', NULL, '09171234516', 'Pasig City'),
+(17, 'S2025-017', 'Edward Tan Sr.', NULL, '09171234517', 'Manila'),
+(18, 'S2025-018', 'Maricar Roxas Sr.', NULL, '09171234518', 'Quezon City'),
+(19, 'S2025-019', 'Kevin Mendoza Sr.', NULL, '09171234519', 'Caloocan City'),
+(20, 'S2025-020', 'Grace Chua Sr.', NULL, '09171234520', 'Quezon City'),
+(21, 'S2025-021', 'Paolo Cruz Sr.', NULL, '09171234521', 'Bulacan'),
+(22, 'S2025-022', 'Liza Flores Sr.', NULL, '09171234522', 'Pasig City'),
+(23, 'S2025-023', 'Richard Uy Sr.', NULL, '09171234523', 'Valenzuela City'),
+(24, 'S2025-024', 'Isabella Lee Sr.', NULL, '09171234524', 'Manila'),
+(25, 'S2025-025', 'Roberto Morales Sr.', NULL, '09171234525', 'Quezon City');
 
 -- --------------------------------------------------------
 
@@ -243,6 +258,55 @@ INSERT INTO `health_records` (`health_id`, `student_id`, `checkup_date`, `health
 -- --------------------------------------------------------
 
 --
+-- Table structure for table `login_audit`
+--
+
+CREATE TABLE `login_audit` (
+  `log_id` int(11) NOT NULL,
+  `user_id` int(11) DEFAULT NULL,
+  `action_type` varchar(255) DEFAULT NULL,
+  `timestamp` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp()
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dumping data for table `login_audit`
+--
+
+INSERT INTO `login_audit` (`log_id`, `user_id`, `action_type`, `timestamp`) VALUES
+(1, 2, 'logout', '2025-09-28 21:44:44'),
+(2, 2, 'logout', '2025-09-28 21:51:06'),
+(3, 2, 'logout', '2025-09-28 21:52:20'),
+(4, 2, 'logout', '2025-09-28 22:09:14'),
+(5, 3, 'login', '2025-09-28 22:13:17'),
+(6, 3, 'logout', '2025-09-28 22:13:17'),
+(7, 2, 'logout', '2025-09-29 06:46:49'),
+(8, 4, 'logout', '2025-10-01 16:00:46'),
+(9, 2, 'logout', '2025-10-01 16:02:10'),
+(10, 2, 'logout', '2025-10-03 17:15:28'),
+(11, 2, 'logout', '2025-10-03 18:48:48'),
+(12, 2, 'logout', '2025-10-03 18:48:48'),
+(13, 4, 'logout', '2025-10-03 18:53:06'),
+(14, 4, 'logout', '2025-10-04 04:25:28'),
+(15, 2, 'logout', '2025-10-04 05:38:02'),
+(16, 4, 'logout', '2025-10-04 05:42:13'),
+(17, 4, 'logout', '2025-10-04 05:46:25'),
+(18, 2, 'logout', '2025-10-04 06:23:22'),
+(19, 4, 'logout', '2025-10-04 06:28:53'),
+(20, 4, 'logout', '2025-10-04 15:18:10'),
+(21, 2, 'logout', '2025-10-04 16:54:31'),
+(22, 4, 'logout', '2025-10-04 17:02:58'),
+(23, 2, 'logout', '2025-10-04 18:21:53'),
+(24, 2, 'logout', '2025-10-04 18:23:32'),
+(25, 4, 'logout', '2025-10-04 18:24:21'),
+(26, 2, 'logout', '2025-10-04 18:36:36'),
+(27, 2, 'logout', '2025-10-05 10:40:33'),
+(28, 2, 'logout', '2025-10-05 12:43:04'),
+(29, 2, 'logout', '2025-10-05 16:07:33'),
+(30, 4, 'logout', '2025-10-05 16:09:04');
+
+-- --------------------------------------------------------
+
+--
 -- Table structure for table `masterlists`
 --
 
@@ -262,7 +326,7 @@ CREATE TABLE `masterlists` (
 --
 
 INSERT INTO `masterlists` (`masterlist_id`, `term`, `year`, `program`, `section`, `year_level`, `generated_by`, `generation_date`) VALUES
-(1, '1st Sem', '2025-2026', 'BSIT', '11001', 1, 2, '2025-10-08 20:30:21');
+(14, '1st Sem', '2025-2026', 'BSIT', '11001', 1, 2, '2025-10-04 16:13:05');
 
 -- --------------------------------------------------------
 
@@ -281,9 +345,11 @@ CREATE TABLE `masterlist_details` (
 --
 
 INSERT INTO `masterlist_details` (`id`, `masterlist_id`, `student_id`) VALUES
-(1, 1, 'S2025-001'),
-(2, 1, 'S2025-002'),
-(3, 1, 'S2025-003');
+(22, 14, 'S2025-001'),
+(23, 14, 'S2025-004'),
+(24, 14, 'S2025-019'),
+(25, 14, 'S2025-022'),
+(26, 14, 'S2025-025');
 
 -- --------------------------------------------------------
 
@@ -334,36 +400,29 @@ CREATE TABLE `students` (
 --
 
 INSERT INTO `students` (`student_id`, `user_id`, `first_name`, `last_name`, `birthdate`, `gender`, `program`, `year_level`, `section`, `student_status`, `photo_path`, `date_registered`, `email`, `contact_no`) VALUES
-('S2025-001', 3, 'Ralph', 'Manalo', '2006-01-15', 'Male', 'BSIT', 1, 11001, 'Enrolled', '../components.img/ids/eh.jpg', '2025-06-01', 'ralph.manalo@bcp.edu.ph', '09170000001'),
-('S2025-002', 4, 'Ella', 'Domingo', '2006-02-18', 'Female', 'BSIT', 1, 11002, 'Enrolled', NULL, '2025-06-01', 'ella.domingo@bcp.edu.ph', '09170000002'),
-('S2025-003', 5, 'Gino', 'Lopez', '2005-12-02', 'Male', 'BSIT', 1, 11003, 'Enrolled', NULL, '2025-06-01', 'gino.lopez@bcp.edu.ph', '09170000003'),
-('S2025-004', 6, 'Clarisse', 'Ferrer', '2006-05-20', 'Female', 'BSIT', 1, 11004, 'Enrolled', NULL, '2025-06-01', 'clarisse.ferrer@bcp.edu.ph', '09170000004'),
-('S2025-005', 7, 'Jerome', 'Villanueva', '2005-10-08', 'Male', 'BSIT', 1, 11005, 'Enrolled', NULL, '2025-06-01', 'jerome.villanueva@bcp.edu.ph', '09170000005'),
-('S2025-006', 8, 'April', 'Salvador', '2006-03-11', 'Female', 'BSIT', 1, 11006, 'Enrolled', NULL, '2025-06-01', 'april.salvador@bcp.edu.ph', '09170000006'),
-('S2025-007', 9, 'Sean', 'Aquino', '2006-07-03', 'Male', 'BSCS', 1, 12001, 'Enrolled', NULL, '2025-06-01', 'sean.aquino@bcp.edu.ph', '09170000007'),
-('S2025-008', 10, 'Jasmine', 'Reyes', '2006-09-30', 'Female', 'BSCS', 1, 12002, 'Enrolled', NULL, '2025-06-01', 'jasmine.reyes@bcp.edu.ph', '09170000008'),
-('S2025-009', 11, 'Lance', 'Chua', '2005-11-22', 'Male', 'BSCS', 1, 12003, 'Enrolled', NULL, '2025-06-01', 'lance.chua@bcp.edu.ph', '09170000009'),
-('S2025-010', 12, 'Hannah', 'Del Rosario', '2006-06-06', 'Female', 'BSCS', 1, 12004, 'Enrolled', NULL, '2025-06-01', 'hannah.delrosario@bcp.edu.ph', '09170000010'),
-('S2025-011', 13, 'Kyle', 'Alcantara', '2006-04-17', 'Male', 'BSCS', 1, 12005, 'Enrolled', NULL, '2025-06-01', 'kyle.alcantara@bcp.edu.ph', '09170000011'),
-('S2025-012', 14, 'Faith', 'Santiago', '2006-01-27', 'Female', 'BSCS', 1, 12006, 'Enrolled', NULL, '2025-06-01', 'faith.santiago@bcp.edu.ph', '09170000012'),
-('S2025-013', 15, 'Patrick', 'Dizon', '2005-09-14', 'Male', 'BSECE', 1, 13001, 'Enrolled', NULL, '2025-06-01', 'patrick.dizon@bcp.edu.ph', '09170000013'),
-('S2025-014', 16, 'Shiela', 'Vergara', '2006-08-01', 'Female', 'BSECE', 1, 13002, 'Enrolled', NULL, '2025-06-01', 'shiela.vergara@bcp.edu.ph', '09170000014'),
-('S2025-015', 17, 'Marcus', 'Ocampo', '2005-05-09', 'Male', 'BSECE', 1, 13003, 'Enrolled', NULL, '2025-06-01', 'marcus.ocampo@bcp.edu.ph', '09170000015'),
-('S2025-016', 18, 'Joanna', 'Ramos', '2006-03-30', 'Female', 'BSECE', 1, 13004, 'Enrolled', NULL, '2025-06-01', 'joanna.ramos@bcp.edu.ph', '09170000016'),
-('S2025-017', 19, 'Andre', 'Cruz', '2006-10-25', 'Male', 'BSECE', 1, 13005, 'Enrolled', NULL, '2025-06-01', 'andre.cruz@bcp.edu.ph', '09170000017'),
-('S2025-018', 20, 'Sofia', 'Valdez', '2006-12-12', 'Female', 'BSECE', 1, 13006, 'Enrolled', NULL, '2025-06-01', 'sofia.valdez@bcp.edu.ph', '09170000018'),
-('S2025-019', 21, 'Jacob', 'Torres', '2006-07-21', 'Male', 'BSHM', 1, 14001, 'Enrolled', NULL, '2025-06-01', 'jacob.torres@bcp.edu.ph', '09170000019'),
-('S2025-020', 22, 'Bea', 'Gutierrez', '2006-04-14', 'Female', 'BSHM', 1, 14002, 'Enrolled', NULL, '2025-06-01', 'bea.gutierrez@bcp.edu.ph', '09170000020'),
-('S2025-021', 23, 'Nathan', 'Reyes', '2005-12-18', 'Male', 'BSHM', 1, 14003, 'Enrolled', NULL, '2025-06-01', 'nathan.reyes@bcp.edu.ph', '09170000021'),
-('S2025-022', 24, 'Lara', 'Gomez', '2006-02-26', 'Female', 'BSHM', 1, 14004, 'Enrolled', NULL, '2025-06-01', 'lara.gomez@bcp.edu.ph', '09170000022'),
-('S2025-023', 25, 'Cedric', 'Morales', '2005-11-03', 'Male', 'BSHM', 1, 14005, 'Enrolled', NULL, '2025-06-01', 'cedric.morales@bcp.edu.ph', '09170000023'),
-('S2025-024', 26, 'Diana', 'Alvarez', '2006-01-08', 'Female', 'BSHM', 1, 14006, 'Enrolled', NULL, '2025-06-01', 'diana.alvarez@bcp.edu.ph', '09170000024'),
-('S2025-025', 27, 'Leo', 'Santos', '2005-10-29', 'Male', 'BSHRM', 1, 15001, 'Enrolled', NULL, '2025-06-01', 'leo.santos@bcp.edu.ph', '09170000025'),
-('S2025-026', 28, 'Camille', 'Estrada', '2006-05-27', 'Female', 'BSHRM', 1, 15002, 'Enrolled', NULL, '2025-06-01', 'camille.estrada@bcp.edu.ph', '09170000026'),
-('S2025-027', 29, 'Aaron', 'Villarin', '2006-06-04', 'Male', 'BSHRM', 1, 15003, 'Enrolled', NULL, '2025-06-01', 'aaron.villarin@bcp.edu.ph', '09170000027'),
-('S2025-028', 30, 'Trisha', 'Soriano', '2006-09-08', 'Female', 'BSHRM', 1, 15004, 'Enrolled', NULL, '2025-06-01', 'trisha.soriano@bcp.edu.ph', '09170000028'),
-('S2025-029', 31, 'Dennis', 'Castro', '2005-08-06', 'Male', 'BSHRM', 1, 15005, 'Enrolled', NULL, '2025-06-01', 'dennis.castro@bcp.edu.ph', '09170000029'),
-('S2025-030', 32, 'Nicole', 'Pineda', '2006-03-02', 'Female', 'BSHRM', 1, 15006, 'Enrolled', NULL, '2025-06-01', 'nicole.pineda@bcp.edu.ph', '09170000030');
+('S2025-001', 3, 'Juan Miguel', 'Dela Cruz', '2005-06-15', 'Male', 'BSIT', 1, 11001, 'Enrolled', '/components/img/ids/juan.jpg', '2025-06-01', 'student@example.com', '09123456789'),
+('S2025-004', 4, 'Juan', 'Dela Cruz', '2005-03-14', 'Male', 'BSIT', 1, 11001, 'Enrolled', NULL, NULL, 'juan.dcruz@bcp.edu.ph', '09123450004'),
+('S2025-005', 5, 'Maria', 'Santos', '2004-07-10', 'Female', 'BSA', 2, 21001, 'Enrolled', NULL, NULL, 'maria.santos@bcp.edu.ph', '09123450005'),
+('S2025-006', 6, 'Carlos', 'Reyes', '2003-11-22', 'Male', 'BSBA', 3, 31001, 'Enrolled', '/components/img/ids/carlos.jpg', NULL, 'carlos.reyes@bcp.edu.ph', '09123450006'),
+('S2025-007', 7, 'Angelica', 'Torres', '2005-02-05', 'Female', 'BSIT', 1, 11002, 'Enrolled', NULL, NULL, 'angelica.torres@bcp.edu.ph', '09123450007'),
+('S2025-008', 8, 'Mark', 'Ramos', '2004-09-12', 'Male', 'BSA', 2, 21001, 'Enrolled', NULL, NULL, 'mark.ramos@bcp.edu.ph', '09123450008'),
+('S2025-009', 9, 'Paula', 'Garcia', '2003-01-20', 'Female', 'BSBA', 3, 31001, 'Enrolled', NULL, NULL, 'paula.garcia@bcp.edu.ph', '09123450009'),
+('S2025-010', 10, 'John', 'Lim', '2005-05-14', 'Male', 'BSIT', 1, 11002, 'Enrolled', NULL, NULL, 'john.lim@bcp.edu.ph', '09123450010'),
+('S2025-011', 11, 'Rose', 'Vergara', '2004-08-25', 'Female', 'BSA', 2, 21001, 'Enrolled', NULL, NULL, 'rose.vergara@bcp.edu.ph', '09123450011'),
+('S2025-012', 12, 'Miguel', 'Dela Cruz', '2003-10-18', 'Male', 'BSBA', 3, 31001, 'Enrolled', NULL, NULL, 'miguel.delacruz@bcp.edu.ph', '09123450012'),
+('S2025-013', 13, 'Clarisse', 'Bautista', '2005-06-05', 'Female', 'BSIT', 1, 11002, 'Enrolled', 'S2025-013.png', NULL, 'clarisse.bautista@bcp.edu.ph', '09123450013'),
+('S2025-014', 14, 'Patrick', 'Gonzales', '2004-01-15', 'Male', 'BSA', 2, 21001, 'Enrolled', NULL, NULL, 'patrick.gonzales@bcp.edu.ph', '09123450014'),
+('S2025-015', 15, 'Samantha', 'Ong', '2003-08-09', 'Female', 'BSBA', 3, 31001, 'Enrolled', NULL, NULL, 'samantha.ong@bcp.edu.ph', '09123450015'),
+('S2025-016', 16, 'Josephine', 'Castro', '2005-10-12', 'Female', 'BSCS', 1, 11002, 'Enrolled', NULL, NULL, 'josephine.castro@bcp.edu.ph', '09123450016'),
+('S2025-017', 17, 'Edward', 'Tan', '2004-11-19', 'Male', 'BSA', 2, 21001, 'Enrolled', NULL, NULL, 'edward.tan@bcp.edu.ph', '09123450017'),
+('S2025-018', 18, 'Maricar', 'Roxas', '2003-12-22', 'Female', 'BSBA', 3, 31001, 'Enrolled', NULL, NULL, 'maricar.roxas@bcp.edu.ph', '09123450018'),
+('S2025-019', 19, 'Kevin', 'Mendoza', '2005-04-01', 'Male', 'BSIT', 1, 11001, 'Enrolled', NULL, NULL, 'kevin.mendoza@bcp.edu.ph', '09123450019'),
+('S2025-020', 20, 'Grace', 'Chua', '2004-09-27', 'Female', 'BSIT', 2, 21001, 'Enrolled', NULL, NULL, 'grace.chua@bcp.edu.ph', '09123450020'),
+('S2025-021', 21, 'Paolo', 'Cruz', '2003-03-30', 'Male', 'BSA', 3, 31001, 'Enrolled', NULL, NULL, 'paolo.cruz@bcp.edu.ph', '09123450021'),
+('S2025-022', 22, 'Liza', 'Flores', '2005-06-14', 'Female', 'BSIT', 1, 11001, 'Enrolled', NULL, NULL, 'liza.flores@bcp.edu.ph', '09123450022'),
+('S2025-023', 23, 'Richard', 'Uy', '2004-07-25', 'Male', 'BSA', 2, 21001, 'Enrolled', NULL, NULL, 'richard.uy@bcp.edu.ph', '09123450023'),
+('S2025-024', 24, 'Isabella', 'Lee', '2003-09-01', 'Female', 'BSBA', 3, 31001, 'Enrolled', NULL, NULL, 'isabella.lee@bcp.edu.ph', '09123450024'),
+('S2025-025', 25, 'Roberto', 'Morales', '2005-12-05', 'Male', 'BSIT', 1, 11001, 'Enrolled', NULL, NULL, 'roberto.morales@bcp.edu.ph', '09123450025');
 
 -- --------------------------------------------------------
 
@@ -385,36 +444,29 @@ CREATE TABLE `student_ids` (
 --
 
 INSERT INTO `student_ids` (`id_id`, `student_id`, `qr_code`, `issue_date`, `expiry_date`, `printed`) VALUES
-(1, 'S2025-001', '../components/img/QR/S2025-001.png', '2025-06-05', '2026-06-05', 1),
-(2, 'S2025-002', '../components/img/QR/S2025-002.png', '2025-06-05', '2026-06-05', 1),
-(3, 'S2025-003', '../components/img/QR/S2025-003.png', '2025-06-05', '2026-06-05', 1),
-(4, 'S2025-004', '../components/img/QR/S2025-004.png', '2025-06-05', '2026-06-05', 1),
-(5, 'S2025-005', '../components/img/QR/S2025-005.png', '2025-06-05', '2026-06-05', 1),
-(6, 'S2025-006', '../components/img/QR/S2025-006.png', '2025-06-05', '2026-06-05', 1),
-(7, 'S2025-007', '../components/img/QR/S2025-007.png', '2025-06-05', '2026-06-05', 1),
-(8, 'S2025-008', '../components/img/QR/S2025-008.png', '2025-06-05', '2026-06-05', 1),
-(9, 'S2025-009', '../components/img/QR/S2025-009.png', '2025-06-05', '2026-06-05', 1),
-(10, 'S2025-010', '../components/img/QR/S2025-010.png', '2025-06-05', '2026-06-05', 1),
-(11, 'S2025-011', '../components/img/QR/S2025-011.png', '2025-06-05', '2026-06-05', 1),
-(12, 'S2025-012', '../components/img/QR/S2025-012.png', '2025-06-05', '2026-06-05', 1),
-(13, 'S2025-013', '../components/img/QR/S2025-013.png', '2025-06-05', '2026-06-05', 1),
-(14, 'S2025-014', '../components/img/QR/S2025-014.png', '2025-06-05', '2026-06-05', 1),
-(15, 'S2025-015', '../components/img/QR/S2025-015.png', '2025-06-05', '2026-06-05', 1),
-(16, 'S2025-016', '../components/img/QR/S2025-016.png', '2025-06-05', '2026-06-05', 1),
-(17, 'S2025-017', '../components/img/QR/S2025-017.png', '2025-06-05', '2026-06-05', 1),
-(18, 'S2025-018', '../components/img/QR/S2025-018.png', '2025-06-05', '2026-06-05', 1),
-(19, 'S2025-019', '../components/img/QR/S2025-019.png', '2025-06-05', '2026-06-05', 1),
-(20, 'S2025-020', '../components/img/QR/S2025-020.png', '2025-06-05', '2026-06-05', 1),
-(21, 'S2025-021', '../components/img/QR/S2025-021.png', '2025-06-05', '2026-06-05', 1),
-(22, 'S2025-022', '../components/img/QR/S2025-022.png', '2025-06-05', '2026-06-05', 1),
-(23, 'S2025-023', '../components/img/QR/S2025-023.png', '2025-06-05', '2026-06-05', 1),
-(24, 'S2025-024', '../components/img/QR/S2025-024.png', '2025-06-05', '2026-06-05', 1),
-(25, 'S2025-025', '../components/img/QR/S2025-025.png', '2025-06-05', '2026-06-05', 1),
-(26, 'S2025-026', '../components/img/QR/S2025-026.png', '2025-06-05', '2026-06-05', 1),
-(27, 'S2025-027', '../components/img/QR/S2025-027.png', '2025-06-05', '2026-06-05', 1),
-(28, 'S2025-028', '../components/img/QR/S2025-028.png', '2025-06-05', '2026-06-05', 1),
-(29, 'S2025-029', '../components/img/QR/S2025-029.png', '2025-06-05', '2026-06-05', 1),
-(30, 'S2025-030', '../components/img/QR/S2025-030.png', '2025-06-05', '2026-06-05', 1);
+(1, 'S2025-001', 'QR123456789', '2025-06-05', '2029-06-05', 1),
+(2, 'S2025-013', 'ID: S2025-013\nName: Clarisse Bautista\nProgram: 0\nYear: 1 Section: 11002\nGuardian:  ()\nAddress: ', '2025-10-04', '2026-10-04', 0),
+(3, 'S2025-016', 'ID: S2025-016\nName: Josephine Castro\nProgram: BSIT\nYear: 1 Section: 11002\nGuardian:  ()\nAddress: ', '2025-10-04', '2026-10-04', 0),
+(4, 'S2025-020', 'ID: S2025-020\nName: Grace Chua\nProgram: 0\nYear: 2 Section: 21001\nGuardian: Paolo (092312132131)\nAddress: dtioasdas', '2025-10-04', '2026-10-04', 0),
+(5, 'S2025-021', 'ID: S2025-021\nName: Paolo Cruz\nProgram: 0\nYear: 3 Section: 31001\nGuardian:  ()\nAddress: ', '2025-10-04', '2026-10-04', 0),
+(6, 'S2025-004', 'ID: S2025-004\nName: Juan Dela Cruz\nProgram: BSIT\nYear: 1 Section: 11001\nGuardian:  ()\nAddress: ', '2025-10-04', '2026-10-04', 0),
+(7, 'S2025-012', 'ID: S2025-012\nName: Miguel Dela Cruz\nProgram: BSBA\nYear: 3 Section: 31001\nGuardian:  ()\nAddress: ', '2025-10-04', '2026-10-04', 0),
+(8, 'S2025-022', 'ID: S2025-022\nName: Liza Flores\nProgram: BSIT\nYear: 1 Section: 11001\nGuardian:  ()\nAddress: ', '2025-10-04', '2026-10-04', 0),
+(9, 'S2025-009', 'ID: S2025-009\nName: Paula Garcia\nProgram: BSBA\nYear: 3 Section: 31001\nGuardian:  ()\nAddress: ', '2025-10-04', '2026-10-04', 0),
+(10, 'S2025-014', 'ID: S2025-014\nName: Patrick Gonzales\nProgram: BSA\nYear: 2 Section: 21001\nGuardian:  ()\nAddress: ', '2025-10-04', '2026-10-04', 0),
+(11, 'S2025-024', '../components/img/QR/S2025-024.png', '2025-10-04', '2026-10-04', 0),
+(12, 'S2025-010', '../components/img/QR/S2025-010.png', '2025-10-04', '2026-10-04', 0),
+(13, 'S2025-019', '../components/img/QR/S2025-019.png', '2025-10-04', '2026-10-04', 0),
+(14, 'S2025-025', '../components/img/QR/S2025-025.png', '2025-10-04', '2026-10-04', 0),
+(15, 'S2025-015', '../components/img/QR/S2025-015.png', '2025-10-04', '2026-10-04', 0),
+(16, 'S2025-008', '../components/img/QR/S2025-008.png', '2025-10-04', '2026-10-04', 0),
+(17, 'S2025-006', '../components/img/QR/S2025-006.png', '2025-10-04', '2026-10-04', 0),
+(18, 'S2025-018', '../components/img/QR/S2025-018.png', '2025-10-04', '2026-10-04', 0),
+(19, 'S2025-005', '../components/img/QR/S2025-005.png', '2025-10-04', '2026-10-04', 0),
+(20, 'S2025-017', '../components/img/QR/S2025-017.png', '2025-10-04', '2026-10-04', 0),
+(21, 'S2025-007', '../components/img/QR/S2025-007.png', '2025-10-04', '2026-10-04', 0),
+(22, 'S2025-023', '../components/img/QR/S2025-023.png', '2025-10-04', '2026-10-04', 0),
+(23, 'S2025-011', '../components/img/QR/S2025-011.png', '2025-10-04', '2026-10-04', 0);
 
 -- --------------------------------------------------------
 
@@ -435,8 +487,7 @@ CREATE TABLE `student_status_history` (
 --
 
 INSERT INTO `student_status_history` (`status_id`, `student_id`, `status_type`, `changed_by`, `timestamp`) VALUES
-(1, 'S2025-001', 'Enrolled', 2, '2025-10-08 20:30:21'),
-(2, 'S2025-002', 'Enrolled', 2, '2025-10-08 20:30:21');
+(1, 'S2025-001', 'Enrolled', 2, '2025-09-28 22:13:17');
 
 -- --------------------------------------------------------
 
@@ -456,10 +507,9 @@ CREATE TABLE `subjects` (
 --
 
 INSERT INTO `subjects` (`subject_id`, `subject_name`, `units`, `type`) VALUES
-(1, 'Programming Fundamentals', 3, 'Major'),
-(2, 'Database Systems', 3, 'Major'),
-(3, 'Discrete Mathematics', 3, 'Major'),
-(4, 'Physical Education 1', 2, 'Minor');
+(1, 'Database Systems', 3, 'Major'),
+(2, 'Web Development', 3, 'Major'),
+(3, 'Physical Education 1', 2, 'Minor');
 
 -- --------------------------------------------------------
 
@@ -481,12 +531,7 @@ CREATE TABLE `system_logs` (
 --
 
 INSERT INTO `system_logs` (`syslog_id`, `level`, `message`, `origin`, `user_id`, `timestamp`) VALUES
-(1, 'INFO', 'Seed import completed', 'system/seeder', 1, '2025-10-08 20:30:21'),
-(2, 'INFO', 'Updated student photo for S2025-011', 'staff/StudentInfo.php', 1, '2025-10-08 20:40:09'),
-(3, 'INFO', 'Updated student photo for S2025-024', 'staff/StudentInfo.php', 1, '2025-10-08 20:41:41'),
-(4, 'INFO', 'Updated student photo for S2025-024', 'staff/StudentInfo.php', 1, '2025-10-08 20:42:36'),
-(5, 'INFO', 'Updated student photo for S2025-024', 'staff/StudentInfo.php', 1, '2025-10-08 20:44:18'),
-(6, 'INFO', 'Updated student photo for S2025-011', 'staff/StudentInfo.php', 1, '2025-10-08 20:44:57');
+(1, 'INFO', 'Student record updated successfully.', 'staff/Enrollment.php', 2, '2025-09-28 22:13:17');
 
 -- --------------------------------------------------------
 
@@ -500,7 +545,7 @@ CREATE TABLE `users` (
   `email` varchar(255) NOT NULL,
   `password_hash` text DEFAULT NULL,
   `role_id` int(11) DEFAULT NULL,
-  `active` tinyint(1) DEFAULT 1
+  `active` tinyint(1) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
@@ -510,36 +555,56 @@ CREATE TABLE `users` (
 INSERT INTO `users` (`user_id`, `username`, `email`, `password_hash`, `role_id`, `active`) VALUES
 (1, 'admin1', 'admin@example.com', '123456', 1, 1),
 (2, 'employee1', 'employee@example.com', '123456', 2, 1),
-(3, 'ralph.manalo', 'ralph.manalo@bcp.edu.ph', '123456', 3, 1),
-(4, 'ella.domingo', 'ella.domingo@bcp.edu.ph', '123456', 3, 1),
-(5, 'gino.lopez', 'gino.lopez@bcp.edu.ph', '123456', 3, 1),
-(6, 'clarisse.ferrer', 'clarisse.ferrer@bcp.edu.ph', '123456', 3, 1),
-(7, 'jerome.villanueva', 'jerome.villanueva@bcp.edu.ph', '123456', 3, 1),
-(8, 'april.salvador', 'april.salvador@bcp.edu.ph', '123456', 3, 1),
-(9, 'sean.aquino', 'sean.aquino@bcp.edu.ph', '123456', 3, 1),
-(10, 'jasmine.reyes', 'jasmine.reyes@bcp.edu.ph', '123456', 3, 1),
-(11, 'lance.chua', 'lance.chua@bcp.edu.ph', '123456', 3, 1),
-(12, 'hannah.delrosario', 'hannah.delrosario@bcp.edu.ph', '123456', 3, 1),
-(13, 'kyle.alcantara', 'kyle.alcantara@bcp.edu.ph', '123456', 3, 1),
-(14, 'faith.santiago', 'faith.santiago@bcp.edu.ph', '123456', 3, 1),
-(15, 'patrick.dizon', 'patrick.dizon@bcp.edu.ph', '123456', 3, 1),
-(16, 'shiela.vergara', 'shiela.vergara@bcp.edu.ph', '123456', 3, 1),
-(17, 'marcus.ocampo', 'marcus.ocampo@bcp.edu.ph', '123456', 3, 1),
-(18, 'joanna.ramos', 'joanna.ramos@bcp.edu.ph', '123456', 3, 1),
-(19, 'andre.cruz', 'andre.cruz@bcp.edu.ph', '123456', 3, 1),
-(20, 'sofia.valdez', 'sofia.valdez@bcp.edu.ph', '123456', 3, 1),
-(21, 'jacob.torres', 'jacob.torres@bcp.edu.ph', '123456', 3, 1),
-(22, 'bea.gutierrez', 'bea.gutierrez@bcp.edu.ph', '123456', 3, 1),
-(23, 'nathan.reyes', 'nathan.reyes@bcp.edu.ph', '123456', 3, 1),
-(24, 'lara.gomez', 'lara.gomez@bcp.edu.ph', '123456', 3, 1),
-(25, 'cedric.morales', 'cedric.morales@bcp.edu.ph', '123456', 3, 1),
-(26, 'diana.alvarez', 'diana.alvarez@bcp.edu.ph', '123456', 3, 1),
-(27, 'leo.santos', 'leo.santos@bcp.edu.ph', '123456', 3, 1),
-(28, 'camille.estrada', 'camille.estrada@bcp.edu.ph', '123456', 3, 1),
-(29, 'aaron.villarin', 'aaron.villarin@bcp.edu.ph', '123456', 3, 1),
-(30, 'trisha.soriano', 'trisha.soriano@bcp.edu.ph', '123456', 3, 1),
-(31, 'dennis.castro', 'dennis.castro@bcp.edu.ph', '123456', 3, 1),
-(32, 'nicole.pineda', 'nicole.pineda@bcp.edu.ph', '123456', 3, 1);
+(3, 'student1', 'student@example.com', '123456', 3, 1),
+(4, 'juan.dcruz', 'juan.dcruz@bcp.edu.ph', '123456', 3, 1),
+(5, 'maria.santos', 'maria.santos@bcp.edu.ph', '123456', 3, 1),
+(6, 'carlos.reyes', 'carlos.reyes@bcp.edu.ph', '123456', 3, 1),
+(7, 'angelica.torres', 'angelica.torres@bcp.edu.ph', '123456', 3, 1),
+(8, 'mark.ramos', 'mark.ramos@bcp.edu.ph', '123456', 3, 1),
+(9, 'paula.garcia', 'paula.garcia@bcp.edu.ph', '123456', 3, 1),
+(10, 'john.lim', 'john.lim@bcp.edu.ph', '123456', 3, 1),
+(11, 'rose.vergara', 'rose.vergara@bcp.edu.ph', '123456', 3, 1),
+(12, 'miguel.delacruz', 'miguel.delacruz@bcp.edu.ph', '123456', 3, 1),
+(13, 'clarisse.bautista', 'clarisse.bautista@bcp.edu.ph', '123456', 3, 1),
+(14, 'patrick.gonzales', 'patrick.gonzales@bcp.edu.ph', '123456', 3, 1),
+(15, 'samantha.ong', 'samantha.ong@bcp.edu.ph', '123456', 3, 1),
+(16, 'josephine.castro', 'josephine.castro@bcp.edu.ph', '123456', 3, 1),
+(17, 'edward.tan', 'edward.tan@bcp.edu.ph', '123456', 3, 1),
+(18, 'maricar.roxas', 'maricar.roxas@bcp.edu.ph', '123456', 3, 1),
+(19, 'kevin.mendoza', 'kevin.mendoza@bcp.edu.ph', '123456', 3, 1),
+(20, 'grace.chua', 'grace.chua@bcp.edu.ph', '123456', 3, 1),
+(21, 'paolo.cruz', 'paolo.cruz@bcp.edu.ph', '123456', 3, 1),
+(22, 'liza.flores', 'liza.flores@bcp.edu.ph', '123456', 3, 1),
+(23, 'richard.uy', 'richard.uy@bcp.edu.ph', '123456', 3, 1),
+(24, 'isabella.lee', 'isabella.lee@bcp.edu.ph', '123456', 3, 1),
+(25, 'roberto.morales', 'roberto.morales@bcp.edu.ph', '123456', 3, 1),
+(26, 'andrea.soriano', 'andrea.soriano@bcp.edu.ph', '123456', 3, 1),
+(27, 'gabriel.perez', 'gabriel.perez@bcp.edu.ph', '123456', 3, 1),
+(28, 'christine.yap', 'christine.yap@bcp.edu.ph', '123456', 3, 1),
+(29, 'darren.valdez', 'darren.valdez@bcp.edu.ph', '123456', 3, 1),
+(30, 'roxanne.lopez', 'roxanne.lopez@bcp.edu.ph', '123456', 3, 1),
+(31, 'samuel.villanueva', 'samuel.villanueva@bcp.edu.ph', '123456', 3, 1),
+(32, 'kimberly.diaz', 'kimberly.diaz@bcp.edu.ph', '123456', 3, 1),
+(33, 'jonathan.cruz', 'jonathan.cruz@bcp.edu.ph', '123456', 3, 1),
+(34, 'micaela.alvarez', 'micaela.alvarez@bcp.edu.ph', '123456', 3, 1),
+(35, 'ryan.santos', 'ryan.santos@bcp.edu.ph', '123456', 3, 1),
+(36, 'nicole.gomez', 'nicole.gomez@bcp.edu.ph', '123456', 3, 1),
+(37, 'leo.delosreyes', 'leo.delosreyes@bcp.edu.ph', '123456', 3, 1),
+(38, 'sophia.manalo', 'sophia.manalo@bcp.edu.ph', '123456', 3, 1),
+(39, 'francis.torralba', 'francis.torralba@bcp.edu.ph', '123456', 3, 1),
+(40, 'danica.estrada', 'danica.estrada@bcp.edu.ph', '123456', 3, 1),
+(41, 'victor.rivera', 'victor.rivera@bcp.edu.ph', '123456', 3, 1),
+(42, 'roxan.santiago', 'roxan.santiago@bcp.edu.ph', '123456', 3, 1),
+(43, 'camille.guevarra', 'camille.guevarra@bcp.edu.ph', '123456', 3, 1),
+(44, 'adrian.navarro', 'adrian.navarro@bcp.edu.ph', '123456', 3, 1),
+(45, 'karla.pascual', 'karla.pascual@bcp.edu.ph', '123456', 3, 1),
+(46, 'jerome.francisco', 'jerome.francisco@bcp.edu.ph', '123456', 3, 1),
+(47, 'trisha.cortez', 'trisha.cortez@bcp.edu.ph', '123456', 3, 1),
+(48, 'allan.vargas', 'allan.vargas@bcp.edu.ph', '123456', 3, 1),
+(49, 'helen.rosario', 'helen.rosario@bcp.edu.ph', '123456', 3, 1),
+(50, 'cesar.montoya', 'cesar.montoya@bcp.edu.ph', '123456', 3, 1),
+(51, 'alyssa.lorenzo', 'alyssa.lorenzo@bcp.edu.ph', '123456', 3, 1),
+(52, 'dennis.quintos', 'dennis.quintos@bcp.edu.ph', '123456', 3, 1);
 
 --
 -- Indexes for dumped tables
@@ -597,6 +662,13 @@ ALTER TABLE `health_records`
   ADD KEY `student_id` (`student_id`);
 
 --
+-- Indexes for table `login_audit`
+--
+ALTER TABLE `login_audit`
+  ADD PRIMARY KEY (`log_id`),
+  ADD KEY `user_id` (`user_id`);
+
+--
 -- Indexes for table `masterlists`
 --
 ALTER TABLE `masterlists`
@@ -622,9 +694,7 @@ ALTER TABLE `roles`
 --
 ALTER TABLE `students`
   ADD PRIMARY KEY (`student_id`),
-  ADD KEY `fk_students_users` (`user_id`),
-  ADD KEY `idx_students_program_name` (`program`,`last_name`,`first_name`),
-  ADD KEY `idx_students_status` (`student_status`);
+  ADD KEY `fk_students_users` (`user_id`);
 
 --
 -- Indexes for table `student_ids`
@@ -670,13 +740,13 @@ ALTER TABLE `users`
 -- AUTO_INCREMENT for table `academic_background`
 --
 ALTER TABLE `academic_background`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=31;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=24;
 
 --
 -- AUTO_INCREMENT for table `academic_records`
 --
 ALTER TABLE `academic_records`
-  MODIFY `record_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
+  MODIFY `record_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
 
 --
 -- AUTO_INCREMENT for table `archived_students`
@@ -688,19 +758,19 @@ ALTER TABLE `archived_students`
 -- AUTO_INCREMENT for table `document_requests`
 --
 ALTER TABLE `document_requests`
-  MODIFY `request_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+  MODIFY `request_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=12;
 
 --
 -- AUTO_INCREMENT for table `file_storage`
 --
 ALTER TABLE `file_storage`
-  MODIFY `file_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+  MODIFY `file_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
 
 --
 -- AUTO_INCREMENT for table `guardians`
 --
 ALTER TABLE `guardians`
-  MODIFY `guardian_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=31;
+  MODIFY `guardian_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=26;
 
 --
 -- AUTO_INCREMENT for table `health_records`
@@ -709,16 +779,22 @@ ALTER TABLE `health_records`
   MODIFY `health_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
 
 --
+-- AUTO_INCREMENT for table `login_audit`
+--
+ALTER TABLE `login_audit`
+  MODIFY `log_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=31;
+
+--
 -- AUTO_INCREMENT for table `masterlists`
 --
 ALTER TABLE `masterlists`
-  MODIFY `masterlist_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+  MODIFY `masterlist_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=15;
 
 --
 -- AUTO_INCREMENT for table `masterlist_details`
 --
 ALTER TABLE `masterlist_details`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=27;
 
 --
 -- AUTO_INCREMENT for table `roles`
@@ -730,31 +806,31 @@ ALTER TABLE `roles`
 -- AUTO_INCREMENT for table `student_ids`
 --
 ALTER TABLE `student_ids`
-  MODIFY `id_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=31;
+  MODIFY `id_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=24;
 
 --
 -- AUTO_INCREMENT for table `student_status_history`
 --
 ALTER TABLE `student_status_history`
-  MODIFY `status_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+  MODIFY `status_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
 
 --
 -- AUTO_INCREMENT for table `subjects`
 --
 ALTER TABLE `subjects`
-  MODIFY `subject_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
+  MODIFY `subject_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
 
 --
 -- AUTO_INCREMENT for table `system_logs`
 --
 ALTER TABLE `system_logs`
-  MODIFY `syslog_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
+  MODIFY `syslog_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
 
 --
 -- AUTO_INCREMENT for table `users`
 --
 ALTER TABLE `users`
-  MODIFY `user_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=33;
+  MODIFY `user_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=53;
 
 --
 -- Constraints for dumped tables
@@ -799,6 +875,12 @@ ALTER TABLE `health_records`
   ADD CONSTRAINT `health_records_ibfk_1` FOREIGN KEY (`student_id`) REFERENCES `students` (`student_id`);
 
 --
+-- Constraints for table `login_audit`
+--
+ALTER TABLE `login_audit`
+  ADD CONSTRAINT `login_audit_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `users` (`user_id`);
+
+--
 -- Constraints for table `masterlists`
 --
 ALTER TABLE `masterlists`
@@ -821,7 +903,7 @@ ALTER TABLE `students`
 -- Constraints for table `student_ids`
 --
 ALTER TABLE `student_ids`
-  ADD CONSTRAINT `student_ids_ibfk_1` FOREIGN KEY (`student_id`) REFERENCES `students` (`student_id`) ON DELETE CASCADE ON UPDATE CASCADE;
+  ADD CONSTRAINT `student_ids_ibfk_1` FOREIGN KEY (`student_id`) REFERENCES `students` (`student_id`);
 
 --
 -- Constraints for table `student_status_history`
