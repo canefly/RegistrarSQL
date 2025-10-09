@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Oct 09, 2025 at 06:31 AM
+-- Generation Time: Oct 09, 2025 at 07:34 AM
 -- Server version: 10.4.32-MariaDB
 -- PHP Version: 8.2.12
 
@@ -63,8 +63,6 @@ INSERT INTO `academic_background` (`id`, `student_id`, `primary_school`, `primar
 (18, 'S2025-020', 'Obando Elementary School', '2019', 'Obando National High School', '2025', 'Bestlink College of the Philippines', '2025'),
 (19, 'S2025-021', 'San Rafael Elementary School', '2019', 'San Rafael National High School', '2025', 'Bestlink College of the Philippines', '2025'),
 (20, 'S2025-022', 'San Jose Elementary School', '2019', 'San Jose National High School', '2025', 'Bestlink College of the Philippines', '2025'),
-(21, 'S2025-023', 'Bulacan Elementary School', '2019', 'Bulacan National High School', '2025', 'Bestlink College of the Philippines', '2025'),
-(22, 'S2025-024', 'Pulilan Elementary School', '2019', 'Pulilan National High School', '2025', 'Bestlink College of the Philippines', '2025'),
 (23, 'S2025-025', 'Guiguinto Elementary School', '2019', 'Guiguinto National High School', '2025', 'Bestlink College of the Philippines', '2025');
 
 -- --------------------------------------------------------
@@ -110,9 +108,17 @@ CREATE TABLE `archived_students` (
   `contact_no` varchar(50) DEFAULT NULL,
   `address` varchar(255) DEFAULT NULL,
   `birthdate` date DEFAULT NULL,
-  `photo_path` varchar(255) DEFAULT NULL,
+  `photo_path` text DEFAULT NULL,
   `archived_date` timestamp NOT NULL DEFAULT current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dumping data for table `archived_students`
+--
+
+INSERT INTO `archived_students` (`archive_id`, `student_id`, `first_name`, `last_name`, `program`, `year_level`, `section`, `student_status`, `contact_no`, `address`, `birthdate`, `photo_path`, `archived_date`) VALUES
+(3, 'S2025-024', 'Isabella', 'Lee', '0', 3, '31001', 'Dropped', '09123450024', NULL, '2003-09-01', 'S2025-024.jpg', '2025-10-09 05:14:02'),
+(6, 'S2025-023', 'Richard', 'Uy', '0', 2, '21001', 'Dropped', NULL, NULL, NULL, 'S2025-023.jpg', '2025-10-09 05:32:05');
 
 -- --------------------------------------------------------
 
@@ -229,8 +235,6 @@ INSERT INTO `guardians` (`guardian_id`, `student_id`, `name`, `relation`, `conta
 (20, 'S2025-020', 'Grace Chua Sr.', NULL, '09171234520', 'Quezon City'),
 (21, 'S2025-021', 'Paolo Cruz Sr.', NULL, '09171234521', 'Bulacan'),
 (22, 'S2025-022', 'Liza Flores Sr.', NULL, '09171234522', 'Pasig City'),
-(23, 'S2025-023', 'Richard Uy Sr.', NULL, '09171234523', 'Valenzuela City'),
-(24, 'S2025-024', 'Isabella Lee Sr.', NULL, '09171234524', 'Manila'),
 (25, 'S2025-025', 'Roberto Morales Sr.', NULL, '09171234525', 'Quezon City');
 
 -- --------------------------------------------------------
@@ -302,7 +306,10 @@ INSERT INTO `login_audit` (`log_id`, `user_id`, `action_type`, `timestamp`) VALU
 (27, 2, 'logout', '2025-10-05 10:40:33'),
 (28, 2, 'logout', '2025-10-05 12:43:04'),
 (29, 2, 'logout', '2025-10-05 16:07:33'),
-(30, 4, 'logout', '2025-10-05 16:09:04');
+(30, 4, 'logout', '2025-10-05 16:09:04'),
+(31, 2, 'logout', '2025-10-09 04:36:12'),
+(32, 1, 'logout', '2025-10-09 04:36:39'),
+(33, 2, 'logout', '2025-10-09 05:14:05');
 
 -- --------------------------------------------------------
 
@@ -414,14 +421,12 @@ INSERT INTO `students` (`student_id`, `user_id`, `first_name`, `last_name`, `bir
 ('S2025-014', 14, 'Patrick', 'Gonzales', '2004-01-15', 'Male', 'BSA', 2, 21001, 'Enrolled', NULL, NULL, 'patrick.gonzales@bcp.edu.ph', '09123450014'),
 ('S2025-015', 15, 'Samantha', 'Ong', '2003-08-09', 'Female', 'BSBA', 3, 31001, 'Enrolled', NULL, NULL, 'samantha.ong@bcp.edu.ph', '09123450015'),
 ('S2025-016', 16, 'Josephine', 'Castro', '2005-10-12', 'Female', 'BSCS', 1, 11002, 'Enrolled', NULL, NULL, 'josephine.castro@bcp.edu.ph', '09123450016'),
-('S2025-017', 17, 'Edward', 'Tan', '2004-11-19', 'Male', 'BSA', 2, 21001, 'Enrolled', NULL, NULL, 'edward.tan@bcp.edu.ph', '09123450017'),
+('S2025-017', 17, 'Edward', 'Tan', '2004-11-19', 'Male', 'BSHM', 2, 21001, 'Enrolled', '', NULL, 'edward.tan@bcp.edu.ph', '09123450017'),
 ('S2025-018', 18, 'Maricar', 'Roxas', '2003-12-22', 'Female', 'BSBA', 3, 31001, 'Enrolled', NULL, NULL, 'maricar.roxas@bcp.edu.ph', '09123450018'),
 ('S2025-019', 19, 'Kevin', 'Mendoza', '2005-04-01', 'Male', 'BSIT', 1, 11001, 'Enrolled', NULL, NULL, 'kevin.mendoza@bcp.edu.ph', '09123450019'),
 ('S2025-020', 20, 'Grace', 'Chua', '2004-09-27', 'Female', 'BSIT', 2, 21001, 'Enrolled', NULL, NULL, 'grace.chua@bcp.edu.ph', '09123450020'),
-('S2025-021', 21, 'Paolo', 'Cruz', '2003-03-30', 'Male', 'BSA', 3, 31001, 'Enrolled', NULL, NULL, 'paolo.cruz@bcp.edu.ph', '09123450021'),
+('S2025-021', 21, 'Paolo', 'Cruz', '2003-03-30', 'Male', 'BSECE', 3, 31001, 'Enrolled', 'S2025-021.jpeg', NULL, 'paolo.cruz@bcp.edu.ph', '09123450021'),
 ('S2025-022', 22, 'Liza', 'Flores', '2005-06-14', 'Female', 'BSIT', 1, 11001, 'Enrolled', NULL, NULL, 'liza.flores@bcp.edu.ph', '09123450022'),
-('S2025-023', 23, 'Richard', 'Uy', '2004-07-25', 'Male', 'BSA', 2, 21001, 'Enrolled', NULL, NULL, 'richard.uy@bcp.edu.ph', '09123450023'),
-('S2025-024', 24, 'Isabella', 'Lee', '2003-09-01', 'Female', 'BSBA', 3, 31001, 'Enrolled', NULL, NULL, 'isabella.lee@bcp.edu.ph', '09123450024'),
 ('S2025-025', 25, 'Roberto', 'Morales', '2005-12-05', 'Male', 'BSIT', 1, 11001, 'Enrolled', NULL, NULL, 'roberto.morales@bcp.edu.ph', '09123450025');
 
 -- --------------------------------------------------------
@@ -454,7 +459,6 @@ INSERT INTO `student_ids` (`id_id`, `student_id`, `qr_code`, `issue_date`, `expi
 (8, 'S2025-022', 'ID: S2025-022\nName: Liza Flores\nProgram: BSIT\nYear: 1 Section: 11001\nGuardian:  ()\nAddress: ', '2025-10-04', '2026-10-04', 0),
 (9, 'S2025-009', 'ID: S2025-009\nName: Paula Garcia\nProgram: BSBA\nYear: 3 Section: 31001\nGuardian:  ()\nAddress: ', '2025-10-04', '2026-10-04', 0),
 (10, 'S2025-014', 'ID: S2025-014\nName: Patrick Gonzales\nProgram: BSA\nYear: 2 Section: 21001\nGuardian:  ()\nAddress: ', '2025-10-04', '2026-10-04', 0),
-(11, 'S2025-024', '../components/img/QR/S2025-024.png', '2025-10-04', '2026-10-04', 0),
 (12, 'S2025-010', '../components/img/QR/S2025-010.png', '2025-10-04', '2026-10-04', 0),
 (13, 'S2025-019', '../components/img/QR/S2025-019.png', '2025-10-04', '2026-10-04', 0),
 (14, 'S2025-025', '../components/img/QR/S2025-025.png', '2025-10-04', '2026-10-04', 0),
@@ -465,7 +469,6 @@ INSERT INTO `student_ids` (`id_id`, `student_id`, `qr_code`, `issue_date`, `expi
 (19, 'S2025-005', '../components/img/QR/S2025-005.png', '2025-10-04', '2026-10-04', 0),
 (20, 'S2025-017', '../components/img/QR/S2025-017.png', '2025-10-04', '2026-10-04', 0),
 (21, 'S2025-007', '../components/img/QR/S2025-007.png', '2025-10-04', '2026-10-04', 0),
-(22, 'S2025-023', '../components/img/QR/S2025-023.png', '2025-10-04', '2026-10-04', 0),
 (23, 'S2025-011', '../components/img/QR/S2025-011.png', '2025-10-04', '2026-10-04', 0);
 
 -- --------------------------------------------------------
@@ -531,7 +534,27 @@ CREATE TABLE `system_logs` (
 --
 
 INSERT INTO `system_logs` (`syslog_id`, `level`, `message`, `origin`, `user_id`, `timestamp`) VALUES
-(1, 'INFO', 'Student record updated successfully.', 'staff/Enrollment.php', 2, '2025-09-28 22:13:17');
+(1, 'INFO', 'Student record updated successfully.', 'staff/Enrollment.php', 2, '2025-09-28 22:13:17'),
+(2, 'INFO', 'Updated student photo for S2025-016', 'staff/StudentInfo.php', 2, '2025-10-09 04:33:02'),
+(3, 'INFO', 'Updated student photo for S2025-016', 'staff/StudentInfo.php', 2, '2025-10-09 04:35:35'),
+(4, 'INFO', 'Updated student photo for S2025-016', 'staff/StudentInfo.php', 2, '2025-10-09 04:35:49'),
+(5, 'INFO', 'Updated student photo for S2025-016', 'staff/StudentInfo.php', 2, '2025-10-09 04:44:11'),
+(6, 'INFO', 'Updated student photo for S2025-016', 'staff/StudentInfo.php', 2, '2025-10-09 04:45:10'),
+(7, 'INFO', 'Updated student photo for S2025-016', 'staff/StudentInfo.php', 2, '2025-10-09 04:45:24'),
+(8, 'INFO', 'Updated student photo for S2025-016', 'staff/StudentInfo.php', 2, '2025-10-09 04:48:31'),
+(9, 'INFO', 'Updated student photo for S2025-016', 'staff/StudentInfo.php', 2, '2025-10-09 04:48:40'),
+(10, 'INFO', 'Updated student photo for S2025-016', 'staff/StudentInfo.php', 2, '2025-10-09 04:49:56'),
+(11, 'INFO', 'Updated student photo for S2025-024', 'staff/StudentInfo.php', 2, '2025-10-09 04:50:28'),
+(12, 'INFO', 'Updated personal details for Isabella Lee (ID: S2025-024)', 'staff/StudentInfo.php', 2, '2025-10-09 04:50:28'),
+(13, 'INFO', 'Updated student photo for S2025-016', 'staff/StudentInfo.php', 2, '2025-10-09 04:50:57'),
+(14, 'INFO', 'Updated student photo for S2025-021', 'staff/StudentInfo.php', 2, '2025-10-09 04:51:20'),
+(15, 'INFO', 'Updated personal details for Paolo Cruz (ID: S2025-021)', 'staff/StudentInfo.php', 2, '2025-10-09 04:51:20'),
+(16, 'INFO', 'Archived student Isabella Lee (ID: S2025-024) as Dropped', 'staff/StudentInfo.php', 2, '2025-10-09 05:14:02'),
+(17, 'INFO', 'Updated personal details for Edward Tan (ID: S2025-017)', 'staff/StudentInfo.php', 1, '2025-10-09 05:23:39'),
+(18, 'INFO', 'Updated student photo for S2025-017', 'staff/StudentInfo.php', 1, '2025-10-09 05:27:20'),
+(19, 'INFO', 'Updated student photo for S2025-023', 'staff/StudentInfo.php', 1, '2025-10-09 05:27:54'),
+(20, 'INFO', 'Updated personal details for Richard Uy (ID: S2025-023)', 'staff/StudentInfo.php', 1, '2025-10-09 05:27:54'),
+(21, 'INFO', 'Archived student Richard Uy (ID: S2025-023) as Dropped', 'staff/StudentInfo.php', 1, '2025-10-09 05:32:05');
 
 -- --------------------------------------------------------
 
@@ -752,7 +775,7 @@ ALTER TABLE `academic_records`
 -- AUTO_INCREMENT for table `archived_students`
 --
 ALTER TABLE `archived_students`
-  MODIFY `archive_id` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `archive_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
 
 --
 -- AUTO_INCREMENT for table `document_requests`
@@ -782,7 +805,7 @@ ALTER TABLE `health_records`
 -- AUTO_INCREMENT for table `login_audit`
 --
 ALTER TABLE `login_audit`
-  MODIFY `log_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=31;
+  MODIFY `log_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=34;
 
 --
 -- AUTO_INCREMENT for table `masterlists`
@@ -824,7 +847,7 @@ ALTER TABLE `subjects`
 -- AUTO_INCREMENT for table `system_logs`
 --
 ALTER TABLE `system_logs`
-  MODIFY `syslog_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+  MODIFY `syslog_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=22;
 
 --
 -- AUTO_INCREMENT for table `users`
@@ -903,7 +926,7 @@ ALTER TABLE `students`
 -- Constraints for table `student_ids`
 --
 ALTER TABLE `student_ids`
-  ADD CONSTRAINT `student_ids_ibfk_1` FOREIGN KEY (`student_id`) REFERENCES `students` (`student_id`);
+  ADD CONSTRAINT `student_ids_ibfk_1` FOREIGN KEY (`student_id`) REFERENCES `students` (`student_id`) ON DELETE CASCADE ON UPDATE CASCADE;
 
 --
 -- Constraints for table `student_status_history`

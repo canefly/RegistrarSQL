@@ -10,19 +10,11 @@ require_once __DIR__ . "/../Database/functions.php";
 function archiveStudent(mysqli $conn, string $student_id, string $final_status, ?int $actor_user_id = null): bool {
     $conn->begin_transaction();
     try {
+        // 📦 grab current student data
         $snap = $conn->prepare("
-            SELECT
-              s.student_id, s.first_name, s.last_name, s.program, s.year_level, s.section,
-              s.student_status, s.photo_path,
-              (SELECT name FROM guardians WHERE student_id=s.student_id LIMIT 1) AS guardian_name,
-              (SELECT contact_no FROM guardians WHERE student_id=s.student_id LIMIT 1) AS guardian_contact,
-              (SELECT address FROM guardians WHERE student_id=s.student_id LIMIT 1) AS guardian_address,
-              (SELECT primary_school FROM academic_background WHERE student_id=s.student_id LIMIT 1) AS primary_school,
-              (SELECT primary_year FROM academic_background WHERE student_id=s.student_id LIMIT 1) AS primary_year,
-              (SELECT secondary_school FROM academic_background WHERE student_id=s.student_id LIMIT 1) AS secondary_school,
-              (SELECT secondary_year FROM academic_background WHERE student_id=s.student_id LIMIT 1) AS secondary_year,
-              (SELECT tertiary_school FROM academic_background WHERE student_id=s.student_id LIMIT 1) AS tertiary_school,
-              (SELECT tertiary_year FROM academic_background WHERE student_id=s.student_id LIMIT 1) AS tertiary_year
+            SELECT 
+                s.student_id, s.first_name, s.last_name, s.program, s.year_level, s.section,
+                s.student_status, s.contact_no, s.birthdate, s.photo_path
             FROM students s
             WHERE s.student_id = ?
             FOR UPDATE
@@ -32,49 +24,45 @@ function archiveStudent(mysqli $conn, string $student_id, string $final_status, 
         $data = $snap->get_result()->fetch_assoc();
         $snap->close();
 
-        if (!$data) { throw new RuntimeException("Student not found for archiving."); }
+        if (!$data) {
+            throw new RuntimeException('Student not found for archiving.');
+        }
 
+        // ⚙️ delete child first to avoid FK constraint
+        $conn->query("DELETE FROM student_ids WHERE student_id='{$conn->real_escape_string($student_id)}'");
+
+        // update snapshot status
         $data['student_status'] = $final_status;
-$ins = $conn->prepare("
-    INSERT INTO archived_students
-    (student_id, first_name, last_name, program, year_level, section,
-     student_status, contact_no, address, birthdate, photo_path)
-    VALUES (?,?,?,?,?,?,?,?,?,?,?)
-");
-$ins->bind_param(
-    "sssisssssss",
-    $data['student_id'],
-    $data['first_name'],
-    $data['last_name'],
-    $data['program'],
-    $data['year_level'],
-    $data['section'],
-    $data['student_status'],
-    $data['contact_no'],
-    $data['address'],
-    $data['birthdate'],
-    $data['photo_path']
-);
-$ins->execute();
-$ins->close();
 
+        // ✅ insert into archive
+        $ins = $conn->prepare("
+            INSERT INTO archived_students
+            (student_id, first_name, last_name, program, year_level, section, student_status,
+             contact_no, birthdate, photo_path, archived_date)
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, NOW())
+        ");
+        $ins->bind_param(
+            "ssssisssss",
+            $data['student_id'],
+            $data['first_name'],
+            $data['last_name'],
+            $data['program'],      // string
+            $data['year_level'],   // int
+            $data['section'],
+            $data['student_status'],
+            $data['contact_no'],
+            $data['birthdate'],
+            $data['photo_path']
+        );
+        $ins->execute();
+        $ins->close();
 
+        // 🧹 cleanup other dependents + parent
+        $conn->query("DELETE FROM guardians WHERE student_id='{$conn->real_escape_string($student_id)}'");
+        $conn->query("DELETE FROM academic_background WHERE student_id='{$conn->real_escape_string($student_id)}'");
+        $conn->query("DELETE FROM students WHERE student_id='{$conn->real_escape_string($student_id)}'");
 
-        $delG = $conn->prepare("DELETE FROM guardians WHERE student_id=?");
-        $delG->bind_param("s", $student_id);
-        $delG->execute();
-        $delG->close();
-
-        $delAB = $conn->prepare("DELETE FROM academic_background WHERE student_id=?");
-        $delAB->bind_param("s", $student_id);
-        $delAB->execute();
-        $delAB->close();
-
-        $delS = $conn->prepare("DELETE FROM students WHERE student_id=?");
-        $delS->bind_param("s", $student_id);
-        $delS->execute();
-        $delS->close();
-
+        // 🪵 log the action
         if (function_exists('addSystemLog')) {
             addSystemLog(
                 $conn,
@@ -87,14 +75,18 @@ $ins->close();
 
         $conn->commit();
         return true;
+
     } catch (Throwable $e) {
-    $conn->rollback();
-    echo "<pre style='color:red;'>Archive Error: " . $e->getMessage() . "</pre>";
-    return false;
+        $conn->rollback();
+        echo "<pre style='color:red;'>Archive Error: " . $e->getMessage() . "</pre>";
+        return false;
+    }
 }
 
-}
 
+
+
+ 
 /* ==========================================================
    ARCHIVE POST HANDLER (direct form submit from modal)
 ========================================================== */
@@ -220,23 +212,23 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['update_student'])) {
           trim((string)$current['student_status']) !== $status
       );
 
-      if ($personalChanged) {
-          $stmt = $conn->prepare("UPDATE students 
-            SET first_name=?, last_name=?, birthdate=?, program=?, year_level=?, section=?, student_status=?, photo_path=? 
-            WHERE student_id=?");
-          $stmt->bind_param(
-              "ssssissss",
-              $first_name,
-              $last_name,
-              $birthdate,
-              $program,
-              $year_level,
-              $section,
-              $status,
-              $photo_path,
-              $student_id
-          );
-          $stmt->execute();
+if ($personalChanged) {
+    $stmt = $conn->prepare("UPDATE students 
+      SET first_name=?, last_name=?, birthdate=?, program=?, year_level=?, section=?, student_status=?, photo_path=? 
+      WHERE student_id=?");
+    $stmt->bind_param(
+        "ssssissss",
+        $first_name,
+        $last_name,
+        $birthdate,
+        $program,
+        $year_level,
+        $section,
+        $status,
+        $photo_path,
+        $student_id
+    );
+    $stmt->execute();
 
           addSystemLog(
               $conn,

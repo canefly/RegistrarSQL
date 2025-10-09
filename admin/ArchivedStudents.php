@@ -171,16 +171,6 @@ function viewStudent(btn) {
         <p><b>Date Archived:</b> ${s.archived_date}</p>
       </div>
     </div>
-    <hr style="margin:20px 0;">
-    <h3 style="color:#1e3a8a;">Guardian Information</h3>
-    <p><b>Name:</b> ${s.guardian_name || 'N/A'}</p>
-    <p><b>Contact:</b> ${s.guardian_contact || 'N/A'}</p>
-    <p><b>Address:</b> ${s.guardian_address || 'N/A'}</p>
-    <hr style="margin:20px 0;">
-    <h3 style="color:#1e3a8a;">Academic Background</h3>
-    <p><b>Primary:</b> ${s.primary_school || 'N/A'} (${s.primary_year || ''})</p>
-    <p><b>Secondary:</b> ${s.secondary_school || 'N/A'} (${s.secondary_year || ''})</p>
-    <p><b>Tertiary:</b> ${s.tertiary_school || 'N/A'} (${s.tertiary_year || ''})</p>
   `;
   document.getElementById("viewStudentDetails").innerHTML = content;
   document.getElementById("viewModal").style.display = "flex";
