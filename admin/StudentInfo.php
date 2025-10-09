@@ -5,6 +5,7 @@ ini_set('display_errors', 1);
 require_once __DIR__ . "/../Database/session-checker.php";
 require_once __DIR__ . "/../Database/connection.php";
 require_once __DIR__ . "/../Database/functions.php";
+requireRole("Admin");
 
 
 function archiveStudent(mysqli $conn, string $student_id, string $final_status, ?int $actor_user_id = null): bool {

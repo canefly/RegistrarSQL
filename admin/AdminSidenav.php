@@ -1,6 +1,7 @@
 <?php
   require_once __DIR__ . "/../Database/session-checker.php";
   require_once __DIR__ . "/../Database/connection.php";
+  requireRole("Admin");
 
   $current_page = basename($_SERVER['PHP_SELF']);
 

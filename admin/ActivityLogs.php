@@ -1,6 +1,7 @@
 <?php
 require_once __DIR__ . '/../Database/session-checker.php';
 require_once __DIR__ . '/../Database/connection.php';
+requireRole("Admin");
 
 $sql = "
 SELECT l.syslog_id, l.level, l.message, l.origin, l.timestamp, u.username, r.name AS role

@@ -4,6 +4,8 @@ require_once __DIR__ . "/../Database/connection.php";
 require_once __DIR__ . "/../Database/functions.php";
 
 include "StaffSidenav.php";
+requireRole("Employee");
+
 ?>
 
 <!DOCTYPE html>

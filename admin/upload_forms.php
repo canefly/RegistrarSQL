@@ -2,6 +2,7 @@
 require_once __DIR__ . "/../Database/session-checker.php";
 require_once __DIR__ . "/../Database/connection.php";
 include "AdminSidenav.php";
+requireRole("Admin");
 
 if ($_SESSION['role_id'] != 1) {
   header("Location: ../index.php");

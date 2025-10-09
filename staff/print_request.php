@@ -1,5 +1,6 @@
 <?php
 require_once __DIR__ . "/../Database/connection.php";
+requireRole("Employee");
 
 // Get request ID
 $request_id = $_GET['id'] ?? null;
