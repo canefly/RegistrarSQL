@@ -14,8 +14,6 @@ $res = $conn->query("
     year_level,
     section,
     student_status,
-    contact_no,
-    address,
     birthdate,
     photo_path,
     archived_date
