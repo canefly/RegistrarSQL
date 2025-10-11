@@ -1,8 +1,6 @@
 <?php
 require_once __DIR__ . "/../Database/session-checker.php";
 require_once __DIR__ . "/../Database/connection.php";
-require_once __DIR__ . "/../Database/functions.php";
-
 
 // 🔹 Handle delete masterlist
 if (isset($_GET['delete_masterlist'])) {

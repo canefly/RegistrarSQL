@@ -2,6 +2,7 @@
 require_once __DIR__ . "/../Database/session-checker.php";
 require_once __DIR__ . "/../Database/connection.php";
 require_once __DIR__ . "/../Database/functions.php"; // ✅ for addSystemLog()
+requireRole("Employee");
 
 // 🔹 Approve request → set status + release date (today + 7 days)
 if (isset($_GET['approve'])) {

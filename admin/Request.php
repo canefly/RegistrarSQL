@@ -1,6 +1,7 @@
 <?php
 require_once __DIR__ . "/../Database/session-checker.php";
 require_once __DIR__ . "/../Database/connection.php";
+requireRole("Admin");
 
 // 🔹 Approve request → set status + release date (today + 7 days)
 if (isset($_GET['approve'])) {

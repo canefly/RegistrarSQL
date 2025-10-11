@@ -1,6 +1,7 @@
 <?php
 require_once __DIR__ . "/../Database/session-checker.php";
 require_once __DIR__ . "/../Database/connection.php";
+requireRole("Student");
 
 // Ensure logged in
 $uid = $_SESSION['user_id'] ?? null;

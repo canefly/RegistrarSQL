@@ -7,7 +7,9 @@
 </head>
 <body>
 
-<?php include 'StaffSidenav.php'; ?>
+<?php include 'StaffSidenav.php'; 
+requireRole("Employee");
+?>
 
 <div class="container">
   <h1>Enrollment Section</h1>

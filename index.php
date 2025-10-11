@@ -33,6 +33,20 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     }
 }
 ?>
+
+<!-- 🍞 Error Toasts OUTSIDE the POST block! -->
+<?php
+if (isset($_GET['error']) && $_GET['error'] === 'timeout') {
+    echo "<script>alert('⏳ Your session expired. Please log in again.');</script>";
+}
+if (isset($_GET['error']) && $_GET['error'] === 'forbidden') {
+    echo "<script>alert('🚫 Access Denied. You do not have permission.');</script>";
+}
+if (isset($_GET['error']) && $_GET['error'] === 'unauthenticated') {
+    echo "<script>alert('🔐 Please log in to continue.');</script>";
+}
+?>
+
 <!DOCTYPE html>
 <html lang="en">
 <head>

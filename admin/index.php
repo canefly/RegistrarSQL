@@ -1,6 +1,7 @@
 <?php
 require_once __DIR__ . "/../Database/session-checker.php";
 require_once __DIR__ . "/../Database/connection.php";
+requireRole("Admin");
 
 // Active Students
 $res = $conn->query("SELECT COUNT(*) AS total FROM students WHERE student_status = 'Enrolled'");
