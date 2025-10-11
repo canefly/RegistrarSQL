@@ -218,9 +218,9 @@ if (isset($_POST['auto_section'])) {
                     <td><?= htmlspecialchars($m['username']) ?></td>
                     <td><?= $m['generation_date'] ?></td>
                     <td>
-                        <a href="?view_students=<?= $m['masterlist_id'] ?>"><button>👀 View</button></a>
-                        <a href="?view_students=<?= $m['masterlist_id'] ?>#print"><button>🖨 Print</button></a>
-                        <a href="?delete_masterlist=<?= $m['masterlist_id'] ?>" onclick="return confirm('Are you sure you want to delete this masterlist?');"><button class="danger">🗑 Delete</button></a>
+                        <a href="?view_students=<?= $m['masterlist_id'] ?>"><button> View</button></a>
+                        <a href="?view_students=<?= $m['masterlist_id'] ?>#print"><button> Print</button></a>
+                        <a href="?delete_masterlist=<?= $m['masterlist_id'] ?>" onclick="return confirm('Are you sure you want to delete this masterlist?');"><button class="danger"> Delete</button></a>
                     </td>
                 </tr>
                 <?php endforeach; ?>
