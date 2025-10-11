@@ -170,6 +170,9 @@ requireRole("Employee");
     <a href="Request.php" class="<?= $current_page=='Request.php' ? 'active' : '' ?>">
       <i class="fas fa-file-alt"></i><span class="sidebar-text"> Request</span>
     </a>
+    <a href="ArchivedStudents.php" class="<?= $current_page=='ArchivedStudents.php' ? 'active' : '' ?>">
+      <i class="fas fa-archive"></i><span class="sidebar-text"> Archived Students</span>
+    </a>
   </div>
 
   <div class="sidebar-section">

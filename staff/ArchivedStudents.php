@@ -4,82 +4,10 @@ ini_set('display_errors', 1);
 require_once __DIR__ . "/../Database/session-checker.php";
 require_once __DIR__ . "/../Database/connection.php";
 require_once __DIR__ . "/../Database/functions.php";
-requireRole("Admin");
-
-/* ==================================================
-   RECOVERY HANDLER
-================================================== */
-if (isset($_POST['recover_student_id'])) {
-    $student_id = $_POST['recover_student_id'];
-
-      function recoverArchivedStudent(mysqli $conn, string $student_id, ?int $actor_user_id = null): bool {
-          $conn->begin_transaction();
-          try {
-              // ✅ Step 1: restore student first
-              $conn->query("
-                  INSERT INTO students (student_id, first_name, last_name, program, year_level, section, student_status, birthdate, gender, photo_path)
-                  SELECT student_id, first_name, last_name, program, year_level, section, 'Enrolled', birthdate, gender, photo_path
-                  FROM archived_students WHERE student_id='{$conn->real_escape_string($student_id)}'
-              ");
-
-              // now that the student exists, we can restore dependents
-
-              // ✅ Step 2: restore guardians (omit PK so MySQL auto-generates IDs)
-              $conn->query("
-                  INSERT INTO guardians (student_id, name, contact_no, address)
-                  SELECT student_id, name, contact_no, address
-                  FROM archived_guardians WHERE student_id='{$conn->real_escape_string($student_id)}'
-              ");
-              $conn->query("DELETE FROM archived_guardians WHERE student_id='{$conn->real_escape_string($student_id)}'");
-
-              // ✅ Step 3: restore academic background
-              $conn->query("
-                  INSERT INTO academic_background (student_id, primary_school, primary_year, secondary_school, secondary_year, tertiary_school, tertiary_year)
-                  SELECT student_id, primary_school, primary_year, secondary_school, secondary_year, tertiary_school, tertiary_year
-                  FROM archived_academic_background WHERE student_id='{$conn->real_escape_string($student_id)}'
-              ");
-              $conn->query("DELETE FROM archived_academic_background WHERE student_id='{$conn->real_escape_string($student_id)}'");
-
-              // ✅ Step 4: restore file storage
-              $conn->query("
-                  INSERT INTO file_storage (student_id, file_type, file_path, upload_date)
-                  SELECT student_id, file_type, file_path, upload_date
-                  FROM archived_file_storage WHERE student_id='{$conn->real_escape_string($student_id)}'
-              ");
-              $conn->query("DELETE FROM archived_file_storage WHERE student_id='{$conn->real_escape_string($student_id)}'");
-
-              // ✅ Step 5: delete student from archive (after all child tables are done)
-              $conn->query("DELETE FROM archived_students WHERE student_id='{$conn->real_escape_string($student_id)}'");
-
-              // ✅ Step 6: log action
-              if (function_exists('addSystemLog')) {
-                  addSystemLog(
-                      $conn,
-                      'INFO',
-                      "Recovered archived student {$student_id} and all related records.",
-                      'admin/ArchivedStudents.php',
-                      $actor_user_id
-                  );
-              }
-
-              $conn->commit();
-              return true;
-
-          } catch (Throwable $e) {
-              $conn->rollback();
-              echo "<pre style='color:red;'>Recovery Error: " . $e->getMessage() . "</pre>";
-              return false;
-          }
-      }
+requireRole("Employee");
 
 
-    $ok = recoverArchivedStudent($conn, $student_id, $_SESSION['user_id'] ?? null);
-    if ($ok) {
-        echo "<script>alert('✅ Student successfully recovered!'); window.location='StudentInfo.php';</script>";
-    } else {
-        echo "<script>alert('❌ Recovery failed. Check logs.');</script>";
-    }
-}
+      
 
 /* ==================================================
    FETCH ARCHIVED STUDENTS + FILES
@@ -124,7 +52,7 @@ $archivedStudents = $res->fetch_all(MYSQLI_ASSOC);
   <link rel="icon" href="../components/img/bcpp.png" type="image/png">
 </head>
 <body>
-<?php include 'AdminSidenav.php'; ?>
+<?php include 'StaffSidenav.php'; ?>
 
 <div class="container">
   <h1>Archived Students</h1>
@@ -167,9 +95,7 @@ $archivedStudents = $res->fetch_all(MYSQLI_ASSOC);
               <button onclick="viewStudent(this)">View</button>
               <form method="POST" style="display:inline;">
                 <input type="hidden" name="recover_student_id" value="<?= htmlspecialchars($s['student_id']) ?>">
-                <button type="submit" style="background:#16a34a;color:white;border:none;border-radius:5px;padding:4px 8px;margin-left:5px;">
-                  Recover
-                </button>
+                
               </form>
             </td>
           </tr>

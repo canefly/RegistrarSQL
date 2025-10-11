@@ -11,10 +11,11 @@ requireRole("Admin");
 function archiveStudent(mysqli $conn, string $student_id, string $final_status, ?int $actor_user_id = null): bool {
     $conn->begin_transaction();
     try {
+        // get snapshot of student data
         $snap = $conn->prepare("
             SELECT
               s.student_id, s.first_name, s.last_name, s.program, s.year_level, s.section,
-              s.student_status, s.photo_path,
+              s.student_status, s.birthdate, s.gender, s.photo_path,
               (SELECT name FROM guardians WHERE student_id=s.student_id LIMIT 1) AS guardian_name,
               (SELECT contact_no FROM guardians WHERE student_id=s.student_id LIMIT 1) AS guardian_contact,
               (SELECT address FROM guardians WHERE student_id=s.student_id LIMIT 1) AS guardian_address,
@@ -33,54 +34,63 @@ function archiveStudent(mysqli $conn, string $student_id, string $final_status, 
         $data = $snap->get_result()->fetch_assoc();
         $snap->close();
 
-        if (!$data) { throw new RuntimeException("Student not found for archiving."); }
+        if (!$data) throw new RuntimeException("Student not found for archiving.");
 
+        // update status
         $data['student_status'] = $final_status;
-$ins = $conn->prepare("
-    INSERT INTO archived_students
-    (student_id, first_name, last_name, program, year_level, section,
-     student_status, contact_no, address, birthdate, photo_path)
-    VALUES (?,?,?,?,?,?,?,?,?,?,?)
-");
-$ins->bind_param(
-    "sssisssssss",
-    $data['student_id'],
-    $data['first_name'],
-    $data['last_name'],
-    $data['program'],
-    $data['year_level'],
-    $data['section'],
-    $data['student_status'],
-    $data['contact_no'],
-    $data['address'],
-    $data['birthdate'],
-    $data['photo_path']
-);
-$ins->execute();
-$ins->close();
 
+        // ✅ CORRECTED — 11 columns + 11 placeholders + 11 types
+        $ins = $conn->prepare("
+            INSERT INTO archived_students
+            (student_id, first_name, last_name, program, year_level, section,
+             student_status, birthdate, gender, photo_path, archived_date)
+            VALUES (?,?,?,?,?,?,?,?,?,?,NOW())
+        ");
+        $ins->bind_param(
+            "ssssisssss",
+            $data['student_id'],
+            $data['first_name'],
+            $data['last_name'],
+            $data['program'],
+            $data['year_level'],
+            $data['section'],
+            $data['student_status'],
+            $data['birthdate'],
+            $data['gender'],
+            $data['photo_path']
+        );
+        $ins->execute();
+        $ins->close();
 
+        // 🔹 move guardian
+        $conn->query("INSERT INTO archived_guardians (student_id, name, contact_no, address)
+                      SELECT student_id, name, contact_no, address FROM guardians WHERE student_id='{$conn->real_escape_string($student_id)}'");
+        $conn->query("DELETE FROM guardians WHERE student_id='{$conn->real_escape_string($student_id)}'");
 
-        $delG = $conn->prepare("DELETE FROM guardians WHERE student_id=?");
-        $delG->bind_param("s", $student_id);
-        $delG->execute();
-        $delG->close();
+        // 🔹 move academic background
+        $conn->query("INSERT INTO archived_academic_background (student_id, primary_school, primary_year, secondary_school, secondary_year, tertiary_school, tertiary_year)
+                      SELECT student_id, primary_school, primary_year, secondary_school, secondary_year, tertiary_school, tertiary_year 
+                      FROM academic_background WHERE student_id='{$conn->real_escape_string($student_id)}'");
+        $conn->query("DELETE FROM academic_background WHERE student_id='{$conn->real_escape_string($student_id)}'");
 
-        $delAB = $conn->prepare("DELETE FROM academic_background WHERE student_id=?");
-        $delAB->bind_param("s", $student_id);
-        $delAB->execute();
-        $delAB->close();
+        // 🔹 move file_storage
+        $conn->query("INSERT INTO archived_file_storage (student_id, file_type, file_path, upload_date, archived_reason)
+                      SELECT student_id, file_type, file_path, upload_date, '{$conn->real_escape_string($final_status)}'
+                      FROM file_storage WHERE student_id='{$conn->real_escape_string($student_id)}'");
+        $conn->query("DELETE FROM file_storage WHERE student_id='{$conn->real_escape_string($student_id)}'");
 
-        $delS = $conn->prepare("DELETE FROM students WHERE student_id=?");
-        $delS->bind_param("s", $student_id);
-        $delS->execute();
-        $delS->close();
+        // 🔹 finally delete student
+        $del = $conn->prepare("DELETE FROM students WHERE student_id=?");
+        $del->bind_param("s", $student_id);
+        $del->execute();
+        $del->close();
 
+        // 🔹 system log
         if (function_exists('addSystemLog')) {
             addSystemLog(
                 $conn,
                 'INFO',
-                "Archived student {$data['first_name']} {$data['last_name']} (ID: {$student_id}) as {$final_status}",
+                "Archived student {$data['first_name']} {$data['last_name']} ({$student_id}) as {$final_status}",
                 'staff/StudentInfo.php',
                 $actor_user_id
             );
@@ -88,13 +98,15 @@ $ins->close();
 
         $conn->commit();
         return true;
+
     } catch (Throwable $e) {
-    $conn->rollback();
-    echo "<pre style='color:red;'>Archive Error: " . $e->getMessage() . "</pre>";
-    return false;
+        $conn->rollback();
+        echo "<pre style='color:red;'>Archive Error: " . $e->getMessage() . "</pre>";
+        return false;
+    }
 }
 
-}
+
 
 /* ==========================================================
    ARCHIVE POST HANDLER (direct form submit from modal)
