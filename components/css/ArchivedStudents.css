@@ -188,6 +188,8 @@ p {
   align-items: center;
   z-index: 2000;
   backdrop-filter: blur(3px);
+-webkit-backdrop-filter: blur(3px);
+
 }
 
 .modal-content {

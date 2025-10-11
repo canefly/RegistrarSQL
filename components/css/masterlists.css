@@ -155,20 +155,45 @@ button.danger:hover { background: #c62b37; }
   justify-content: center;
   align-items: center;
   z-index: 1000;
+  overflow: hidden; /* prevents the page from scrolling when modal is open */
 }
 
 .modal-content {
   background: #fff;
-  padding: 25px;
+  padding: 25px 30px;
   border-radius: 10px;
-  width: 500px;
+  width: 600px;              /* locked width */
+  max-width: 95%;
+  max-height: 85vh;          /* locks the height */
+  overflow-y: auto;          /* scrolls internally if too tall */
   position: relative;
-  box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+  box-shadow: 0 4px 15px rgba(0,0,0,0.25);
+  transition: all 0.2s ease-in-out;
 }
 
-.modal-content.wide { width: 800px; }
+.modal-content.wide {
+  width: 900px;              /* locked width for wide modals */
+  max-width: 95%;
+  max-height: 85vh;
+  overflow-y: auto;
+}
 
-.modal-content h2 { margin-top: 0; }
+.modal-content::-webkit-scrollbar {
+  width: 8px;
+}
+.modal-content::-webkit-scrollbar-thumb {
+  background: #888;
+  border-radius: 6px;
+}
+.modal-content::-webkit-scrollbar-thumb:hover {
+  background: #555;
+}
+
+.modal-content h2 {
+  margin-top: 0;
+  font-weight: 700;
+  color: #003a91;
+}
 
 .close {
   position: absolute;
@@ -176,6 +201,11 @@ button.danger:hover { background: #c62b37; }
   font-size: 22px;
   cursor: pointer;
   color: #666;
+  transition: color 0.2s ease;
+}
+
+.close:hover {
+  color: #000;
 }
 
 .modal-content label {
@@ -202,6 +232,7 @@ button.danger:hover { background: #c62b37; }
   box-shadow: 0 0 4px rgba(0,115,230,0.4);
   outline: none;
 }
+
 
 .form-actions {
   display: flex;

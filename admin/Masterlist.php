@@ -2,7 +2,7 @@
 require_once __DIR__ . "/../Database/session-checker.php";
 require_once __DIR__ . "/../Database/connection.php";
 require_once __DIR__ . "/../Database/functions.php";
-requireRole("Employee");
+requireRole("Admin");
 
 
 // 🔹 Handle delete masterlist
@@ -190,7 +190,7 @@ if (isset($_POST['auto_section'])) {
 </head>
 <body>
 
-<?php include 'StaffSidenav.php'; ?>
+<?php include 'AdminSidenav.php'; ?>
 
 <div class="container">
     <h1> Masterlist Manager</h1>
