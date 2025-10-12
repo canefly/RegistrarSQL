@@ -91,7 +91,7 @@ function archiveStudent(mysqli $conn, string $student_id, string $final_status, 
                 $conn,
                 'INFO',
                 "Archived student {$data['first_name']} {$data['last_name']} ({$student_id}) as {$final_status}",
-                'staff/StudentInfo.php',
+                'admin/StudentInfo.php',
                 $actor_user_id
             );
         }
@@ -307,14 +307,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['update_student'])) {
                   WHERE student_id=?");
               $stmt->bind_param("sssssss", $primary_school, $primary_year, $secondary_school, $secondary_year, $tertiary_school, $tertiary_year, $student_id);
               $stmt->execute();
-              addSystemLog($conn, 'INFO', "Updated academic background for student {$student_id}", 'staff/StudentInfo.php', $_SESSION['user_id']);
+              addSystemLog($conn, 'INFO', "Updated academic background for student {$student_id}", 'admin/StudentInfo.php', $_SESSION['user_id']);
           } else {
               $stmt = $conn->prepare("INSERT INTO academic_background 
                   (student_id, primary_school, primary_year, secondary_school, secondary_year, tertiary_school, tertiary_year) 
                   VALUES (?, ?, ?, ?, ?, ?, ?)");
               $stmt->bind_param("sssssss", $student_id, $primary_school, $primary_year, $secondary_school, $secondary_year, $tertiary_school, $tertiary_year);
               $stmt->execute();
-              addSystemLog($conn, 'INFO', "Added academic background for student {$student_id}", 'staff/StudentInfo.php', $_SESSION['user_id']);
+              addSystemLog($conn, 'INFO', "Added academic background for student {$student_id}", 'admin/StudentInfo.php', $_SESSION['user_id']);
           }
       }
 
