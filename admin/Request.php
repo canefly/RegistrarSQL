@@ -2,33 +2,99 @@
 require_once __DIR__ . "/../Database/session-checker.php";
 require_once __DIR__ . "/../Database/connection.php";
 requireRole("Admin");
+// 🕛 AUTO-ARCHIVE after 11:59 PM if approved or declined
+$today = date('Y-m-d');
 
-// 🔹 Approve request → set status + release date (today + 7 days)
+// Find all requests before today that were already approved or declined
+$archive_sql = "
+    SELECT * FROM document_requests
+    WHERE status IN ('Approved','Declined')
+    AND DATE(request_date) < ?
+";
+$stmt = $conn->prepare($archive_sql);
+$stmt->bind_param("s", $today);
+$stmt->execute();
+$result = $stmt->get_result();
+
+while ($row = $result->fetch_assoc()) {
+    // Insert into archive table
+    $ins = $conn->prepare("
+        INSERT INTO archived_requests 
+        (request_id, student_id, document_type, request_date, status, release_date)
+        VALUES (?, ?, ?, ?, ?, ?)
+    ");
+    $ins->bind_param(
+        "isssss",
+        $row['request_id'],
+        $row['student_id'],
+        $row['document_type'],
+        $row['request_date'],
+        $row['status'],
+        $row['release_date']
+    );
+    $ins->execute();
+
+    // Delete from document_requests table after archiving
+    $del = $conn->prepare("DELETE FROM document_requests WHERE request_id = ?");
+    $del->bind_param("i", $row['request_id']);
+    $del->execute();
+}
+
+// ✅ APPROVE (add 7 days, skip Sunday)
 if (isset($_GET['approve'])) {
     $id = intval($_GET['approve']);
-    $release_date = date('Y-m-d', strtotime('+7 days'));
+    $release_date = new DateTime();
+    $release_date->modify('+7 days');
+
+    // If the 7th day lands on a Sunday (0 = Sunday)
+    if ($release_date->format('w') == 0) {
+        $release_date->modify('+1 day'); // move to Monday
+    }
+
+    $final_date = $release_date->format('Y-m-d');
 
     $stmt = $conn->prepare("UPDATE document_requests SET status = 'Approved', release_date = ? WHERE request_id = ?");
-    $stmt->bind_param("si", $release_date, $id);
+    $stmt->bind_param("si", $final_date, $id);
     $stmt->execute();
 
-    echo "<script>alert('Request approved! Release date set.'); window.location='Request.php';</script>";
+      if ($data) {
+        $full_name = "{$data['first_name']} {$data['last_name']}";
+        addSystemLog(
+            $conn,
+            'INFO',
+            "Approved document request '{$data['document_type']}' for {$full_name} (ID: {$data['student_id']})",
+            'admin/Request.php',
+            $_SESSION['user_id']
+        );
+    }
+
+    echo "<script>alert('Request approved! Release date set (Sunday skipped).'); window.location='Request.php';</script>";
     exit;
 }
 
-// 🔹 Decline request → set status + clear release date
+// ❌ DECLINE (clear release date)
 if (isset($_GET['decline'])) {
     $id = intval($_GET['decline']);
-
     $stmt = $conn->prepare("UPDATE document_requests SET status = 'Declined', release_date = NULL WHERE request_id = ?");
     $stmt->bind_param("i", $id);
     $stmt->execute();
+
+     if ($data) {
+        $full_name = "{$data['first_name']} {$data['last_name']}";
+        addSystemLog(
+            $conn,
+            'INFO',
+            "Declined document request '{$data['document_type']}' for {$full_name} (ID: {$data['student_id']})",
+            'admin/Request.php',
+            $_SESSION['user_id']
+        );
+    }
 
     echo "<script>alert('Request declined!'); window.location='Request.php';</script>";
     exit;
 }
 
-// 🔹 Fetch requests joined with student info
+// 📋 FETCH requests
 $sql = "SELECT r.request_id, r.document_type, r.request_date, r.status, r.release_date,
                s.first_name, s.last_name
         FROM document_requests r
