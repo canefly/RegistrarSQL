@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Oct 12, 2025 at 06:54 PM
+-- Generation Time: Oct 12, 2025 at 07:41 PM
 -- Server version: 10.4.32-MariaDB
 -- PHP Version: 8.2.12
 
@@ -63,7 +63,7 @@ INSERT INTO `academic_background` (`id`, `student_id`, `primary_school`, `primar
 (19, 'S2025-021', 'San Rafael Elementary School', '2019', 'San Rafael National High School', '2025', 'Bestlink College of the Philippines', '2025'),
 (20, 'S2025-022', 'San Jose Elementary School', '2019', 'San Jose National High School', '2025', 'Bestlink College of the Philippines', '2025'),
 (23, 'S2025-025', 'Guiguinto Elementary School', '2019', 'Guiguinto National High School', '2025', 'Bestlink College of the Philippines', '2025'),
-(26, 'S2025-013', 'Bocaue Elementary School', '2018', 'Bocaue National High School', '2024', 'Bestlink College of the Philippines', '2024');
+(27, 'S2025-013', 'Bocaue Elementary School', '2018', 'Bocaue National High School', '2024', 'Bestlink College of the Philippines', '2024');
 
 -- --------------------------------------------------------
 
@@ -145,6 +145,22 @@ CREATE TABLE `archived_guardians` (
 -- --------------------------------------------------------
 
 --
+-- Table structure for table `archived_requests`
+--
+
+CREATE TABLE `archived_requests` (
+  `archive_id` int(11) NOT NULL,
+  `request_id` int(11) NOT NULL,
+  `student_id` varchar(50) DEFAULT NULL,
+  `document_type` varchar(100) DEFAULT NULL,
+  `request_date` date DEFAULT NULL,
+  `status` varchar(20) DEFAULT NULL,
+  `release_date` date DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+-- --------------------------------------------------------
+
+--
 -- Table structure for table `archived_students`
 --
 
@@ -195,10 +211,12 @@ CREATE TABLE `document_requests` (
 
 INSERT INTO `document_requests` (`request_id`, `student_id`, `document_type`, `notes`, `request_date`, `status`, `release_date`) VALUES
 (1, 'S2025-001', 'Certificate of Enrollment', '', '2025-09-01', 'Released', '2025-09-05'),
-(2, 'S2025-004', 'Receipt Records', 'NSTP - RECEIPT CERTIFICATE\r\n', '2025-10-01', 'Approved', '2025-10-10'),
-(3, 'S2025-004', 'ID Replacement', '', '2025-10-01', 'Approved', '2025-10-08'),
-(9, 'S2025-004', 'Receipt Records', '', '2025-10-03', 'Approved', '2025-10-10'),
-(11, 'S2025-004', 'Certificate of Enrollment', '', '2025-10-05', 'Approved', '2025-10-12');
+(12, 'S2025-008', 'Receipt Records', '', '2025-10-12', 'Pending', NULL),
+(13, 'S2025-008', 'Certificate of Enrollment', '', '2025-10-12', 'Pending', NULL),
+(14, 'S2025-008', 'ID Replacement', '', '2025-10-12', 'Pending', NULL),
+(15, 'S2025-004', 'ID Replacement', '', '2025-10-12', 'Pending', NULL),
+(16, 'S2025-004', 'Receipt Records', '', '2025-10-12', 'Pending', NULL),
+(17, 'S2025-004', 'Certificate of Enrollment', '', '2025-10-12', 'Pending', NULL);
 
 -- --------------------------------------------------------
 
@@ -248,7 +266,8 @@ INSERT INTO `file_storage` (`file_id`, `student_id`, `file_type`, `file_path`, `
 (1, 'S2025-001', 'Enrollment Form', '/uploads/docs/enrollment_form.pdf', 2, '2025-09-28 22:13:17'),
 (2, 'S2025-001', 'Form137', '/uploads/docs/1759646441_1.PNG', 2, '2025-10-05 06:40:41'),
 (4, 'S2025-001', 'ID', '/uploads/docs/1759661396_ID.pdf', 2, '2025-10-05 10:49:56'),
-(10, 'S2025-013', 'ID', '/uploads/docs/1760203678_ID.pdf', NULL, '2025-10-11 17:27:58');
+(12, 'S2025-013', 'ID', '/uploads/docs/1760203678_ID.pdf', NULL, '2025-10-11 17:27:58'),
+(13, 'S2025-013', 'student id ', '/uploads/docs/1760289135_Student Records.pdf', NULL, '2025-10-12 17:12:15');
 
 -- --------------------------------------------------------
 
@@ -289,7 +308,7 @@ INSERT INTO `guardians` (`guardian_id`, `student_id`, `name`, `relation`, `conta
 (21, 'S2025-021', 'Paolo Cruz Sr.', NULL, '09171234521', 'Bulacan'),
 (22, 'S2025-022', 'Liza Flores Sr.', NULL, '09171234522', 'Pasig City'),
 (25, 'S2025-025', 'Roberto Morales Sr.', NULL, '09171234525', 'Quezon City'),
-(29, 'S2025-013', 'Clarisse Bautista Sr.', NULL, '09171234513', 'Quezon City');
+(30, 'S2025-013', 'Clarisse Bautista Sr.', NULL, '09171234513', 'Quezon City');
 
 -- --------------------------------------------------------
 
@@ -365,7 +384,10 @@ INSERT INTO `login_audit` (`log_id`, `user_id`, `action_type`, `timestamp`) VALU
 (32, 1, 'logout', '2025-10-09 04:36:39'),
 (33, 2, 'logout', '2025-10-09 05:14:05'),
 (34, 4, 'logout', '2025-10-11 14:57:12'),
-(35, 4, 'logout', '2025-10-11 17:47:16');
+(35, 4, 'logout', '2025-10-11 17:47:16'),
+(36, 1, 'logout', '2025-10-12 17:36:08'),
+(37, 8, 'logout', '2025-10-12 17:36:31'),
+(38, 4, 'logout', '2025-10-12 17:37:05');
 
 -- --------------------------------------------------------
 
@@ -645,7 +667,13 @@ INSERT INTO `system_logs` (`syslog_id`, `level`, `message`, `origin`, `user_id`,
 (55, 'INFO', 'Archived student Clarisse Bautista (S2025-013) as Graduated', 'staff/StudentInfo.php', 1, '2025-10-11 17:38:04'),
 (56, 'INFO', 'Recovered archived student S2025-013 and all related records.', 'admin/ArchivedStudents.php', 1, '2025-10-11 17:38:26'),
 (57, 'INFO', 'Archived student Clarisse Bautista (S2025-013) as Graduated', 'staff/StudentInfo.php', 2, '2025-10-11 17:43:48'),
-(58, 'INFO', 'Recovered archived student S2025-013 and all related records.', 'admin/ArchivedStudents.php', 1, '2025-10-11 17:44:47');
+(58, 'INFO', 'Recovered archived student S2025-013 and all related records.', 'admin/ArchivedStudents.php', 1, '2025-10-11 17:44:47'),
+(59, 'INFO', 'Updated student photo for S2025-007', 'staff/StudentInfo.php', 1, '2025-10-12 17:01:47'),
+(60, 'INFO', 'Updated student photo for S2025-007', 'staff/StudentInfo.php', 1, '2025-10-12 17:02:18'),
+(61, 'INFO', 'Updated student photo for S2025-007', 'staff/StudentInfo.php', 1, '2025-10-12 17:03:53'),
+(62, 'INFO', 'Uploaded document \'student id \' for Clarisse Bautista (ID: S2025-013)', 'staff/upload_student_file.php', 1, '2025-10-12 17:12:16'),
+(63, 'INFO', 'Archived student Clarisse Bautista (S2025-013) as Dropped', 'staff/StudentInfo.php', 1, '2025-10-12 17:12:37'),
+(64, 'INFO', 'Recovered archived student S2025-013 and all related records.', 'admin/ArchivedStudents.php', 1, '2025-10-12 17:13:32');
 
 -- --------------------------------------------------------
 
@@ -758,6 +786,13 @@ ALTER TABLE `archived_file_storage`
 --
 ALTER TABLE `archived_guardians`
   ADD PRIMARY KEY (`guardian_id`),
+  ADD KEY `student_id` (`student_id`);
+
+--
+-- Indexes for table `archived_requests`
+--
+ALTER TABLE `archived_requests`
+  ADD PRIMARY KEY (`archive_id`),
   ADD KEY `student_id` (`student_id`);
 
 --
@@ -875,7 +910,7 @@ ALTER TABLE `users`
 -- AUTO_INCREMENT for table `academic_background`
 --
 ALTER TABLE `academic_background`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=27;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=28;
 
 --
 -- AUTO_INCREMENT for table `academic_records`
@@ -887,43 +922,49 @@ ALTER TABLE `academic_records`
 -- AUTO_INCREMENT for table `archived_academic_background`
 --
 ALTER TABLE `archived_academic_background`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=15;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=16;
 
 --
 -- AUTO_INCREMENT for table `archived_file_storage`
 --
 ALTER TABLE `archived_file_storage`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=10;
 
 --
 -- AUTO_INCREMENT for table `archived_guardians`
 --
 ALTER TABLE `archived_guardians`
-  MODIFY `guardian_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=17;
+  MODIFY `guardian_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=18;
+
+--
+-- AUTO_INCREMENT for table `archived_requests`
+--
+ALTER TABLE `archived_requests`
+  MODIFY `archive_id` int(11) NOT NULL AUTO_INCREMENT;
 
 --
 -- AUTO_INCREMENT for table `archived_students`
 --
 ALTER TABLE `archived_students`
-  MODIFY `archive_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=16;
+  MODIFY `archive_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=17;
 
 --
 -- AUTO_INCREMENT for table `document_requests`
 --
 ALTER TABLE `document_requests`
-  MODIFY `request_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=12;
+  MODIFY `request_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=18;
 
 --
 -- AUTO_INCREMENT for table `file_storage`
 --
 ALTER TABLE `file_storage`
-  MODIFY `file_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=11;
+  MODIFY `file_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=15;
 
 --
 -- AUTO_INCREMENT for table `guardians`
 --
 ALTER TABLE `guardians`
-  MODIFY `guardian_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=30;
+  MODIFY `guardian_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=31;
 
 --
 -- AUTO_INCREMENT for table `health_records`
@@ -935,7 +976,7 @@ ALTER TABLE `health_records`
 -- AUTO_INCREMENT for table `login_audit`
 --
 ALTER TABLE `login_audit`
-  MODIFY `log_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=36;
+  MODIFY `log_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=39;
 
 --
 -- AUTO_INCREMENT for table `masterlists`
@@ -977,7 +1018,7 @@ ALTER TABLE `subjects`
 -- AUTO_INCREMENT for table `system_logs`
 --
 ALTER TABLE `system_logs`
-  MODIFY `syslog_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=59;
+  MODIFY `syslog_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=65;
 
 --
 -- AUTO_INCREMENT for table `users`
@@ -1007,6 +1048,12 @@ ALTER TABLE `academic_records`
 --
 ALTER TABLE `archived_file_storage`
   ADD CONSTRAINT `archived_file_storage_ibfk_1` FOREIGN KEY (`student_id`) REFERENCES `archived_students` (`student_id`) ON DELETE CASCADE ON UPDATE CASCADE;
+
+--
+-- Constraints for table `archived_requests`
+--
+ALTER TABLE `archived_requests`
+  ADD CONSTRAINT `archived_requests_ibfk_1` FOREIGN KEY (`student_id`) REFERENCES `students` (`student_id`);
 
 --
 -- Constraints for table `document_requests`
