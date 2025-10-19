@@ -130,7 +130,7 @@ $stmt2->close();
 </style>
 </head>
 <body>
-<?php include 'StudentSidenav.php'; ?>
+<?php include 'StudentSideNav.php'; ?>
 
 <div class="container">
   <h1>Welcome, <?= htmlspecialchars($student['first_name'] . " " . $student['last_name']) ?></h1>
