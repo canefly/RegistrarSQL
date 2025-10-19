@@ -39,7 +39,7 @@ $res = $conn->query("
     LEFT JOIN archived_academic_background ab ON a.student_id = ab.student_id
     LEFT JOIN archived_file_storage f ON a.student_id = f.student_id
     GROUP BY a.student_id
-    ORDER BY a.archived_date DESC, a.last_name ASC;");
+    ORDER BY ANY_VALUE(a.archived_date) DESC, ANY_VALUE(a.last_name) ASC");
 $archivedStudents = $res->fetch_all(MYSQLI_ASSOC);
 ?>
 <!DOCTYPE html>
