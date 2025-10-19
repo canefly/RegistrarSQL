@@ -10,6 +10,35 @@ if (!$uid) {
     exit();
 }
 
+// Handle password update (plain text version)
+if (isset($_POST['update_password'])) {
+    $current = $_POST['current_password'];
+    $new = $_POST['new_password'];
+    $confirm = $_POST['confirm_password'];
+    $user_id = $_SESSION['user_id'];
+
+    if ($new !== $confirm) {
+        $error = "New passwords do not match.";
+    } else {
+        $stmt = $conn->prepare("SELECT password_hash FROM users WHERE user_id = ?");
+        $stmt->bind_param("i", $user_id);
+        $stmt->execute();
+        $stmt->bind_result($stored_pass);
+        $stmt->fetch();
+        $stmt->close();
+
+        if ($stored_pass !== $current) {
+            $error = "Incorrect current password.";
+        } else {
+            $update = $conn->prepare("UPDATE users SET password_hash = ? WHERE user_id = ?");
+            $update->bind_param("si", $new, $user_id);
+            $update->execute();
+            $update->close();
+            $success = "Password updated successfully!";
+        }
+    }
+}
+
 // Fetch student + guardian info
 $stmt = $conn->prepare("
   SELECT 
@@ -38,7 +67,6 @@ if (!$student) die("Student not found.");
 <link rel="icon" sizes="192x192" href="../components/img/bcpp.png">
 <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;600;700&display=swap" rel="stylesheet">
 <style>
-/* ---------------- Global Layout ---------------- */
 body {
   margin: 0;
   font-family: 'Outfit', sans-serif;
@@ -48,7 +76,6 @@ body {
   min-height: 100vh;
 }
 
-/* Sidebar offset */
 .container {
   flex: 1;
   margin-left: 240px;
@@ -59,13 +86,9 @@ body {
 .sidebar.collapsed ~ .container { margin-left: 70px; }
 
 @media (max-width: 768px) {
-  .container {
-    margin-left: 0;
-    padding: 20px;
-  }
+  .container { margin-left: 0; padding: 20px; }
 }
 
-/* ---------------- Headings ---------------- */
 h1 {
   color: #004aad;
   font-weight: 700;
@@ -77,66 +100,6 @@ p {
   margin-bottom: 25px;
 }
 
-/* ---------------- Collapsible Notice ---------------- */
-.notice-container {
-  margin-bottom: 30px;
-  border-left: 5px solid #004aad;
-  border-radius: 10px;
-  background: #eef3ff;
-  overflow: hidden;
-  box-shadow: 0 2px 6px rgba(0,0,0,0.05);
-  transition: all 0.3s ease;
-  position: relative;
-}
-.notice-header {
-  padding: 15px 20px;
-  cursor: pointer;
-  font-weight: 700;
-  color: #004aad;
-  background: #e7edff;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-}
-.notice-header i {
-  transition: transform 0.3s ease;
-}
-.notice-content {
-  max-height: 70px;
-  overflow: hidden;
-  padding: 0 20px 20px 20px;
-  color: #1e3a8a;
-  font-size: 15px;
-  line-height: 1.6;
-  position: relative;
-  transition: max-height 0.4s ease;
-}
-
-/* Fading overlay when collapsed */
-.notice-content::after {
-  content: "";
-  position: absolute;
-  bottom: 0;
-  left: 0;
-  right: 0;
-  height: 50px;
-  background: linear-gradient(to bottom, rgba(238,243,255,0), rgba(238,243,255,1));
-  pointer-events: none;
-  transition: opacity 0.4s ease;
-}
-
-/* Expanded state */
-.notice-container.active .notice-content {
-  max-height: 300px;
-}
-.notice-container.active .notice-content::after {
-  opacity: 0;
-}
-.notice-container.active .notice-header i {
-  transform: rotate(180deg);
-}
-
-/* ---------------- Form Section ---------------- */
 form {
   background: #fff;
   border-radius: 12px;
@@ -175,7 +138,6 @@ input[readonly], textarea[readonly] {
   cursor: not-allowed;
 }
 
-/* -------------- Responsive grid layout -------------- */
 .info-grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
@@ -189,21 +151,53 @@ textarea {
   word-break: break-word;
 }
 
-/* ---------------- Responsive Touch ---------------- */
 @media (max-width: 480px) {
-  form {
-    padding: 20px;
-  }
+  form { padding: 20px; }
   h1 { font-size: 22px; }
   form h2 { font-size: 18px; }
   input, textarea { font-size: 14px; }
-  .info-grid {
-    grid-template-columns: 1fr;
-    gap: 12px;
-  }
-  textarea {
-    min-height: 90px;
-  }
+  .info-grid { grid-template-columns: 1fr; gap: 12px; }
+  textarea { min-height: 90px; }
+}
+
+/* Password form styling */
+form button {
+  background: #004aad;
+  color: #fff;
+  border: none;
+  padding: 10px;
+  border-radius: 8px;
+  font-size: 15px;
+  cursor: pointer;
+  transition: background 0.3s ease;
+  margin-top: 15px;
+}
+form button:hover { background: #00348a; }
+
+/* Fade-out messages */
+.success, .error {
+  font-weight: 600;
+  margin-top: 10px;
+  padding: 10px;
+  border-radius: 6px;
+  animation: fadeIn 0.3s ease;
+  opacity: 1;
+  transition: opacity 0.5s ease;
+}
+.success {
+  color: #2e7d32;
+  background: #e8f5e9;
+}
+.error {
+  color: #c62828;
+  background: #ffebee;
+}
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+.fade-out {
+  opacity: 0;
 }
 </style>
 </head>
@@ -213,89 +207,82 @@ textarea {
 
 <div class="container">
   <h1>Account Overview</h1>
-
-  <!-- Collapsible Notice -->
-  <div class="notice-container" id="noticeBox">
-    <div class="notice-header" id="noticeHeader">
-      <span> Important Notice</span>
-      <i class="fa-solid fa-chevron-down"></i>
-    </div>
-    <div class="notice-content">
-      If you need to change your password or have forgotten your login credentials, 
-      please proceed to the <strong>Ascend Asia (AA’s) Office</strong> for assistance.<br><br>
-      Kindly <strong>bring your valid school ID</strong> for verification purposes. 
-      Password modifications are handled by authorized administrative personnel 
-      to ensure account security and proper verification.
-    </div>
-  </div>
-
   <p>Review your account settings, credentials, and profile information in one place.</p>
 
-  <!-- Personal Info -->
   <form>
     <h2>Personal Information</h2>
     <div class="info-grid">
-      <div>
-        <label>First Name</label>
-        <input type="text" value="<?= htmlspecialchars($student['first_name']) ?>" readonly>
-      </div>
-      <div>
-        <label>Last Name</label>
-        <input type="text" value="<?= htmlspecialchars($student['last_name']) ?>" readonly>
-      </div>
-      <div>
-        <label>Birthdate</label>
-        <input type="text" value="<?= htmlspecialchars($student['birthdate']) ?>" readonly>
-      </div>
-      <div>
-        <label>Gender</label>
-        <input type="text" value="<?= htmlspecialchars($student['gender']) ?>" readonly>
-      </div>
+      <div><label>First Name</label>
+        <input type="text" value="<?= htmlspecialchars($student['first_name']) ?>" readonly></div>
+      <div><label>Last Name</label>
+        <input type="text" value="<?= htmlspecialchars($student['last_name']) ?>" readonly></div>
+      <div><label>Birthdate</label>
+        <input type="text" value="<?= htmlspecialchars($student['birthdate']) ?>" readonly></div>
+      <div><label>Gender</label>
+        <input type="text" value="<?= htmlspecialchars($student['gender']) ?>" readonly></div>
     </div>
   </form>
 
-  <!-- Contact Info -->
   <form>
     <h2>Contact Information</h2>
     <div class="info-grid">
-      <div>
-        <label>Email</label>
-        <input type="text" value="<?= htmlspecialchars($student['email']) ?>" readonly>
-      </div>
-      <div>
-        <label>Contact Number</label>
-        <input type="text" value="<?= htmlspecialchars($student['contact_no']) ?>" readonly>
-      </div>
+      <div><label>Email</label>
+        <input type="text" value="<?= htmlspecialchars($student['email']) ?>" readonly></div>
+      <div><label>Contact Number</label>
+        <input type="text" value="<?= htmlspecialchars($student['contact_no']) ?>" readonly></div>
     </div>
   </form>
 
-  <!-- Guardian Info -->
   <form>
     <h2>Guardian Information</h2>
     <div class="info-grid">
-      <div>
-        <label>Guardian's Name</label>
-        <input type="text" value="<?= htmlspecialchars($student['guardian_name'] ?? 'N/A') ?>" readonly>
-      </div>
-      <div>
-        <label>Relationship</label>
-        <input type="text" value="<?= htmlspecialchars($student['guardian_relation'] ?? 'N/A') ?>" readonly>
-      </div>
-      <div>
-        <label>Guardian Contact Number</label>
-        <input type="text" value="<?= htmlspecialchars($student['guardian_contact'] ?? 'N/A') ?>" readonly>
-      </div>
-      <div>
-        <label>Address</label>
-        <textarea rows="2" readonly><?= htmlspecialchars($student['guardian_address'] ?? 'N/A') ?></textarea>
-      </div>
+      <div><label>Guardian's Name</label>
+        <input type="text" value="<?= htmlspecialchars($student['guardian_name'] ?? 'N/A') ?>" readonly></div>
+      <div><label>Relationship</label>
+        <input type="text" value="<?= htmlspecialchars($student['guardian_relation'] ?? 'N/A') ?>" readonly></div>
+      <div><label>Guardian Contact Number</label>
+        <input type="text" value="<?= htmlspecialchars($student['guardian_contact'] ?? 'N/A') ?>" readonly></div>
+      <div><label>Address</label>
+        <textarea rows="2" readonly><?= htmlspecialchars($student['guardian_address'] ?? 'N/A') ?></textarea></div>
     </div>
   </form>
+
+  <!-- Change Password -->
+  <form method="POST" action="">
+    <h2>Change Password</h2>
+    <label>Current Password</label>
+    <input type="password" name="current_password" required>
+
+    <label>New Password</label>
+    <input type="password" name="new_password" minlength="4" required>
+
+    <label>Confirm New Password</label>
+    <input type="password" name="confirm_password" minlength="4" required>
+
+    <button type="submit" name="update_password">Update Password</button>
+
+    <?php if (isset($success)): ?>
+      <p class="success" id="message"><?= htmlspecialchars($success) ?></p>
+    <?php elseif (isset($error)): ?>
+      <p class="error" id="message"><?= htmlspecialchars($error) ?></p>
+    <?php endif; ?>
+  </form>
+
 </div>
 
-<!-- JS for collapsible -->
-<script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/js/all.min.js"></script>
+<!-- JS fade-out for messages -->
+ <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/js/all.min.js"></script>
+
 <script>
+const msg = document.getElementById('message');
+if (msg) {
+  setTimeout(() => {
+    msg.classList.add('fade-out');
+    setTimeout(() => msg.remove(), 600); // fully remove from DOM after fade
+  }, 3000); // 3 seconds before fade starts
+}
+
+<!-- JS for collapsible -->
 const noticeHeader = document.getElementById("noticeHeader");
 const noticeBox = document.getElementById("noticeBox");
 

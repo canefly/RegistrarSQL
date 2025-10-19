@@ -17,7 +17,6 @@ body {
   box-sizing: border-box;
 
   /* background image */
-  background-image: url('../img/bg.jpg');
   background-size: cover;
   background-position: center;
   background-attachment: fixed;
@@ -66,6 +65,7 @@ body {
   border-radius: 12px;
   box-shadow: 0 4px 10px rgba(0,0,0,0.08);
   transition: transform 0.25s ease, box-shadow 0.25s ease;
+  animation: fadeInUp 0.4s ease both;
 }
 
 .card:hover {
@@ -98,7 +98,7 @@ body {
   color: #222;
 }
 
-/* Tables *//* --- TABLE STYLING --- */
+/* --- TABLE STYLING --- */
 .table-wrapper {
   width: 100%;
   max-height: 500px;
@@ -107,6 +107,7 @@ body {
   box-shadow: 0 3px 10px rgba(0,0,0,0.1);
   background: white;
   margin-top: 15px;
+  animation: fadeInUp 0.4s ease both;
 }
 
 /* Scrollbar styling */
@@ -126,14 +127,19 @@ table {
   border-collapse: separate;
   border-spacing: 0;
 }
+
 table thead {
   background: #004aad;
   color: #fff;
 }
-table th, .request-table td {
+
+table th,
+table td {
   padding: 12px 15px;
   text-align: center;
   border-bottom: 1px solid #eee;
+  word-wrap: break-word;
+  white-space: normal;
 }
 
 table tbody tr:hover {
@@ -148,14 +154,7 @@ table th:last-child {
   border-top-right-radius: 12px;
 }
 
-/* Responsive */
-@media (max-width: 768px) {
-  .container { margin-left: 0; }
-  table th,table td {
-    font-size: 13px;
-    padding: 10px;
-  }
-}/* Status colors */
+/* Status colors */
 .status-pending {
   color: #ff9800;
   font-weight: 600;
@@ -190,7 +189,7 @@ table th:last-child {
   margin-left: 70px;
 }
 
-/* Responsive */
+/* RESPONSIVE DESIGN */
 @media (max-width: 768px) {
   .container {
     margin-left: 0;
@@ -203,4 +202,29 @@ table th:last-child {
     font-size: 13px;
     padding: 10px 8px;
   }
+  h1 {
+    font-size: 26px;
+  }
+  p {
+    font-size: 15px;
+  }
+}
+
+@media (max-width: 480px) {
+  .container {
+    padding: 10px;
+  }
+  h1 {
+    font-size: 22px;
+  }
+  table th, table td {
+    font-size: 12px;
+    padding: 8px 5px;
+  }
+}
+
+/* Animation */
+@keyframes fadeInUp {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
 }

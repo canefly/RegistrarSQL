@@ -52,7 +52,7 @@ if (isset($_GET['error']) && $_GET['error'] === 'unauthenticated') {
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Registrar Login</title>
+  <title>Unified Login</title>
   <link rel="stylesheet" href="components/css/LoginPage.css">
   <link rel="icon" sizes="32x32" href="components/img/bcpp.png">
   <link rel="icon" sizes="192x192" href="components/img/bcpp.png">
