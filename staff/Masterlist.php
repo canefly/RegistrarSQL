@@ -28,19 +28,17 @@ if (isset($_GET['delete_masterlist'])) {
     exit;
 }
 
-// 🔹 Handle create masterlist
-// 🔹 Handle create masterlist
+// 🔹 Handle create masterlist (CLEAN FIXED VERSION)
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['create_masterlist'])) {
-    $term        = trim($_POST['term']);
-    $year        = trim($_POST['year']);
-    $program     = trim($_POST['program']);
-    $section     = trim($_POST['section']);
-    $year_level  = intval($_POST['year_level']);
+    $term         = trim($_POST['term']);
+    $year         = trim($_POST['year']);
+    $program      = trim($_POST['program']);
+    $section      = trim($_POST['section']); // comes from form
+    $year_level   = intval($_POST['year_level']);
     $generated_by = $_SESSION['user_id'];
 
-    // 🛑 Normalize case/spacing
+    // Normalize
     $program_norm = strtolower(trim($program));
-    $section_norm = strtolower(trim($section));
 
     // 1️⃣ Create the masterlist record
     $stmt = $conn->prepare("
@@ -51,22 +49,23 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['create_masterlist']))
     $stmt->execute();
 
     $masterlist_id = $conn->insert_id;
-
     if ($masterlist_id <= 0) {
         echo "<script>alert('Error creating masterlist.'); window.location='Masterlist.php';</script>";
         exit;
     }
 
-    // 2️⃣ Fetch students with matching program, section, and year_level (normalized)
+    // 2️⃣ Fetch students by program + year level only
     $students_stmt = $conn->prepare("
         SELECT student_id
         FROM students
-        WHERE LOWER(TRIM(program)) = ? AND LOWER(TRIM(section)) = ? AND year_level = ?
+        WHERE LOWER(TRIM(program)) = ? AND year_level = ?
+        ORDER BY last_name ASC
     ");
-    $students_stmt->bind_param("ssi", $program_norm, $section_norm, $year_level);
+    $students_stmt->bind_param("si", $program_norm, $year_level);
     $students_stmt->execute();
     $result = $students_stmt->get_result();
 
+    // 3️⃣ Insert students into masterlist_details
     if ($result->num_rows > 0) {
         $insert_stmt = $conn->prepare("
             INSERT INTO masterlist_details (masterlist_id, student_id)
@@ -77,31 +76,30 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['create_masterlist']))
             $insert_stmt->execute();
         }
 
-        // ✅ Log success
         addSystemLog(
             $conn,
             'INFO',
-            "Created masterlist for {$program} {$section} YL{$year_level} Term {$term}, SY {$year}. Added {$result->num_rows} students.",
+            "Created masterlist for {$program} {$section} (YL{$year_level}) - Term {$term}, SY {$year}. Added {$result->num_rows} students.",
             'staff/Masterlist.php',
             $generated_by
         );
 
-        echo "<script>alert('Masterlist created and students added successfully!'); window.location='Masterlist.php';</script>";
+        echo "<script>alert('Masterlist created successfully — all students in this program/year added!'); window.location='Masterlist.php';</script>";
     } else {
-        // 📝 Log no matches
         addSystemLog(
             $conn,
             'WARNING',
-            "Created masterlist for {$program} {$section} YL{$year_level}, but no students matched.",
+            "Created masterlist for {$program} {$section} YL{$year_level}, but no students matched program/year.",
             'staff/Masterlist.php',
             $generated_by
         );
 
-        echo "<script>alert('Masterlist created, but no students matched the section.'); window.location='Masterlist.php';</script>";
+        echo "<script>alert('Masterlist created, but no students matched this program/year.'); window.location='Masterlist.php';</script>";
     }
 
     exit;
 }
+
 
 
 
