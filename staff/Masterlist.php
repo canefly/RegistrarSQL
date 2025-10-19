@@ -29,15 +29,20 @@ if (isset($_GET['delete_masterlist'])) {
 }
 
 // 🔹 Handle create masterlist
+// 🔹 Handle create masterlist
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['create_masterlist'])) {
-    $term = $_POST['term'];
-    $year = $_POST['year'];
-    $program = $_POST['program'];
-    $section = $_POST['section'];
-    $year_level = intval($_POST['year_level']);
+    $term        = trim($_POST['term']);
+    $year        = trim($_POST['year']);
+    $program     = trim($_POST['program']);
+    $section     = trim($_POST['section']);
+    $year_level  = intval($_POST['year_level']);
     $generated_by = $_SESSION['user_id'];
 
-    // 1️⃣ Create the new masterlist record
+    // 🛑 Normalize case/spacing
+    $program_norm = strtolower(trim($program));
+    $section_norm = strtolower(trim($section));
+
+    // 1️⃣ Create the masterlist record
     $stmt = $conn->prepare("
         INSERT INTO masterlists (term, year, program, section, year_level, generated_by)
         VALUES (?, ?, ?, ?, ?, ?)
@@ -45,59 +50,59 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['create_masterlist']))
     $stmt->bind_param("ssssii", $term, $year, $program, $section, $year_level, $generated_by);
     $stmt->execute();
 
-    // ✅ get the newly created masterlist_id right after execute
     $masterlist_id = $conn->insert_id;
 
-    // 🧾 Log creation of masterlist
-    if ($masterlist_id > 0) {
-        addSystemLog(
-            $conn,
-            'INFO',
-            "Created new masterlist ({$program} - Year {$year_level}, Section {$section}, Term {$term}, SY {$year})",
-            'staff/Masterlist.php',
-            $_SESSION['user_id']
-        );
-    } else {
-        die("<script>alert('Error: Failed to create masterlist record.'); window.location='Masterlist.php';</script>");
+    if ($masterlist_id <= 0) {
+        echo "<script>alert('Error creating masterlist.'); window.location='Masterlist.php';</script>";
+        exit;
     }
 
-    // 2️⃣ Fetch all students with matching program, section, and year level
+    // 2️⃣ Fetch students with matching program, section, and year_level (normalized)
     $students_stmt = $conn->prepare("
         SELECT student_id
         FROM students
-        WHERE program = ? AND section = ? AND year_level = ?
+        WHERE LOWER(TRIM(program)) = ? AND LOWER(TRIM(section)) = ? AND year_level = ?
     ");
-    $students_stmt->bind_param("ssi", $program, $section, $year_level);
+    $students_stmt->bind_param("ssi", $program_norm, $section_norm, $year_level);
     $students_stmt->execute();
     $result = $students_stmt->get_result();
 
-    // 3️⃣ Insert matching students into masterlist_details
     if ($result->num_rows > 0) {
         $insert_stmt = $conn->prepare("
             INSERT INTO masterlist_details (masterlist_id, student_id)
             VALUES (?, ?)
         ");
         while ($row = $result->fetch_assoc()) {
-            $insert_stmt->bind_param("is", $masterlist_id, $row['student_id']); // student_id is varchar
+            $insert_stmt->bind_param("is", $masterlist_id, $row['student_id']);
             $insert_stmt->execute();
         }
 
-        // 🧾 Log the number of students added
+        // ✅ Log success
         addSystemLog(
             $conn,
             'INFO',
-            "Added {$result->num_rows} students to masterlist ID {$masterlist_id}",
+            "Created masterlist for {$program} {$section} YL{$year_level} Term {$term}, SY {$year}. Added {$result->num_rows} students.",
             'staff/Masterlist.php',
-            $_SESSION['user_id']
+            $generated_by
         );
 
         echo "<script>alert('Masterlist created and students added successfully!'); window.location='Masterlist.php';</script>";
     } else {
-        echo "<script>alert('Masterlist created, but no students matched the criteria.'); window.location='Masterlist.php';</script>";
+        // 📝 Log no matches
+        addSystemLog(
+            $conn,
+            'WARNING',
+            "Created masterlist for {$program} {$section} YL{$year_level}, but no students matched.",
+            'staff/Masterlist.php',
+            $generated_by
+        );
+
+        echo "<script>alert('Masterlist created, but no students matched the section.'); window.location='Masterlist.php';</script>";
     }
 
     exit;
 }
+
 
 
 
