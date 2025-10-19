@@ -23,15 +23,15 @@ $stmt->close();
 
 if (!$student) die("Student not found.");
 
-// Fetch archived requests
+// Fetch archived requests (corrected table + correct string binding)
 $stud_id = $student['student_id'];
 $stmt2 = $conn->prepare("
-    SELECT document_type, notes, status, request_date, release_date, deleted_at
-    FROM document_requests_archive
+    SELECT document_type, status, request_date, release_date
+    FROM archived_requests
     WHERE student_id = ?
-    ORDER BY deleted_at DESC
+    ORDER BY request_date DESC
 ");
-$stmt2->bind_param("i", $stud_id);
+$stmt2->bind_param("s", $stud_id); // Bind as string — student_id is 'S2025-xxx'
 $stmt2->execute();
 $history = $stmt2->get_result()->fetch_all(MYSQLI_ASSOC);
 $stmt2->close();
@@ -54,6 +54,7 @@ $stmt2->close();
 .history-table th, .history-table td { padding: 10px 12px; text-align: left; }
 .history-table th { background: #004aad; color: #fff; }
 .history-table tr:nth-child(even) { background: #f3f3f3; }
+.history-table td { font-size: 15px; }
 </style>
 </head>
 <body>
@@ -61,7 +62,7 @@ $stmt2->close();
 
 <div class="container">
   <h1>Request History</h1>
-  <p>All your deleted or archived document requests.</p>
+  <p>Below are your archived or previously completed document requests.</p>
 
   <div class="card">
     <div class="table-wrapper">
@@ -69,11 +70,9 @@ $stmt2->close();
         <thead>
           <tr>
             <th>Document</th>
-            <th>Notes</th>
             <th>Status</th>
             <th>Request Date</th>
             <th>Release Date</th>
-            <th>Deleted At</th>
           </tr>
         </thead>
         <tbody>
@@ -81,15 +80,13 @@ $stmt2->close();
             <?php foreach ($history as $h): ?>
               <tr>
                 <td><?= htmlspecialchars($h['document_type']) ?></td>
-                <td><?= htmlspecialchars($h['notes']) ?></td>
                 <td><?= htmlspecialchars($h['status']) ?></td>
                 <td><?= htmlspecialchars($h['request_date']) ?></td>
                 <td><?= htmlspecialchars($h['release_date'] ?: '-') ?></td>
-                <td><?= htmlspecialchars($h['deleted_at']) ?></td>
               </tr>
             <?php endforeach; ?>
           <?php else: ?>
-            <tr><td colspan="6" style="text-align:center;padding:18px;">No history found</td></tr>
+            <tr><td colspan="4" style="text-align:center;padding:18px;">No history found.</td></tr>
           <?php endif; ?>
         </tbody>
       </table>
@@ -98,5 +95,3 @@ $stmt2->close();
 </div>
 </body>
 </html>
-
-
