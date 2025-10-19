@@ -2,6 +2,8 @@
 require_once __DIR__ . "/../Database/session-checker.php";
 require_once __DIR__ . "/../Database/connection.php";
 requireRole("Admin");
+date_default_timezone_set('Asia/Manila');
+
 // 🕛 AUTO-ARCHIVE after 11:59 PM if approved or declined
 $today = date('Y-m-d');
 
@@ -40,6 +42,23 @@ while ($row = $result->fetch_assoc()) {
     $del->execute();
 }
 
+// Helper: fetch student info by request_id (so $data is always defined)
+function getStudentData($conn, $requestId) {
+    $sql = "
+        SELECT dr.request_id, dr.document_type, dr.student_id,
+               s.first_name, s.last_name
+        FROM document_requests dr
+        LEFT JOIN students s ON dr.student_id = s.student_id
+        WHERE dr.request_id = ?
+        LIMIT 1
+    ";
+    $stmt = $conn->prepare($sql);
+    $stmt->bind_param("i", $requestId);
+    $stmt->execute();
+    $res = $stmt->get_result();
+    return $res->fetch_assoc();
+}
+
 // ✅ APPROVE (add 7 days, skip Sunday)
 if (isset($_GET['approve'])) {
     $id = intval($_GET['approve']);
@@ -53,19 +72,25 @@ if (isset($_GET['approve'])) {
 
     $final_date = $release_date->format('Y-m-d');
 
+    // Update document status
     $stmt = $conn->prepare("UPDATE document_requests SET status = 'Approved', release_date = ? WHERE request_id = ?");
     $stmt->bind_param("si", $final_date, $id);
     $stmt->execute();
 
-      if ($data) {
+    // Fetch data for logging
+    $data = getStudentData($conn, $id);
+
+    if ($data) {
         $full_name = "{$data['first_name']} {$data['last_name']}";
-        addSystemLog(
-            $conn,
-            'INFO',
-            "Approved document request '{$data['document_type']}' for {$full_name} (ID: {$data['student_id']})",
-            'admin/Request.php',
-            $_SESSION['user_id']
-        );
+        if (function_exists('addSystemLog')) {
+            addSystemLog(
+                $conn,
+                'INFO',
+                "Approved document request '{$data['document_type']}' for {$full_name} (ID: {$data['student_id']})",
+                'admin/Request.php',
+                $_SESSION['user_id']
+            );
+        }
     }
 
     echo "<script>alert('Request approved! Release date set (Sunday skipped).'); window.location='Request.php';</script>";
@@ -79,22 +104,27 @@ if (isset($_GET['decline'])) {
     $stmt->bind_param("i", $id);
     $stmt->execute();
 
-     if ($data) {
+    // Fetch data for logging
+    $data = getStudentData($conn, $id);
+
+    if ($data) {
         $full_name = "{$data['first_name']} {$data['last_name']}";
-        addSystemLog(
-            $conn,
-            'INFO',
-            "Declined document request '{$data['document_type']}' for {$full_name} (ID: {$data['student_id']})",
-            'admin/Request.php',
-            $_SESSION['user_id']
-        );
+        if (function_exists('addSystemLog')) {
+            addSystemLog(
+                $conn,
+                'INFO',
+                "Declined document request '{$data['document_type']}' for {$full_name} (ID: {$data['student_id']})",
+                'admin/Request.php',
+                $_SESSION['user_id']
+            );
+        }
     }
 
     echo "<script>alert('Request declined!'); window.location='Request.php';</script>";
     exit;
 }
 
-// 📋 FETCH requests
+// 📋 FETCH requests for table
 $sql = "SELECT r.request_id, r.document_type, r.request_date, r.status, r.release_date,
                s.first_name, s.last_name
         FROM document_requests r
@@ -114,14 +144,13 @@ $requests = $result->fetch_all(MYSQLI_ASSOC);
   <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@100..900&family=Roboto:ital,wght@0,100..900;1,100..900&display=swap" rel="stylesheet">
   <title>Requests</title>
   <link rel="stylesheet" href="../components/css/StaffRequest.css">
-  
 </head>
 <body>
 
 <?php include 'AdminSidenav.php'; ?>
 
 <div class="container">
-  <h1>  Student Requests</h1>
+  <h1>Student Requests</h1>
   <p>Below is the list of student requests awaiting review.</p>
 
   <table class="requests-table">
@@ -150,17 +179,14 @@ $requests = $result->fetch_all(MYSQLI_ASSOC);
             <?php if ($req['status'] === "Pending"): ?>
               <a href="?approve=<?= $req['request_id'] ?>"><button class="approve">Approve</button></a>
               <a href="?decline=<?= $req['request_id'] ?>"><button class="decline">Decline</button></a>
-            
             <?php elseif ($req['status'] === "Approved"): ?>
               <a href="print_request.php?id=<?= $req['request_id'] ?>" target="_blank">
                 <button class="print">🖨 Print</button>
               </a>
-            
             <?php else: ?>
               <button disabled><?= $req['status'] ?></button>
             <?php endif; ?>
           </td>
-
         </tr>
         <?php endforeach; ?>
       <?php else: ?>
