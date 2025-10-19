@@ -2,24 +2,12 @@
 $host = 'localhost';
 $dbname = 'sms';
 $username = 'root';
+$password = 'Scara1313'; // Leave blank for XAMPP
 
-// Try blank password first (XAMPP-style)
-$passwords = ['', 'Scara1313'];
-$conn = null;
+$conn = new mysqli($host, $username, $password, $dbname);
 
-foreach ($passwords as $password) {
-    $conn = new mysqli($host, $username, $password, $dbname);
-    
-    if (!$conn->connect_error) {
-        break; // success!
-    }
-}
-
-// Final check if connection worked
+// Check connection
 if ($conn->connect_error) {
     die("Database connection failed: " . $conn->connect_error);
 }
-
-// Optional: echo which method worked
-// echo "Connected using password: " . ($password === '' ? 'blank' : $password);
 ?>
