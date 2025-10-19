@@ -252,6 +252,9 @@ if (isset($_POST['auto_section'])) {
                 <option value="BSIT">BSIT</option>
                 <option value="BSA">BSA</option>
                 <option value="BSBA">BSBA</option>
+                <option value="BSECE">BSECE</option>
+                <option value="BSHM">BSHM</option>
+                <option value="BSCS">BSCS</option>
             </select>
             <label>Year Level</label>
             <select name="year_level" required>
@@ -332,7 +335,7 @@ if (isset($_POST['auto_section'])) {
             <table border="1" cellspacing="0" cellpadding="7" width="100%" style="border-collapse:collapse; font-size:13px;">
                 <thead style="background:#0056d2; color:white;">
                     <tr>
-                        <th>Student ID</th><th>Name</th><th>Program</th><th>Year Level</th><th>Section</th><th>Status</th><th>Signature</th>
+                        <th>Student ID</th><th>Name</th><th>Program</th><th>Year Level</th><th>Status</th><th>Signature</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -343,7 +346,7 @@ if (isset($_POST['auto_section'])) {
                             <td><?= htmlspecialchars($s['first_name'] . " " . $s['last_name']) ?></td>
                             <td><?= htmlspecialchars($s['program']) ?></td>
                             <td><?= htmlspecialchars($s['year_level']) ?></td>
-                            <td><?= htmlspecialchars($s['section']) ?></td>
+                            
                             <td><?= htmlspecialchars($s['student_status']) ?></td>
                             <td style="height:30px;"></td>
                         </tr>

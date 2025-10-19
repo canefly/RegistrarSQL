@@ -1,4 +1,3 @@
-
 <?php
 error_reporting(E_ALL);
 ini_set('display_errors', 1);
@@ -7,14 +6,21 @@ require_once __DIR__ . "/../Database/connection.php";
 require_once __DIR__ . "/../Database/functions.php";
 requireRole("Employee");
 
-
+/* ==========================================================
+   ARCHIVE FUNCTION
+========================================================== */
 function archiveStudent(mysqli $conn, string $student_id, string $final_status, ?int $actor_user_id = null): bool {
     $conn->begin_transaction();
     try {
-        // get snapshot of student data
         $snap = $conn->prepare("
             SELECT
-              s.student_id, s.first_name, s.last_name, s.program, s.year_level, s.section,
+              s.student_id, s.first_name, s.last_name, s.program, s.year_level,
+              COALESCE((
+                SELECT m.section FROM masterlist_details md
+                INNER JOIN masterlists m ON md.masterlist_id = m.masterlist_id
+                WHERE md.student_id = s.student_id
+                ORDER BY m.generation_date DESC LIMIT 1
+              ), '') AS section,
               s.student_status, s.birthdate, s.gender, s.photo_path,
               (SELECT name FROM guardians WHERE student_id=s.student_id LIMIT 1) AS guardian_name,
               (SELECT contact_no FROM guardians WHERE student_id=s.student_id LIMIT 1) AS guardian_contact,
@@ -34,12 +40,10 @@ function archiveStudent(mysqli $conn, string $student_id, string $final_status, 
         $data = $snap->get_result()->fetch_assoc();
         $snap->close();
 
-        if (!$data) throw new RuntimeException("Student not found for archiving.");
+        if (!$data) throw new RuntimeException("Student not found.");
 
-        // update status
         $data['student_status'] = $final_status;
 
-        // ✅ CORRECTED — 11 columns + 11 placeholders + 11 types
         $ins = $conn->prepare("
             INSERT INTO archived_students
             (student_id, first_name, last_name, program, year_level, section,
@@ -62,43 +66,29 @@ function archiveStudent(mysqli $conn, string $student_id, string $final_status, 
         $ins->execute();
         $ins->close();
 
-        // 🔹 move guardian
         $conn->query("INSERT INTO archived_guardians (student_id, name, contact_no, address)
                       SELECT student_id, name, contact_no, address FROM guardians WHERE student_id='{$conn->real_escape_string($student_id)}'");
         $conn->query("DELETE FROM guardians WHERE student_id='{$conn->real_escape_string($student_id)}'");
 
-        // 🔹 move academic background
         $conn->query("INSERT INTO archived_academic_background (student_id, primary_school, primary_year, secondary_school, secondary_year, tertiary_school, tertiary_year)
                       SELECT student_id, primary_school, primary_year, secondary_school, secondary_year, tertiary_school, tertiary_year 
                       FROM academic_background WHERE student_id='{$conn->real_escape_string($student_id)}'");
         $conn->query("DELETE FROM academic_background WHERE student_id='{$conn->real_escape_string($student_id)}'");
 
-        // 🔹 move file_storage
         $conn->query("INSERT INTO archived_file_storage (student_id, file_type, file_path, upload_date, archived_reason)
                       SELECT student_id, file_type, file_path, upload_date, '{$conn->real_escape_string($final_status)}'
                       FROM file_storage WHERE student_id='{$conn->real_escape_string($student_id)}'");
         $conn->query("DELETE FROM file_storage WHERE student_id='{$conn->real_escape_string($student_id)}'");
 
-        // 🔹 finally delete student
         $del = $conn->prepare("DELETE FROM students WHERE student_id=?");
         $del->bind_param("s", $student_id);
         $del->execute();
         $del->close();
 
-        // 🔹 system log
-        if (function_exists('addSystemLog')) {
-            addSystemLog(
-                $conn,
-                'INFO',
-                "Archived student {$data['first_name']} {$data['last_name']} ({$student_id}) as {$final_status}",
-                'staff/StudentInfo.php',
-                $actor_user_id
-            );
-        }
+        addSystemLog($conn, 'INFO', "Archived student {$data['first_name']} {$data['last_name']} ({$student_id}) as {$final_status}", 'staff/StudentInfo.php', $actor_user_id);
 
         $conn->commit();
         return true;
-
     } catch (Throwable $e) {
         $conn->rollback();
         echo "<pre style='color:red;'>Archive Error: " . $e->getMessage() . "</pre>";
@@ -106,40 +96,18 @@ function archiveStudent(mysqli $conn, string $student_id, string $final_status, 
     }
 }
 
-
-
 /* ==========================================================
-   ARCHIVE POST HANDLER (direct form submit from modal)
+   ARCHIVE HANDLER
 ========================================================== */
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['archive_student']) && $_POST['archive_student'] === '1') {
     $student_id   = $_POST['student_id'] ?? '';
     $final_status = trim($_POST['final_status'] ?? 'Dropped');
     $ok = archiveStudent($conn, $student_id, $final_status, $_SESSION['user_id'] ?? null);
-
-    if ($ok) {
-        echo "<script>
-          window.addEventListener('DOMContentLoaded',function(){
-            try{
-              showToast('Student archived successfully.');
-              // remove row from table instantly
-              var rows=document.querySelectorAll('#studentsTable tbody tr[data-student]');
-              rows.forEach(function(r){
-                try{ var s=JSON.parse(r.dataset.student); if(s.student_id==='".addslashes($student_id)."'){ r.remove(); } }catch(e){}
-              });
-              // close modals if open
-              if (typeof closeModal==='function'){ closeModal('modal'); closeModal('archiveConfirmModal'); }
-            }catch(e){}
-          });
-        </script>";
-    } else {
-        echo "<script>
-          window.addEventListener('DOMContentLoaded',function(){ showToast('Archiving failed. Please try again.', true); });
-        </script>";
-    }
+    echo "<script>window.addEventListener('DOMContentLoaded',()=>showToast('".($ok?"Student archived successfully.":"Archiving failed.")."',".($ok?"false":"true")."));</script>";
 }
 
 /* ==========================================================
-   Handle Student Update (original + server fallback to archive)
+   UPDATE HANDLER (NO DUPLICATES)
 ========================================================== */
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['update_student'])) {
   $student_id       = $_POST['student_id'];
@@ -147,11 +115,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['update_student'])) {
   $last_name        = trim($_POST['last_name'] ?? '');
   $birthdate        = $_POST['birthdate'] ?? '';
   $program          = trim($_POST['program'] ?? '');
-  $validPrograms    = ['Undeclared', 'BSIT', 'BSCS', 'BSECE', 'BSHM', 'BSHRM'];
-  if (!in_array($program, $validPrograms)) $program = 'Undeclared';
-
   $year_level       = (int)($_POST['year_level'] ?? 0);
-  $section          = trim($_POST['section'] ?? '');
   $status           = trim($_POST['student_status'] ?? 'Enrolled');
   $guardian_name    = trim($_POST['guardian_name'] ?? '');
   $guardian_contact = trim($_POST['guardian_contact'] ?? '');
@@ -163,48 +127,16 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['update_student'])) {
   $tertiary_school  = trim($_POST['tertiary_school'] ?? '');
   $tertiary_year    = trim($_POST['tertiary_year'] ?? '');
 
-  // SERVER-SIDE SAFETY: if Dropped/Graduated, archive instead of update
   if ($status === 'Dropped' || $status === 'Graduated') {
       $ok = archiveStudent($conn, $student_id, $status, $_SESSION['user_id'] ?? null);
-      if ($ok) {
-          echo "<script>
-            window.addEventListener('DOMContentLoaded',function(){
-              showToast('Student archived successfully.');
-              var rows=document.querySelectorAll('#studentsTable tbody tr[data-student]');
-              rows.forEach(function(r){
-                try{ var s=JSON.parse(r.dataset.student); if(s.student_id==='".addslashes($student_id)."'){ r.remove(); } }catch(e){}
-              });
-              if (typeof closeModal==='function'){ closeModal('modal'); closeModal('archiveConfirmModal'); }
-            });
-          </script>";
-      } else {
-          echo "<script>window.addEventListener('DOMContentLoaded',function(){ showToast('Archiving failed. Please try again.', true); });</script>";
-      }
-      // stop further updates
+      echo "<script>window.addEventListener('DOMContentLoaded',()=>showToast('".($ok?"Student archived successfully.":"Archiving failed.")."',".($ok?"false":"true")."));</script>";
   } else {
+      $stmt = $conn->prepare("SELECT * FROM students WHERE student_id=?");
+      $stmt->bind_param("s", $student_id);
+      $stmt->execute();
+      $current = $stmt->get_result()->fetch_assoc() ?? [];
+      $stmt->close();
 
-      // 🔍 current data snapshot
-      $stmtCurrent = $conn->prepare("
-        SELECT 
-          first_name, last_name, birthdate, program, year_level, section, student_status,
-          (SELECT name FROM guardians WHERE student_id = s.student_id LIMIT 1) AS guardian_name,
-          (SELECT contact_no FROM guardians WHERE student_id = s.student_id LIMIT 1) AS guardian_contact,
-          (SELECT address FROM guardians WHERE student_id = s.student_id LIMIT 1) AS guardian_address,
-          (SELECT primary_school FROM academic_background WHERE student_id = s.student_id LIMIT 1) AS primary_school,
-          (SELECT primary_year FROM academic_background WHERE student_id = s.student_id LIMIT 1) AS primary_year,
-          (SELECT secondary_school FROM academic_background WHERE student_id = s.student_id LIMIT 1) AS secondary_school,
-          (SELECT secondary_year FROM academic_background WHERE student_id = s.student_id LIMIT 1) AS secondary_year,
-          (SELECT tertiary_school FROM academic_background WHERE student_id = s.student_id LIMIT 1) AS tertiary_school,
-          (SELECT tertiary_year FROM academic_background WHERE student_id = s.student_id LIMIT 1) AS tertiary_year,
-          s.photo_path
-        FROM students s WHERE s.student_id = ?
-      ");
-      $stmtCurrent->bind_param("s", $student_id);
-      $stmtCurrent->execute();
-      $current = $stmtCurrent->get_result()->fetch_assoc() ?? [];
-      $stmtCurrent->close();
-
-      // ✅ handle photo
       $photo_path = $current['photo_path'] ?? '';
       if (isset($_FILES['student_photo']) && $_FILES['student_photo']['error'] === UPLOAD_ERR_OK) {
           $ext = strtolower(pathinfo($_FILES['student_photo']['name'], PATHINFO_EXTENSION));
@@ -212,172 +144,101 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['update_student'])) {
               $newFileName = $student_id . '.' . $ext;
               $target = __DIR__ . '/../components/img/ids/' . $newFileName;
               if (move_uploaded_file($_FILES['student_photo']['tmp_name'], $target)) {
-                  if ($photo_path !== $newFileName) {
-                      $photo_path = $newFileName;
-                      addSystemLog($conn, 'INFO', "Updated student photo for {$student_id}", 'staff/StudentInfo.php', $_SESSION['user_id']);
-                  }
+                  $photo_path = $newFileName;
               }
           }
       }
 
-      // === PERSONAL DETAILS ===
-      foreach ($current as $key => $val) { if (is_null($val)) { $current[$key] = ''; } }
+      $stmt = $conn->prepare("UPDATE students 
+          SET first_name=?, last_name=?, birthdate=?, program=?, year_level=?, student_status=?, photo_path=? 
+          WHERE student_id=?");
+      $stmt->bind_param("ssssisss", $first_name, $last_name, $birthdate, $program, $year_level, $status, $photo_path, $student_id);
+      $stmt->execute();
 
-      $personalChanged = (
-          trim((string)$current['first_name']) !== $first_name ||
-          trim((string)$current['last_name']) !== $last_name ||
-          trim((string)$current['birthdate']) !== $birthdate ||
-          trim((string)$current['program']) !== $program ||
-          (int)$current['year_level'] !== (int)$year_level ||
-          trim((string)$current['section']) !== $section ||
-          trim((string)$current['student_status']) !== $status
-      );
+      // ✅ SAFE guardian update
+      $chk = $conn->prepare("SELECT guardian_id FROM guardians WHERE student_id=? LIMIT 1");
+      $chk->bind_param("s", $student_id);
+      $chk->execute();
+      $hasGuardian = $chk->get_result()->fetch_assoc();
+      $chk->close();
 
-      if ($personalChanged) {
-          $stmt = $conn->prepare("UPDATE students 
-            SET first_name=?, last_name=?, birthdate=?, program=?, year_level=?, section=?, student_status=?, photo_path=? 
-            WHERE student_id=?");
-          $stmt->bind_param(
-              "ssssissss",
-              $first_name,
-              $last_name,
-              $birthdate,
-              $program,
-              $year_level,
-              $section,
-              $status,
-              $photo_path,
-              $student_id
-          );
+      if ($hasGuardian) {
+          $stmt = $conn->prepare("UPDATE guardians SET name=?, contact_no=?, address=? WHERE student_id=?");
+          $stmt->bind_param("ssss", $guardian_name, $guardian_contact, $guardian_address, $student_id);
           $stmt->execute();
-
-          addSystemLog(
-              $conn,
-              'INFO',
-              "Updated personal details for {$first_name} {$last_name} (ID: {$student_id})",
-              'staff/StudentInfo.php',
-              $_SESSION['user_id']
-          );
-      } else if ($photo_path !== $current['photo_path']) {
-    // ONLY photo changed, so update just that!
-    $stmt = $conn->prepare("UPDATE students SET photo_path=? WHERE student_id=?");
-    $stmt->bind_param("ss", $photo_path, $student_id);
-    $stmt->execute();
-
-    addSystemLog(
-        $conn,
-        'INFO',
-        "Updated photo for {$student_id} only (no other personal fields changed)",
-        'staff/StudentInfo.php',
-        $_SESSION['user_id']
-    );
-}
-
-
-      // === GUARDIAN INFO ===
-      $guardianChanged = (
-          trim((string)$current['guardian_name']) !== $guardian_name ||
-          trim((string)$current['guardian_contact']) !== $guardian_contact ||
-          trim((string)$current['guardian_address']) !== $guardian_address
-      );
-
-      if ($guardianChanged) {
-          $res = $conn->prepare("SELECT guardian_id FROM guardians WHERE student_id=?");
-          $res->bind_param("s", $student_id);
-          $res->execute();
-          $check = $res->get_result();
-          if ($check->num_rows > 0) {
-              $stmt = $conn->prepare("UPDATE guardians SET name=?, contact_no=?, address=? WHERE student_id=?");
-              $stmt->bind_param("ssss", $guardian_name, $guardian_contact, $guardian_address, $student_id);
-              $stmt->execute();
-              addSystemLog($conn, 'INFO', "Updated guardian info for student {$student_id}", 'staff/StudentInfo.php', $_SESSION['user_id']);
-          } else {
-              $stmt = $conn->prepare("INSERT INTO guardians (student_id, name, contact_no, address) VALUES (?, ?, ?, ?)");
-              $stmt->bind_param("ssss", $student_id, $guardian_name, $guardian_contact, $guardian_address);
-              $stmt->execute();
-              addSystemLog($conn, 'INFO', "Added guardian info for student {$student_id}", 'staff/StudentInfo.php', $_SESSION['user_id']);
-          }
+      } else {
+          $stmt = $conn->prepare("INSERT INTO guardians (student_id, name, contact_no, address) VALUES (?,?,?,?)");
+          $stmt->bind_param("ssss", $student_id, $guardian_name, $guardian_contact, $guardian_address);
+          $stmt->execute();
       }
 
-      // === ACADEMIC BACKGROUND ===
-      $academicChanged = (
-          trim((string)$current['primary_school']) !== $primary_school ||
-          trim((string)$current['primary_year']) !== $primary_year ||
-          trim((string)$current['secondary_school']) !== $secondary_school ||
-          trim((string)$current['secondary_year']) !== $secondary_year ||
-          trim((string)$current['tertiary_school']) !== $tertiary_school ||
-          trim((string)$current['tertiary_year']) !== $tertiary_year
-      );
+      // ✅ SAFE academic update
+      $chk = $conn->prepare("SELECT id FROM academic_background WHERE student_id=? LIMIT 1");
+      $chk->bind_param("s", $student_id);
+      $chk->execute();
+      $hasAcad = $chk->get_result()->fetch_assoc();
+      $chk->close();
 
-      if ($academicChanged) {
-          $res = $conn->prepare("SELECT id FROM academic_background WHERE student_id=?");
-          $res->bind_param("s", $student_id);
-          $res->execute();
-          $check = $res->get_result();
-          $res->close();
-          if ($check->num_rows > 0) {
-              $stmt = $conn->prepare("UPDATE academic_background 
-                  SET primary_school=?, primary_year=?, secondary_school=?, secondary_year=?, tertiary_school=?, tertiary_year=? 
-                  WHERE student_id=?");
-              $stmt->bind_param("sssssss", $primary_school, $primary_year, $secondary_school, $secondary_year, $tertiary_school, $tertiary_year, $student_id);
-              $stmt->execute();
-              addSystemLog($conn, 'INFO', "Updated academic background for student {$student_id}", 'staff/StudentInfo.php', $_SESSION['user_id']);
-          } else {
-              $stmt = $conn->prepare("INSERT INTO academic_background 
-                  (student_id, primary_school, primary_year, secondary_school, secondary_year, tertiary_school, tertiary_year) 
-                  VALUES (?, ?, ?, ?, ?, ?, ?)");
-              $stmt->bind_param("sssssss", $student_id, $primary_school, $primary_year, $secondary_school, $secondary_year, $tertiary_school, $tertiary_year);
-              $stmt->execute();
-              addSystemLog($conn, 'INFO', "Added academic background for student {$student_id}", 'staff/StudentInfo.php', $_SESSION['user_id']);
-          }
+      if ($hasAcad) {
+          $stmt = $conn->prepare("
+              UPDATE academic_background
+              SET primary_school=?, primary_year=?, secondary_school=?, secondary_year=?, tertiary_school=?, tertiary_year=?
+              WHERE student_id=?
+          ");
+          $stmt->bind_param("sssssss", $primary_school, $primary_year, $secondary_school, $secondary_year, $tertiary_school, $tertiary_year, $student_id);
+          $stmt->execute();
+      } else {
+          $stmt = $conn->prepare("
+              INSERT INTO academic_background (student_id, primary_school, primary_year, secondary_school, secondary_year, tertiary_school, tertiary_year)
+              VALUES (?,?,?,?,?,?,?)
+          ");
+          $stmt->bind_param("sssssss", $student_id, $primary_school, $primary_year, $secondary_school, $secondary_year, $tertiary_school, $tertiary_year);
+          $stmt->execute();
       }
 
       echo "<script>alert('Student record updated successfully!');</script>";
-  } // end else (not Dropped/Graduated)
+  }
 }
 
-/* ======================
-   Fetch Students
-====================== */
-$resAll = $conn->query(
-  "SELECT
+/* ==========================================================
+   FETCH STUDENTS (CLEAN SINGLE ROW PER STUDENT)
+========================================================== */
+$resAll = $conn->query("
+  SELECT
     s.student_id,
     s.first_name,
     s.last_name,
     s.program,
     s.year_level,
-    s.section,
+    COALESCE((
+      SELECT m.section
+      FROM masterlist_details md
+      JOIN masterlists m ON md.masterlist_id = m.masterlist_id
+      WHERE md.student_id = s.student_id
+      ORDER BY m.generation_date DESC
+      LIMIT 1
+    ), '') AS section,
     s.student_status,
-    g.name AS guardian_name,
-    g.contact_no AS guardian_contact,
-    g.address AS guardian_address,
+    (SELECT g.name FROM guardians g WHERE g.student_id = s.student_id ORDER BY g.guardian_id DESC LIMIT 1) AS guardian_name,
+    (SELECT g.contact_no FROM guardians g WHERE g.student_id = s.student_id ORDER BY g.guardian_id DESC LIMIT 1) AS guardian_contact,
+    (SELECT g.address FROM guardians g WHERE g.student_id = s.student_id ORDER BY g.guardian_id DESC LIMIT 1) AS guardian_address,
+    (SELECT ab.primary_school FROM academic_background ab WHERE ab.student_id = s.student_id ORDER BY ab.id DESC LIMIT 1) AS primary_school,
+    (SELECT ab.primary_year FROM academic_background ab WHERE ab.student_id = s.student_id ORDER BY ab.id DESC LIMIT 1) AS primary_year,
+    (SELECT ab.secondary_school FROM academic_background ab WHERE ab.student_id = s.student_id ORDER BY ab.id DESC LIMIT 1) AS secondary_school,
+    (SELECT ab.secondary_year FROM academic_background ab WHERE ab.student_id = s.student_id ORDER BY ab.id DESC LIMIT 1) AS secondary_year,
+    (SELECT ab.tertiary_school FROM academic_background ab WHERE ab.student_id = s.student_id ORDER BY ab.id DESC LIMIT 1) AS tertiary_school,
+    (SELECT ab.tertiary_year FROM academic_background ab WHERE ab.student_id = s.student_id ORDER BY ab.id DESC LIMIT 1) AS tertiary_year,
     s.birthdate,
     s.gender,
-    s.photo_path,
-    ab.primary_school,
-    ab.primary_year,
-    ab.secondary_school,
-    ab.secondary_year,
-    ab.tertiary_school,
-    ab.tertiary_year
+    s.photo_path
   FROM students s
-  LEFT JOIN guardians g ON s.student_id = g.student_id
-  LEFT JOIN academic_background ab ON s.student_id = ab.student_id
-  ORDER BY s.last_name ASC"
-);
+  ORDER BY s.last_name ASC
+");
 $allStudents = $resAll->fetch_all(MYSQLI_ASSOC);
 $students = array_slice($allStudents, 0, 50);
-
-foreach ($allStudents as &$s) {
-  foreach ([
-    'guardian_name','guardian_contact','guardian_address',
-    'photo_path','section','primary_school','primary_year',
-    'secondary_school','secondary_year','tertiary_school','tertiary_year'
-  ] as $field) {
-    $s[$field] = $s[$field] ?? '';
-  }
-}
 ?>
+
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
