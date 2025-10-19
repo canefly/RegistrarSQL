@@ -258,7 +258,21 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['update_student'])) {
               'staff/StudentInfo.php',
               $_SESSION['user_id']
           );
-      }
+      } else if ($photo_path !== $current['photo_path']) {
+    // ONLY photo changed, so update just that!
+    $stmt = $conn->prepare("UPDATE students SET photo_path=? WHERE student_id=?");
+    $stmt->bind_param("ss", $photo_path, $student_id);
+    $stmt->execute();
+
+    addSystemLog(
+        $conn,
+        'INFO',
+        "Updated photo for {$student_id} only (no other personal fields changed)",
+        'staff/StudentInfo.php',
+        $_SESSION['user_id']
+    );
+}
+
 
       // === GUARDIAN INFO ===
       $guardianChanged = (

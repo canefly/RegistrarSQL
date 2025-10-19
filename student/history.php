@@ -58,7 +58,7 @@ $stmt2->close();
 </style>
 </head>
 <body>
-<?php include 'StudentSidenav.php'; ?>
+<?php include 'StudentSideNav.php'; ?>
 
 <div class="container">
   <h1>Request History</h1>

@@ -166,7 +166,7 @@ p { margin-bottom: 24px; color: #444; }
 </head>
 <body>
 
-<?php include 'StudentSidenav.php'; ?>
+<?php include 'StudentSideNav.php'; ?>
 
 <div class="container">
   <h1>Official School Forms</h1>

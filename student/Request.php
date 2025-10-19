@@ -284,7 +284,7 @@ body {
 </head>
 <body>
 
-<?php include 'StudentSidenav.php'; ?>
+<?php include 'StudentSideNav.php'; ?>
 
 <div class="container">
   <h1>Request Documents</h1>

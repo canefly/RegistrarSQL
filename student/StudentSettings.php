@@ -203,7 +203,7 @@ form button:hover { background: #00348a; }
 </head>
 
 <body>
-<?php include 'StudentSidenav.php'; ?>
+<?php include 'StudentSideNav.php'; ?>
 
 <div class="container">
   <h1>Account Overview</h1>
