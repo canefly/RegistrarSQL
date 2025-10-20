@@ -85,34 +85,33 @@ if (isset($_POST['recover_student_id'])) {
    FETCH ARCHIVED STUDENTS + FILES
 ================================================== */
 $res = $conn->query("
-  SELECT 
-    a.student_id,
-    a.first_name,
-    a.last_name,
-    a.program,
-    a.year_level,
-    a.section,
-    a.student_status,
-    a.birthdate,
-    a.photo_path,
-    a.archived_date,
-    g.name AS guardian_name,
-    g.contact_no AS guardian_contact,
-    g.address AS guardian_address,
-    ab.primary_school,
-    ab.primary_year,
-    ab.secondary_school,
-    ab.secondary_year,
-    ab.tertiary_school,
-    ab.tertiary_year,
-    GROUP_CONCAT(CONCAT(f.file_type, '|', f.file_path) SEPARATOR '||') AS archived_files
-  FROM archived_students a
-  LEFT JOIN archived_guardians g ON a.student_id = g.student_id
-  LEFT JOIN archived_academic_background ab ON a.student_id = ab.student_id
-  LEFT JOIN archived_file_storage f ON a.student_id = f.student_id
-  GROUP BY a.student_id
-  ORDER BY a.archived_date DESC, a.last_name ASC
-");
+      SELECT 
+      a.student_id,
+      ANY_VALUE(a.first_name) AS first_name,
+      ANY_VALUE(a.last_name) AS last_name,
+      ANY_VALUE(a.program) AS program,
+      ANY_VALUE(a.year_level) AS year_level,
+      ANY_VALUE(a.section) AS section,
+      ANY_VALUE(a.student_status) AS student_status,
+      ANY_VALUE(a.birthdate) AS birthdate,
+      ANY_VALUE(a.photo_path) AS photo_path,
+      ANY_VALUE(a.archived_date) AS archived_date,
+      ANY_VALUE(g.name) AS guardian_name,
+      ANY_VALUE(g.contact_no) AS guardian_contact,
+      ANY_VALUE(g.address) AS guardian_address,
+      ANY_VALUE(ab.primary_school) AS primary_school,
+      ANY_VALUE(ab.primary_year) AS primary_year,
+      ANY_VALUE(ab.secondary_school) AS secondary_school,
+      ANY_VALUE(ab.secondary_year) AS secondary_year,
+      ANY_VALUE(ab.tertiary_school) AS tertiary_school,
+      ANY_VALUE(ab.tertiary_year) AS tertiary_year,
+      GROUP_CONCAT(CONCAT(f.file_type, '|', f.file_path) SEPARATOR '||') AS archived_files
+    FROM archived_students a
+    LEFT JOIN archived_guardians g ON a.student_id = g.student_id
+    LEFT JOIN archived_academic_background ab ON a.student_id = ab.student_id
+    LEFT JOIN archived_file_storage f ON a.student_id = f.student_id
+    GROUP BY a.student_id
+    ORDER BY ANY_VALUE(a.archived_date) DESC, ANY_VALUE(a.last_name) ASC");
 $archivedStudents = $res->fetch_all(MYSQLI_ASSOC);
 ?>
 <!DOCTYPE html>

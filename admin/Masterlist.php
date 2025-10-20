@@ -22,22 +22,25 @@ if (isset($_GET['delete_masterlist'])) {
     $conn,
     'INFO',
     "Deleted masterlist ID {$delete_id}",
-    'staff/Masterlist.php',
+    'admin/Masterlist.php',
     $_SESSION['user_id']
 );
     exit;
 }
 
-// 🔹 Handle create masterlist
+// 🔹 Handle create masterlist (CLEAN FIXED VERSION)
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['create_masterlist'])) {
-    $term = $_POST['term'];
-    $year = $_POST['year'];
-    $program = $_POST['program'];
-    $section = $_POST['section'];
-    $year_level = intval($_POST['year_level']);
+    $term         = trim($_POST['term']);
+    $year         = trim($_POST['year']);
+    $program      = trim($_POST['program']);
+    $section      = trim($_POST['section']); // comes from form
+    $year_level   = intval($_POST['year_level']);
     $generated_by = $_SESSION['user_id'];
 
-    // 1️⃣ Create the new masterlist record
+    // Normalize
+    $program_norm = strtolower(trim($program));
+
+    // 1️⃣ Create the masterlist record
     $stmt = $conn->prepare("
         INSERT INTO masterlists (term, year, program, section, year_level, generated_by)
         VALUES (?, ?, ?, ?, ?, ?)
@@ -45,59 +48,59 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['create_masterlist']))
     $stmt->bind_param("ssssii", $term, $year, $program, $section, $year_level, $generated_by);
     $stmt->execute();
 
-    // ✅ get the newly created masterlist_id right after execute
     $masterlist_id = $conn->insert_id;
-
-    // 🧾 Log creation of masterlist
-    if ($masterlist_id > 0) {
-        addSystemLog(
-            $conn,
-            'INFO',
-            "Created new masterlist ({$program} - Year {$year_level}, Section {$section}, Term {$term}, SY {$year})",
-            'staff/Masterlist.php',
-            $_SESSION['user_id']
-        );
-    } else {
-        die("<script>alert('Error: Failed to create masterlist record.'); window.location='Masterlist.php';</script>");
+    if ($masterlist_id <= 0) {
+        echo "<script>alert('Error creating masterlist.'); window.location='Masterlist.php';</script>";
+        exit;
     }
 
-    // 2️⃣ Fetch all students with matching program, section, and year level
+    // 2️⃣ Fetch students by program + year level only
     $students_stmt = $conn->prepare("
         SELECT student_id
         FROM students
-        WHERE program = ? AND section = ? AND year_level = ?
+        WHERE LOWER(TRIM(program)) = ? AND year_level = ?
+        ORDER BY last_name ASC
     ");
-    $students_stmt->bind_param("ssi", $program, $section, $year_level);
+    $students_stmt->bind_param("si", $program_norm, $year_level);
     $students_stmt->execute();
     $result = $students_stmt->get_result();
 
-    // 3️⃣ Insert matching students into masterlist_details
+    // 3️⃣ Insert students into masterlist_details
     if ($result->num_rows > 0) {
         $insert_stmt = $conn->prepare("
             INSERT INTO masterlist_details (masterlist_id, student_id)
             VALUES (?, ?)
         ");
         while ($row = $result->fetch_assoc()) {
-            $insert_stmt->bind_param("is", $masterlist_id, $row['student_id']); // student_id is varchar
+            $insert_stmt->bind_param("is", $masterlist_id, $row['student_id']);
             $insert_stmt->execute();
         }
 
-        // 🧾 Log the number of students added
         addSystemLog(
             $conn,
             'INFO',
-            "Added {$result->num_rows} students to masterlist ID {$masterlist_id}",
-            'staff/Masterlist.php',
-            $_SESSION['user_id']
+            "Created masterlist for {$program} {$section} (YL{$year_level}) - Term {$term}, SY {$year}. Added {$result->num_rows} students.",
+            'admin/Masterlist.php',
+            $generated_by
         );
 
-        echo "<script>alert('Masterlist created and students added successfully!'); window.location='Masterlist.php';</script>";
+        echo "<script>alert('Masterlist created successfully — all students in this program/year added!'); window.location='Masterlist.php';</script>";
     } else {
-        echo "<script>alert('Masterlist created, but no students matched the criteria.'); window.location='Masterlist.php';</script>";
+        addSystemLog(
+            $conn,
+            'WARNING',
+            "Created masterlist for {$program} {$section} YL{$year_level}, but no students matched program/year.",
+            'admin/Masterlist.php',
+            $generated_by
+        );
+
+        echo "<script>alert('Masterlist created, but no students matched this program/year.'); window.location='Masterlist.php';</script>";
     }
 
     exit;
 }
+
+
 
 
 
@@ -249,6 +252,9 @@ if (isset($_POST['auto_section'])) {
                 <option value="BSIT">BSIT</option>
                 <option value="BSA">BSA</option>
                 <option value="BSBA">BSBA</option>
+                <option value="BSECE">BSECE</option>
+                <option value="BSHM">BSHM</option>
+                <option value="BSCS">BSCS</option>
             </select>
             <label>Year Level</label>
             <select name="year_level" required>
@@ -329,7 +335,7 @@ if (isset($_POST['auto_section'])) {
             <table border="1" cellspacing="0" cellpadding="7" width="100%" style="border-collapse:collapse; font-size:13px;">
                 <thead style="background:#0056d2; color:white;">
                     <tr>
-                        <th>Student ID</th><th>Name</th><th>Program</th><th>Year Level</th><th>Section</th><th>Status</th><th>Signature</th>
+                        <th>Student ID</th><th>Name</th><th>Program</th><th>Year Level</th><th>Status</th><th>Signature</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -340,7 +346,7 @@ if (isset($_POST['auto_section'])) {
                             <td><?= htmlspecialchars($s['first_name'] . " " . $s['last_name']) ?></td>
                             <td><?= htmlspecialchars($s['program']) ?></td>
                             <td><?= htmlspecialchars($s['year_level']) ?></td>
-                            <td><?= htmlspecialchars($s['section']) ?></td>
+                            
                             <td><?= htmlspecialchars($s['student_status']) ?></td>
                             <td style="height:30px;"></td>
                         </tr>
